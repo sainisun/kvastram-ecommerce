@@ -1,29 +1,38 @@
 import { describe, expect, it } from 'vitest';
-import { optimizeCloudinaryUrl, isCloudinaryUrl, cloudinaryImageLoader } from './media';
+import {
+  cloudinaryImageLoader,
+  isCloudinaryUrl,
+  optimizeCloudinaryUrl,
+} from './media';
 import { getProductDisplayTitle } from './product-title';
 
 describe('wholesale product title utility', () => {
   it('removes marketing descriptors and keeps the canonical title segment', () => {
-    expect(getProductDisplayTitle('Handcrafted Odhvica Silk Saree | Blue')).toBe('Silk Saree');
+    expect(
+      getProductDisplayTitle('Handcrafted Odhvica Silk Saree | Blue')
+    ).toBe('Silk Saree');
   });
 
-  it('returns an empty string for missing titles and preserves a trimmed fallback', () => {
+  it('handles missing titles and preserves a meaningful fallback', () => {
     expect(getProductDisplayTitle(undefined)).toBe('');
     expect(getProductDisplayTitle('   Artisan   ')).toBe('Artisan');
   });
 });
 
 describe('wholesale Cloudinary media utility', () => {
-  const cloudinaryUrl = 'https://res.cloudinary.com/odhvica/image/upload/sample.heic';
+  const cloudinaryUrl =
+    'https://res.cloudinary.com/odhvica/image/upload/sample.heic';
 
   it('accepts only HTTPS Cloudinary URLs', () => {
     expect(isCloudinaryUrl(cloudinaryUrl)).toBe(true);
-    expect(isCloudinaryUrl('http://res.cloudinary.com/odhvica/image/upload/sample.jpg')).toBe(false);
+    expect(
+      isCloudinaryUrl('http://res.cloudinary.com/odhvica/image/upload/sample.jpg')
+    ).toBe(false);
     expect(isCloudinaryUrl('https://example.com/sample.jpg')).toBe(false);
     expect(isCloudinaryUrl(null)).toBe(false);
   });
 
-  it('normalizes SEO-safe extensions and adds automatic delivery transforms', () => {
+  it('normalizes extensions and adds automatic delivery transforms', () => {
     expect(optimizeCloudinaryUrl(cloudinaryUrl)).toBe(
       'https://res.cloudinary.com/odhvica/image/upload/f_auto,q_auto/sample.jpg'
     );

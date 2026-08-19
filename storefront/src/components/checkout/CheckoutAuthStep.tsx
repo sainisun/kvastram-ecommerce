@@ -33,18 +33,12 @@ export default function CheckoutAuthStep({
         <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
           {authStage === 'email' ? 'Enter Email' : 'Verify OTP'}
         </h3>
-
         {authError && (
-          <div className="bg-danger-bg text-error p-3 text-body-sm mb-4">
-            {authError}
-          </div>
+          <div className="bg-danger-bg text-error p-3 text-body-sm mb-4">{authError}</div>
         )}
-
         {authStage === 'email' ? (
           <div className="space-y-4">
-            <p className="text-body-sm text-muted">
-              Please enter your email to proceed with checkout.
-            </p>
+            <p className="text-body-sm text-muted">Please enter your email to proceed with checkout.</p>
             <Input
               id="auth_email"
               type="email"
@@ -66,9 +60,7 @@ export default function CheckoutAuthStep({
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-body-sm text-muted">
-              Enter the 6-digit code sent to {authEmail}
-            </p>
+            <p className="text-body-sm text-muted">Enter the 6-digit code sent to {authEmail}</p>
             <Input
               id="auth_otp"
               type="text"
@@ -76,7 +68,7 @@ export default function CheckoutAuthStep({
               label="6-Digit OTP"
               required
               value={authOtp}
-              onChange={(event) => onOtpChange(event.target.value)}
+              onChange={(event) => onOtpChange(event.target.value.replace(/\D/g, '').slice(0, 6))}
             />
             <Button
               onClick={onVerifyOtp}
@@ -86,12 +78,7 @@ export default function CheckoutAuthStep({
             >
               Verify OTP
             </Button>
-            <Button
-              onClick={onChangeEmail}
-              variant="inline"
-              fullWidth
-              type="button"
-            >
+            <Button onClick={onChangeEmail} variant="inline" fullWidth type="button">
               Change Email
             </Button>
           </div>

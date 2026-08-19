@@ -2,7 +2,6 @@
 
 
 import { Heading } from '@/design-system';
-import { HiddenCheckbox, SelectionControl } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
@@ -10,26 +9,17 @@ import { api } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
 import Link from 'next/link';
-import { CountrySelect, Select } from '@/design-system';
 import { getCountryName } from '@/config/countries';
-import { INDIAN_STATES } from '@/config/indian-states';
-import { AddressAutocomplete } from '@/design-system';
-import { Input } from '@/design-system';
-import { Textarea } from '@/design-system';
-import { Button } from '@/design-system';
 import { CheckoutSkeleton } from '@/design-system';
-import CheckoutSuccess from '@/components/checkout/CheckoutSuccess';
-import CheckoutAuthStep from '@/components/checkout/CheckoutAuthStep';
-import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
-import CheckoutPaymentStep from '@/components/checkout/CheckoutPaymentStep';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useCurrency } from '@/context/currency-context';
 import { formatMoney } from '@/lib/currency';
 import { resolveRegionForCountry } from '@/lib/regions';
-import {
-  calculateCheckoutShippingCost,
-  calculateCheckoutTotal,
-} from '@/lib/checkout-total-policy';
+import CheckoutAuthStep from '@/components/checkout/CheckoutAuthStep';
+import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
+import CheckoutPaymentStep from '@/components/checkout/CheckoutPaymentStep';
+import CheckoutSuccess from '@/components/checkout/CheckoutSuccess';
+import CheckoutShippingForm from '@/components/checkout/CheckoutShippingForm';
 
 interface ShippingOption {
   id: string;
@@ -156,8 +146,6 @@ export default function CheckoutPage() {
 
   // PHASE 1.3: Fetch shipping options when country changes
   useEffect(() => {
-    let active = true;
-
     const fetchShippingOptions = async () => {
       if (!formData.country_code) {
         setShippingOptions([]);
@@ -173,7 +161,6 @@ export default function CheckoutPage() {
           currentRegion?.id,
           formData.postal_code
         );
-        if (!active) return;
         setShippingPreviewMessage(data.serviceability?.message || '');
         if (data.options && data.options.length > 0) {
           setShippingOptions(data.options);
@@ -186,27 +173,21 @@ export default function CheckoutPage() {
         }
       } catch (error) {
         console.error('Failed to fetch shipping options:', error);
-        if (!active) return;
         setShippingOptions([]);
         setSelectedShipping(null);
         setShippingPreviewMessage('');
       } finally {
-        if (active) setShippingLoading(false);
+        setShippingLoading(false);
       }
     };
 
     // Debounce the fetch
     const timer = setTimeout(fetchShippingOptions, 300);
-    return () => {
-      active = false;
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [formData.country_code, formData.postal_code, currentRegion?.id]);
 
   // PHASE 1.4: Fetch tax when country or cart total changes
   useEffect(() => {
-    let active = true;
-
     const fetchTax = async () => {
       if (!formData.country_code || cartTotal === 0) {
         setTaxAmount(0);
@@ -224,25 +205,20 @@ export default function CheckoutPage() {
           currentRegion?.id,
           settings || undefined
         );
-        if (!active) return;
         if (data.tax_amount) {
           setTaxAmount(data.tax_amount);
           setTaxName(data.tax_name || 'Tax');
         }
       } catch (error) {
         console.error('Failed to calculate tax:', error);
-        if (!active) return;
         setTaxAmount(0);
       } finally {
-        if (active) setTaxLoading(false);
+        setTaxLoading(false);
       }
     };
 
     const timer = setTimeout(fetchTax, 500);
-    return () => {
-      active = false;
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id, settings]);
 
   const handleApplyPromo = async () => {
@@ -263,6 +239,7 @@ export default function CheckoutPage() {
       setPromoLoading(false);
     }
   };
+
 
   const handleSendCheckoutOtp = async () => {
     if (!authEmail) return;
@@ -466,11 +443,11 @@ export default function CheckoutPage() {
   // PHASE 1.3: Calculate shipping cost
   const shippingCost =
     confirmedOrderTotals?.shipping_total ??
-    calculateCheckoutShippingCost({
-      subtotal: cartTotal,
-      freeShippingThreshold,
-      selectedShippingPrice: selectedShipping?.price,
-    });
+    (selectedShipping
+      ? cartTotal >= freeShippingThreshold
+        ? 0
+        : selectedShipping.price || 0
+      : 0);
 
   // Gift wrapping is stored in INR paise to match cart totals.
   const giftWrappingFee = 29900;
@@ -482,13 +459,11 @@ export default function CheckoutPage() {
   // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
     confirmedOrderTotals?.total ??
-    calculateCheckoutTotal({
-      subtotal: cartTotal,
-      discountAmount: discount?.amount,
-      shippingCost,
-      taxAmount: displayedTaxAmount,
-      giftWrappingCost,
-    });
+    (cartTotal -
+      (discount?.amount || 0) +
+      shippingCost +
+      displayedTaxAmount +
+      giftWrappingCost);
 
   // Local cart amounts are INR paise and need conversion. Confirmed order totals
   // are already in the backend-selected regional currency and need formatting only.
@@ -499,11 +474,11 @@ export default function CheckoutPage() {
     formatMoney(amount, confirmedOrderTotals?.currency_code || currency);
 
   return (
-    <div className="checkout-page min-h-screen bg-surface-paper">
+    <div className="min-h-screen bg-surface-paper">
       {/* PHASE 3.2: Mobile-first responsive layout */}
-      <div className="checkout-layout grid min-h-screen lg:grid-cols-2">
+      <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left: Form */}
-        <div className="checkout-form-column order-2 border-border-subtle p-4 md:p-8 lg:order-1 lg:border-r lg:p-20">
+        <div className="order-2 border-border-subtle p-4 md:p-8 lg:order-1 lg:border-r lg:p-20">
           <div className="max-w-lg mx-auto">
             <Link
               href="/"
@@ -524,7 +499,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* D1: Premium Progress Bar — 3 steps */}
-            <div className="checkout-stepper mb-10">
+            <div className="mb-10">
               <div className="flex items-center">
                 {/* Step 1: Shipping */}
                 <div className="flex flex-col items-center">
@@ -585,7 +560,7 @@ export default function CheckoutPage() {
 
             {error && (
               <div className="mb-6 space-y-3">
-                <div className="checkout-error bg-danger-bg border border-danger text-error p-4 text-body-sm">
+                <div className="bg-danger-bg border border-danger text-error p-4 text-body-sm">
                   {error}
                 </div>
                 <div className="border border-border-subtle bg-surface p-4 text-body-xs text-muted">
@@ -627,381 +602,58 @@ export default function CheckoutPage() {
                 authLoading={authLoadingStep}
                 authError={authError}
                 onEmailChange={setAuthEmail}
-                onOtpChange={(value) => setAuthOtp(value.replace(/\D/g, '').slice(0, 6))}
+                onOtpChange={setAuthOtp}
                 onSendOtp={handleSendCheckoutOtp}
                 onVerifyOtp={handleVerifyCheckoutOtp}
                 onChangeEmail={() => setAuthStage('email')}
               />
             ) : step === 'shipping' ? (
-              <form onSubmit={handleShippingSubmit} className="space-y-8">
-                <div>
-                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                    Contact
-                  </h3>
-                  <div className="space-y-4">
-                    <Input
-                      id="email"
-                      type="email"
-                      name="email"
-                      label="Email Address"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      autoComplete="email"
-                      aria-required="true"
-                      aria-describedby="email-help"
-                    />
-                    <span id="email-help" className="sr-only">
-                      Enter your email address for order updates
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                    Shipping Address
-                  </h3>
-                  {/* PHASE 3.2: Mobile-first responsive grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
-                    <div>
-                      <Input
-                        id="first_name"
-                        type="text"
-                        name="first_name"
-                        label="First Name"
-                        required
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        autoComplete="given-name"
-                        aria-required="true"
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        id="last_name"
-                        type="text"
-                        name="last_name"
-                        label="Last Name"
-                        required
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        autoComplete="family-name"
-                        aria-required="true"
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <AddressAutocomplete
-                      label="Address (Line 1)"
-                      value={formData.address_1}
-                      onChange={(value) =>
-                        setFormData((prev) => ({ ...prev, address_1: value }))
-                      }
-                      onAddressSelect={handleAddressSelect}
-                      required
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
-                    <div>
-                      <Input
-                        id="city"
-                        type="text"
-                        name="city"
-                        label="City"
-                        required
-                        value={formData.city}
-                        onChange={handleChange}
-                        autoComplete="address-level2"
-                        aria-required="true"
-                      />
-                    </div>
-                    <div>
-                      {formData.country_code.toUpperCase() === 'IN' ? (
-                        <Select
-                          id="province"
-                          name="province"
-                          label="State/Union Territory"
-                          value={formData.province}
-                          onChange={handleChange}
-                          autoComplete="address-level1"
-                          required
-                          aria-required="true"
-                        >
-                          <option value="">Select state</option>
-                          {INDIAN_STATES.map((state) => (
-                            <option key={state.code} value={state.code}>
-                              {state.name}
-                            </option>
-                          ))}
-                        </Select>
-                      ) : (
-                        <Input
-                          id="province"
-                          type="text"
-                          name="province"
-                          label="State/Province"
-                          value={formData.province}
-                          onChange={handleChange}
-                          autoComplete="address-level1"
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
-                    <div>
-                      <Input
-                        id="postal_code"
-                        type="text"
-                        name="postal_code"
-                        label="Postal Code"
-                        required
-                        value={formData.postal_code}
-                        onChange={handleChange}
-                        autoComplete="postal-code"
-                        aria-required="true"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="form-label-typography mb-1.5  text-muted">
-                      Country <span className="ml-1 text-error">*</span>
-                    </p>
-                    <CountrySelect
-                      name="country"
-                      value={formData.country_code}
-                      onChange={(code) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          country_code: code,
-                          province:
-                            code === prev.country_code ? prev.province : '',
-                        }))
-                      }
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* PHASE 1.3: Shipping Method Selection */}
-                <div className="mt-8">
-                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                    Shipping Method
-                  </h3>
-
-                  {shippingLoading ? (
-                    <div className="py-4 text-center text-muted">
-                      Loading shipping options...
-                    </div>
-                  ) : shippingOptions.length > 0 ? (
-                    <div className="space-y-3">
-                      {shippingOptions.map((option) => {
-                        const isFree =
-                          option.price === 0 ||
-                          cartTotal >= freeShippingThreshold;
-                        const displayPrice = isFree ? 0 : option.price;
-
-                        return (
-                          <label
-                            key={option.id}
-                            className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${
-                              selectedShipping?.id === option.id
-                                ? 'border-primary bg-surface'
-                                : 'border-border-subtle hover:border-muted'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <SelectionControl
-                                type="radio"
-                                name="shipping_method"
-                                value={option.id}
-                                checked={selectedShipping?.id === option.id}
-                                onChange={() => setSelectedShipping(option)}
-                              />
-                              <div>
-                                <p className="font-medium text-primary">
-                                  {option.name}
-                                </p>
-                                <p className="text-body-sm text-muted">
-                                  {option.description}
-                                </p>
-                              </div>
-                            </div>
-                            <span
-                              className={`font-medium ${isFree ? 'text-success' : 'text-primary'}`}
-                            >
-                              {isFree
-                                ? 'FREE'
-                                : displayMoney(displayPrice)}
-                            </span>
-                          </label>
-                        );
-                      })}
-
-                      {cartTotal >= freeShippingThreshold &&
-                        selectedShipping && (
-                          <p className="text-body-sm text-success bg-success-bg p-3 border border-success">
-                            🎉 You&apos;ve unlocked FREE shipping!
-                          </p>
-                        )}
-                    </div>
-                  ) : formData.country_code ? (
-                    <div className="py-4 text-center text-muted">
-                      No shipping options available for this country
-                    </div>
-                  ) : (
-                    <div className="py-4 text-center text-muted">
-                      Select your country to see available shipping methods
-                    </div>
-                  )}
-                  {!shippingLoading && shippingPreviewMessage ? (
-                    <p className="mt-3 text-body-xs text-muted">
-                      {shippingPreviewMessage}
-                    </p>
-                  ) : null}
-                </div>
-
-                {/* D3: Gift Wrapping */}
-                <div className="mt-8">
-                  <h3 className="mb-4 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                    Gift Options
-                  </h3>
-                  <label
-                    className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
-                      giftWrapping
-                        ? 'border-primary bg-surface'
-                        : 'border-border-subtle hover:border-muted'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-display-md">🎁</div>
-                      <div>
-                        <p className="text-body-sm font-medium text-primary">
-                          Premium Gift Wrapping
-                        </p>
-                        <p className="text-body-xs font-light text-muted">
-                          Signature Odhvica box with ribbon &amp; message card
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-body-sm font-medium text-muted">
-                        +{displayMoney(giftWrappingFee)}
-                      </span>
-                      <div
-                        className={`relative w-11 h-6 rounded-full transition-colors ${
-                          giftWrapping ? 'bg-primary' : 'bg-border-subtle'
-                        }`}
-                      >
-                        <HiddenCheckbox
-                          checked={giftWrapping}
-                          onChange={(e) => setGiftWrapping(e.target.checked)}
-                          id="gift-wrapping-toggle"
-                        />
-                        <span
-                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface-paper shadow transition-transform ${
-                            giftWrapping ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  </label>
-                  {giftWrapping && (
-                    <div className="mt-3 animate-fade-in">
-                      <Textarea
-                        label="Gift Message (Optional)"
-                        value={giftMessage}
-                        onChange={(e) => setGiftMessage(e.target.value)}
-                        placeholder="Write a personal message for the recipient..."
-                        maxLength={200}
-                        rows={3}
-                        className="min-h-24 resize-none"
-                      />
-                      <p className="mt-1 text-right text-body-xs text-muted">
-                        {giftMessage.length}/200
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* PHASE 1.5: Terms Acceptance */}
-                <div className="mt-8 border-t border-border-subtle pt-6">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <SelectionControl
-                      type="checkbox"
-                      checked={acceptTerms}
-                      onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="-ml-3 -mt-3"
-                    />
-                    <span className="text-body-sm text-muted group-hover:text-primary">
-                      I agree to the{' '}
-                      <Link
-                        href={storefrontTrust.policyRoutes.terms}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:text-primary"
-                      >
-                        Terms of Service
-                      </Link>{' '}
-                      and{' '}
-                      <Link
-                        href={storefrontTrust.policyRoutes.privacy}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:text-primary"
-                      >
-                        Privacy Policy
-                      </Link>
-                      ,{' '}
-                      <Link
-                        href={storefrontTrust.policyRoutes.shipping}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:text-primary"
-                      >
-                        Shipping
-                      </Link>{' '}
-                      and{' '}
-                      <Link
-                        href={storefrontTrust.policyRoutes.refundPolicy}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:text-primary"
-                      >
-                        Refund Policy
-                      </Link>
-                    </span>
-                  </label>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading || !acceptTerms}
-                  variant="secondary"
-                  size="lg"
-                  fullWidth
-                  aria-live="polite"
-                  aria-busy={loading}
-                >
-                  {loading ? 'Processing...' : 'Continue to Payment'}
-                </Button>
-              </form>
+              <CheckoutShippingForm
+                formData={formData}
+                shippingOptions={shippingOptions}
+                selectedShipping={selectedShipping}
+                shippingLoading={shippingLoading}
+                freeShippingThreshold={freeShippingThreshold}
+                shippingPreviewMessage={shippingPreviewMessage}
+                cartTotal={cartTotal}
+                giftWrapping={giftWrapping}
+                giftMessage={giftMessage}
+                acceptTerms={acceptTerms}
+                loading={loading}
+                policyRoutes={storefrontTrust.policyRoutes}
+                onSubmit={handleShippingSubmit}
+                onChange={handleChange}
+                onAddressChange={(value) => setFormData((prev) => ({ ...prev, address_1: value }))}
+                onAddressSelect={handleAddressSelect}
+                onCountryChange={(code) => setFormData((prev) => ({
+                  ...prev,
+                  country_code: code,
+                  province: code === prev.country_code ? prev.province : '',
+                }))}
+                onShippingChange={setSelectedShipping}
+                onGiftWrappingChange={setGiftWrapping}
+                onGiftMessageChange={setGiftMessage}
+                onTermsChange={setAcceptTerms}
+                displayMoney={displayMoney}
+              />
             ) : (
               <CheckoutPaymentStep
                 currency={currency}
                 orderUUID={orderUUID}
                 checkoutPaymentToken={checkoutPaymentToken}
                 finalTotal={finalTotal}
-                customerName={`${formData.first_name} ${formData.last_name}`}
+                customerName={`${formData.first_name} ${formData.last_name}`.trim()}
                 customerEmail={formData.email}
                 customerPhone={formData.phone}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
                 onBackToShipping={() => setStep('shipping')}
               />
             )}
           </div>
         </div>
 
+        {/* Right: Summary - Mobile on top, Desktop on right */}
         <CheckoutOrderSummary
           items={items}
           step={step}
@@ -1010,17 +662,17 @@ export default function CheckoutPage() {
           promoCode={promoCode}
           promoLoading={promoLoading}
           promoMessage={promoMessage}
-          onPromoCodeChange={setPromoCode}
-          onApplyPromo={handleApplyPromo}
-          shippingCost={shippingCost}
           selectedShipping={selectedShipping}
+          shippingCost={shippingCost}
           taxLoading={taxLoading}
-          displayedTaxAmount={displayedTaxAmount}
           taxName={taxName}
+          displayedTaxAmount={displayedTaxAmount}
           giftWrapping={giftWrapping}
           giftWrappingCost={giftWrappingCost}
           finalTotal={finalTotal}
-          hasConfirmedOrderTotals={Boolean(confirmedOrderTotals)}
+          confirmedOrderTotals={confirmedOrderTotals}
+          onPromoCodeChange={setPromoCode}
+          onApplyPromo={handleApplyPromo}
           displayMoney={displayMoney}
           displayConfirmedMoney={displayConfirmedMoney}
         />

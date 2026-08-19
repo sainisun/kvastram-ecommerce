@@ -468,7 +468,7 @@ export default function EditProductPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50 hover:opacity-90 transition"
+            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-2.5 text-sm font-semibold text-[var(--kv-card)] disabled:opacity-50 hover:opacity-90 transition"
           >
             <Save size={16} />
             {loading ? 'Saving…' : 'Save Changes'}
@@ -626,7 +626,7 @@ export default function EditProductPage() {
               <button
                 type="button"
                 onClick={() => setShowAddVariant(!showAddVariant)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-[var(--kv-card)] rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
               >
                 <Plus size={15} />
                 Add Size
@@ -702,7 +702,7 @@ export default function EditProductPage() {
                   />
                   <button
                     type="button" onClick={handleCreateOption}
-                    className="px-3 py-1.5 bg-[var(--kv-text)] text-white rounded-lg text-sm font-medium hover:bg-[var(--kv-text)]"
+                    className="px-3 py-1.5 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg text-sm font-medium hover:bg-[var(--kv-text)]"
                   >
                     Save Option
                   </button>
@@ -781,7 +781,7 @@ export default function EditProductPage() {
                 <div className="flex gap-2 mt-3">
                   <button
                     type="button" onClick={handleAddVariant}
-                    className="px-4 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"
+                    className="px-4 py-1.5 bg-purple-600 text-[var(--kv-card)] rounded-lg text-sm font-medium hover:bg-purple-700"
                   >
                     Add Variant
                   </button>
@@ -1003,7 +1003,7 @@ export default function EditProductPage() {
                       key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
                       className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                         selectedTagIds.includes(tag.id)
-                          ? 'bg-[var(--kv-text)] text-white border-[var(--kv-text)]'
+                          ? 'bg-[var(--kv-text)] text-[var(--kv-card)] border-[var(--kv-text)]'
                           : 'bg-[var(--kv-card)] text-[var(--kv-text)] border-[var(--kv-border)] hover:border-[var(--kv-muted)]'
                       }`}
                     >

@@ -1,15 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
 import { Heading } from '@/design-system';
+import { CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 
-interface CheckoutSuccessProps {
-  orderId: string;
-}
-
-export default function CheckoutSuccess({ orderId }: CheckoutSuccessProps) {
+export default function CheckoutSuccess({ orderId }: { orderId: string }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface-paper">
       <div className="relative w-24 h-24 mb-8">
@@ -24,7 +20,8 @@ export default function CheckoutSuccess({ orderId }: CheckoutSuccessProps) {
         Thank You!
       </Heading>
       <p className="mb-2 max-w-md text-body-xl font-light text-muted">
-        Your order <span className="font-semibold text-primary">#{orderId}</span> has been confirmed.
+        Your order <span className="font-semibold text-primary">#{orderId}</span>{' '}
+        has been confirmed.
       </p>
       <p className="mb-10 max-w-md text-body-sm font-light text-muted">
         We&apos;re preparing your order for shipment. You&apos;ll receive an email confirmation shortly.

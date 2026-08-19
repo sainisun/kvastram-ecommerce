@@ -257,7 +257,7 @@ export default function NewProductPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-50 hover:opacity-90 transition"
+            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-2.5 text-sm font-semibold text-[var(--kv-card)] disabled:opacity-50 hover:opacity-90 transition"
           >
             <Save size={16} />
             {loading ? 'Saving…' : 'Save Product'}
@@ -567,7 +567,7 @@ export default function NewProductPage() {
                       key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
                       className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                         selectedTagIds.includes(tag.id)
-                          ? 'bg-[var(--kv-text)] text-white border-[var(--kv-text)]'
+                          ? 'bg-[var(--kv-text)] text-[var(--kv-card)] border-[var(--kv-text)]'
                           : 'bg-[var(--kv-card)] text-[var(--kv-text)] border-[var(--kv-border)] hover:border-[var(--kv-muted)]'
                       }`}
                     >

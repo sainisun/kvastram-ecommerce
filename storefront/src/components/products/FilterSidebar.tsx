@@ -156,313 +156,43 @@ export default function FilterSidebar({
 
   return (
     <div className={`flex min-h-full flex-col bg-surface-paper ${className}`}>
-      <div className="flex-1 sm:hidden">
-        <div className="space-y-7">
-          <div className="flex items-center justify-between gap-4 border-b border-border-subtle pb-4">
-            <h3 className="filter-sidebar-title">Filters</h3>
-            {hasActiveFilters ? (
-              <Button
-                type="button"
-                onClick={clearAllFilters}
-                variant="ghost"
-                size="sm"
-                className="filter-clear-button px-0 underline underline-offset-4"
-              >
-                Clear All
-              </Button>
-            ) : null}
-          </div>
+      <FilterContent
+        mode="mobile"
+        categories={categories}
+        tags={tags}
+        collections={collections}
+        draftFilters={draftFilters}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        hasActiveFilters={hasActiveFilters}
+        expandedCats={expandedCats}
+        openGroups={openGroups}
+        onClear={clearAllFilters}
+        onMinPriceChange={setMinPrice}
+        onMaxPriceChange={setMaxPrice}
+        onToggleCategory={toggleCategory}
+        onToggleGroup={toggleGroup}
+        onUpdateDraftFilter={updateDraftFilter}
+      />
 
-          {categories.length > 0 ? (
-            <MobileFilterGroup label="Categories">
-              {categories.map((cat) => {
-                const isActive = draftFilters.category_id === cat.id;
-                const isExpanded = expandedCats.includes(cat.id);
-
-                return (
-                  <div key={cat.id}>
-                    <div className="flex items-center justify-between gap-2">
-                      <MobileFilterButton
-                        active={isActive}
-                        onClick={() =>
-                          updateDraftFilter(
-                            'category_id',
-                            isActive ? null : cat.id
-                          )
-                        }
-                      >
-                        {cat.name}
-                      </MobileFilterButton>
-                      {cat.children?.length ? (
-                        <IconButton
-                          type="button"
-                          onClick={() => toggleCategory(cat.id)}
-                          variant="ghost"
-                          size="sm"
-                          className="filter-expand-button rounded-full"
-                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
-                        >
-                          {isExpanded ? (
-                            <ChevronDown size={14} />
-                          ) : (
-                            <ChevronRight size={14} />
-                          )}
-                        </IconButton>
-                      ) : null}
-                    </div>
-
-                    {cat.children?.length && isExpanded ? (
-                      <div className="ml-3 mt-2 space-y-1 border-l border-border-subtle pl-3">
-                        {cat.children.map((sub) => (
-                          <MobileFilterButton
-                            key={sub.id}
-                            active={draftFilters.category_id === sub.id}
-                            onClick={() =>
-                              updateDraftFilter(
-                                'category_id',
-                                draftFilters.category_id === sub.id
-                                  ? null
-                                  : sub.id
-                              )
-                            }
-                            small
-                          >
-                            {sub.name}
-                          </MobileFilterButton>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </MobileFilterGroup>
-          ) : null}
-
-          {collections.length > 0 ? (
-            <MobileFilterGroup label="Collections">
-              {collections.map((col) => (
-                <MobileFilterButton
-                  key={col.id}
-                  active={draftFilters.collection_id === col.id}
-                  onClick={() =>
-                    updateDraftFilter(
-                      'collection_id',
-                      draftFilters.collection_id === col.id ? null : col.id
-                    )
-                  }
-                >
-                  {col.title}
-                </MobileFilterButton>
-              ))}
-            </MobileFilterGroup>
-          ) : null}
-
-          <MobileFilterGroup label="Price">
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  type="number"
-                  aria-label="Minimum price"
-                  inputMode="numeric"
-                  min="0"
-                  placeholder="Min"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                />
-                <Input
-                  type="number"
-                  aria-label="Maximum price"
-                  inputMode="numeric"
-                  min="0"
-                  placeholder="Max"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                />
-              </div>
-            </div>
-          </MobileFilterGroup>
-
-          {tags.length > 0 ? (
-            <MobileFilterGroup label="Tags">
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => {
-                  const isActive = draftFilters.tag_id === tag.id;
-                  return (
-                    <Button
-                      key={tag.id}
-                      type="button"
-                      onClick={() =>
-                        updateDraftFilter('tag_id', isActive ? null : tag.id)
-                      }
-                      variant={isActive ? 'chipSelected' : 'chip'}
-                      size="sm"
-                      className="px-3 text-body-xs tracking-token-wider"
-                    >
-                      {tag.name}
-                    </Button>
-                  );
-                })}
-              </div>
-            </MobileFilterGroup>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="hidden flex-1 sm:block">
-        {categories.length > 0 ? (
-          <FilterGroup
-            id="categories"
-            label="Categories"
-            isOpen={openGroups.includes('categories')}
-            onToggle={() => toggleGroup('categories')}
-          >
-            {categories.map((cat) => {
-              const isActive = draftFilters.category_id === cat.id;
-              const isExpanded = expandedCats.includes(cat.id);
-
-              return (
-                <div key={cat.id}>
-                  <div className="flex items-center justify-between gap-2">
-                    <FilterButton
-                      active={isActive}
-                      onClick={() =>
-                        updateDraftFilter(
-                          'category_id',
-                          isActive ? null : cat.id
-                        )
-                      }
-                    >
-                      {cat.name}
-                    </FilterButton>
-                    {cat.children?.length ? (
-                      <IconButton
-                        type="button"
-                        onClick={() => toggleCategory(cat.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="filter-expand-button shrink-0 rounded-full"
-                        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
-                      >
-                        {isExpanded ? (
-                          <ChevronDown size={14} />
-                        ) : (
-                          <ChevronRight size={14} />
-                        )}
-                      </IconButton>
-                    ) : null}
-                  </div>
-
-                  {cat.children?.length && isExpanded ? (
-                    <div className="ml-4 mt-1 space-y-1 border-l border-border-subtle pl-3">
-                      {cat.children.map((sub) => (
-                        <FilterButton
-                          key={sub.id}
-                          active={draftFilters.category_id === sub.id}
-                          onClick={() =>
-                            updateDraftFilter(
-                              'category_id',
-                              draftFilters.category_id === sub.id
-                                ? null
-                                : sub.id
-                            )
-                          }
-                          small
-                        >
-                          {sub.name}
-                        </FilterButton>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-          </FilterGroup>
-        ) : null}
-
-        {collections.length > 0 ? (
-          <FilterGroup
-            id="collections"
-            label="Collections"
-            isOpen={openGroups.includes('collections')}
-            onToggle={() => toggleGroup('collections')}
-          >
-            {collections.map((col) => (
-              <FilterButton
-                key={col.id}
-                active={draftFilters.collection_id === col.id}
-                onClick={() =>
-                  updateDraftFilter(
-                    'collection_id',
-                    draftFilters.collection_id === col.id ? null : col.id
-                  )
-                }
-              >
-                {col.title}
-              </FilterButton>
-            ))}
-          </FilterGroup>
-        ) : null}
-
-        <FilterGroup
-          id="price"
-          label="Price"
-          isOpen={openGroups.includes('price')}
-          onToggle={() => toggleGroup('price')}
-        >
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Input
-                  type="number"
-                  label="Min"
-                  inputMode="numeric"
-                  min="0"
-                  placeholder="0"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                />
-              </div>
-              <div>
-                <Input
-                  type="number"
-                  label="Max"
-                  inputMode="numeric"
-                  min="0"
-                  placeholder="Any"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-        </FilterGroup>
-
-        {tags.length > 0 ? (
-          <FilterGroup
-            id="tags"
-            label="Tags"
-            isOpen={openGroups.includes('tags')}
-            onToggle={() => toggleGroup('tags')}
-          >
-            <div className="space-y-1">
-              {tags.map((tag) => {
-                const isActive = draftFilters.tag_id === tag.id;
-                return (
-                  <FilterButton
-                    key={tag.id}
-                    active={isActive}
-                    onClick={() =>
-                      updateDraftFilter('tag_id', isActive ? null : tag.id)
-                    }
-                  >
-                    {tag.name}
-                  </FilterButton>
-                );
-              })}
-            </div>
-          </FilterGroup>
-        ) : null}
-      </div>
+      <FilterContent
+        mode="desktop"
+        categories={categories}
+        tags={tags}
+        collections={collections}
+        draftFilters={draftFilters}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        hasActiveFilters={hasActiveFilters}
+        expandedCats={expandedCats}
+        openGroups={openGroups}
+        onClear={clearAllFilters}
+        onMinPriceChange={setMinPrice}
+        onMaxPriceChange={setMaxPrice}
+        onToggleCategory={toggleCategory}
+        onToggleGroup={toggleGroup}
+        onUpdateDraftFilter={updateDraftFilter}
+      />
 
       <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-border-subtle bg-surface-paper px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
         <Button
@@ -509,37 +239,317 @@ export default function FilterSidebar({
     </div>
   );
 }
+type FilterMode = 'mobile' | 'desktop';
 
-function MobileFilterGroup({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
+type FilterContentProps = {
+  mode: FilterMode;
+  categories: Category[];
+  tags: Tag[];
+  collections: Collection[];
+  draftFilters: DraftFilters;
+  minPrice: string;
+  maxPrice: string;
+  hasActiveFilters: boolean;
+  expandedCats: string[];
+  openGroups: string[];
+  onClear: () => void;
+  onMinPriceChange: (value: string) => void;
+  onMaxPriceChange: (value: string) => void;
+  onToggleCategory: (id: string) => void;
+  onToggleGroup: (id: string) => void;
+  onUpdateDraftFilter: (
+    type: 'category_id' | 'tag_id' | 'collection_id',
+    value: string | null
+  ) => void;
+};
+
+function FilterContent({
+  mode,
+  categories,
+  tags,
+  collections,
+  draftFilters,
+  minPrice,
+  maxPrice,
+  hasActiveFilters,
+  expandedCats,
+  openGroups,
+  onClear,
+  onMinPriceChange,
+  onMaxPriceChange,
+  onToggleCategory,
+  onToggleGroup,
+  onUpdateDraftFilter,
+}: FilterContentProps) {
+  const compact = mode === 'mobile';
+  const groupIsOpen = (id: string) => compact || openGroups.includes(id);
+
   return (
-    <section className="space-y-3">
-      <p className="filter-group-label">{label}</p>
-      <div className="space-y-1">{children}</div>
-    </section>
+    <div className={compact ? 'flex-1 sm:hidden' : 'hidden flex-1 sm:block'}>
+      <div className={compact ? 'space-y-7' : undefined}>
+        {compact ? (
+          <div className="flex items-center justify-between gap-4 border-b border-border-subtle pb-4">
+            <h3 className="filter-sidebar-title">Filters</h3>
+            {hasActiveFilters ? (
+              <Button
+                type="button"
+                onClick={onClear}
+                variant="ghost"
+                size="sm"
+                className="filter-clear-button px-0 underline underline-offset-4"
+              >
+                Clear All
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
+
+        {categories.length > 0 ? (
+          <FilterSection
+            id="categories"
+            label="Categories"
+            compact={compact}
+            isOpen={groupIsOpen('categories')}
+            onToggle={() => onToggleGroup('categories')}
+          >
+            <CategoryOptions
+              categories={categories}
+              compact={compact}
+              draftCategoryId={draftFilters.category_id}
+              expandedCats={expandedCats}
+              onToggleCategory={onToggleCategory}
+              onUpdateDraftFilter={onUpdateDraftFilter}
+            />
+          </FilterSection>
+        ) : null}
+
+        {collections.length > 0 ? (
+          <FilterSection
+            id="collections"
+            label="Collections"
+            compact={compact}
+            isOpen={groupIsOpen('collections')}
+            onToggle={() => onToggleGroup('collections')}
+          >
+            <div className={compact ? 'space-y-1' : 'space-y-1'}>
+              {collections.map((collection) => {
+                const active = draftFilters.collection_id === collection.id;
+                return (
+                  <FilterOption
+                    key={collection.id}
+                    active={active}
+                    compact={compact}
+                    onClick={() =>
+                      onUpdateDraftFilter(
+                        'collection_id',
+                        active ? null : collection.id
+                      )
+                    }
+                  >
+                    {collection.title}
+                  </FilterOption>
+                );
+              })}
+            </div>
+          </FilterSection>
+        ) : null}
+
+        <FilterSection
+          id="price"
+          label="Price"
+          compact={compact}
+          isOpen={groupIsOpen('price')}
+          onToggle={() => onToggleGroup('price')}
+        >
+          <div className="space-y-3">
+            <div className={compact ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-3'}>
+              <Input
+                type="number"
+                {...(compact ? { 'aria-label': 'Minimum price' } : { label: 'Min' })}
+                inputMode="numeric"
+                min="0"
+                placeholder={compact ? 'Min' : '0'}
+                value={minPrice}
+                onChange={(event) => onMinPriceChange(event.target.value)}
+              />
+              <Input
+                type="number"
+                {...(compact ? { 'aria-label': 'Maximum price' } : { label: 'Max' })}
+                inputMode="numeric"
+                min="0"
+                placeholder={compact ? 'Max' : 'Any'}
+                value={maxPrice}
+                onChange={(event) => onMaxPriceChange(event.target.value)}
+              />
+            </div>
+          </div>
+        </FilterSection>
+
+        {tags.length > 0 ? (
+          <FilterSection
+            id="tags"
+            label="Tags"
+            compact={compact}
+            isOpen={groupIsOpen('tags')}
+            onToggle={() => onToggleGroup('tags')}
+          >
+            <TagOptions
+              tags={tags}
+              compact={compact}
+              draftTagId={draftFilters.tag_id}
+              onUpdateDraftFilter={onUpdateDraftFilter}
+            />
+          </FilterSection>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
-function FilterGroup({
+function CategoryOptions({
+  categories,
+  compact,
+  draftCategoryId,
+  expandedCats,
+  onToggleCategory,
+  onUpdateDraftFilter,
+}: {
+  categories: Category[];
+  compact: boolean;
+  draftCategoryId: string;
+  expandedCats: string[];
+  onToggleCategory: (id: string) => void;
+  onUpdateDraftFilter: FilterContentProps['onUpdateDraftFilter'];
+}) {
+  return (
+    <div className="space-y-1">
+      {categories.map((category) => {
+        const active = draftCategoryId === category.id;
+        const expanded = expandedCats.includes(category.id);
+        return (
+          <div key={category.id}>
+            <div className="flex items-center justify-between gap-2">
+              <FilterOption
+                active={active}
+                compact={compact}
+                onClick={() =>
+                  onUpdateDraftFilter('category_id', active ? null : category.id)
+                }
+              >
+                {category.name}
+              </FilterOption>
+              {category.children?.length ? (
+                <IconButton
+                  type="button"
+                  onClick={() => onToggleCategory(category.id)}
+                  variant="ghost"
+                  size="sm"
+                  className={compact ? 'filter-expand-button rounded-full' : 'filter-expand-button rounded-full shrink-0'}
+                  aria-label={(expanded ? 'Collapse' : 'Expand') + ' ' + category.name}
+                >
+                  {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                </IconButton>
+              ) : null}
+            </div>
+            {category.children?.length && expanded ? (
+              <div className={(compact ? 'ml-3 mt-2' : 'ml-4 mt-1') + ' space-y-1 border-l border-border-subtle pl-3'}>
+                {category.children.map((child) => {
+                  const childActive = draftCategoryId === child.id;
+                  return (
+                    <FilterOption
+                      key={child.id}
+                      active={childActive}
+                      compact={compact}
+                      small
+                      onClick={() =>
+                        onUpdateDraftFilter(
+                          'category_id',
+                          childActive ? null : child.id
+                        )
+                      }
+                    >
+                      {child.name}
+                    </FilterOption>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function TagOptions({
+  tags,
+  compact,
+  draftTagId,
+  onUpdateDraftFilter,
+}: {
+  tags: Tag[];
+  compact: boolean;
+  draftTagId: string;
+  onUpdateDraftFilter: FilterContentProps['onUpdateDraftFilter'];
+}) {
+  return (
+    <div className={compact ? 'flex flex-wrap gap-2' : 'space-y-1'}>
+      {tags.map((tag) => {
+        const active = draftTagId === tag.id;
+        if (compact) {
+          return (
+            <Button
+              key={tag.id}
+              type="button"
+              onClick={() => onUpdateDraftFilter('tag_id', active ? null : tag.id)}
+              variant={active ? 'chipSelected' : 'chip'}
+              size="sm"
+              className="px-3 text-body-xs tracking-token-wider"
+            >
+              {tag.name}
+            </Button>
+          );
+        }
+        return (
+          <FilterOption
+            key={tag.id}
+            active={active}
+            compact={false}
+            onClick={() => onUpdateDraftFilter('tag_id', active ? null : tag.id)}
+          >
+            {tag.name}
+          </FilterOption>
+        );
+      })}
+    </div>
+  );
+}
+
+function FilterSection({
   id,
   label,
+  compact,
   isOpen,
   onToggle,
   children,
 }: {
   id: string;
   label: string;
+  compact: boolean;
   isOpen: boolean;
   onToggle: () => void;
   children: ReactNode;
 }) {
-  const panelId = `filter-panel-${id}`;
+  if (compact) {
+    return (
+      <section className="space-y-3">
+        <p className="filter-group-label">{label}</p>
+        <div className="space-y-1">{children}</div>
+      </section>
+    );
+  }
 
+  const panelId = 'filter-panel-' + id;
   return (
     <section className="border-b border-border-subtle">
       <Button
@@ -554,9 +564,7 @@ function FilterGroup({
         <span className="filter-group-label">{label}</span>
         <ChevronDown
           size={16}
-          className={`text-secondary transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={'text-secondary transition-transform ' + (isOpen ? 'rotate-180' : '')}
           aria-hidden="true"
         />
       </Button>
@@ -569,47 +577,39 @@ function FilterGroup({
   );
 }
 
-function MobileFilterButton({
+function FilterOption({
   active,
-  onClick,
+  compact,
   small,
+  onClick,
   children,
 }: {
   active: boolean;
-  onClick: () => void;
+  compact: boolean;
   small?: boolean;
+  onClick: () => void;
   children: ReactNode;
 }) {
-  return (
-    <Button
-      type="button"
-      onClick={onClick}
-      variant="ghost"
-      size="sm"
-      className={`filter-option flex w-full justify-between rounded-md px-3 py-2 text-left ${
-        small ? 'filter-option-small' : 'filter-option-regular'
-      } ${
-        active
-          ? 'filter-option-active bg-primary text-inverse'
-          : 'filter-option-inactive hover:bg-surface-soft'
-      }`}
-    >
-      <span className="line-clamp-1">{children}</span>
-    </Button>
-  );
-}
+  if (compact) {
+    return (
+      <Button
+        type="button"
+        onClick={onClick}
+        variant="ghost"
+        size="sm"
+        className={[
+          'filter-option flex w-full justify-between rounded-md px-3 py-2 text-left',
+          small ? 'filter-option-small' : 'filter-option-regular',
+          active
+            ? 'filter-option-active bg-primary text-inverse'
+            : 'filter-option-inactive hover:bg-surface-soft',
+        ].join(' ')}
+      >
+        <span className="line-clamp-1">{children}</span>
+      </Button>
+    );
+  }
 
-function FilterButton({
-  active,
-  onClick,
-  small,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  small?: boolean;
-  children: ReactNode;
-}) {
   return (
     <Button
       type="button"
@@ -618,20 +618,21 @@ function FilterButton({
       aria-checked={active}
       variant="ghost"
       size="sm"
-      className={`filter-option flex w-full justify-start gap-3 border px-3 py-2.5 text-left ${
-        small ? 'filter-option-small' : 'filter-option-regular'
-      } ${
+      className={[
+        'filter-option flex w-full justify-start gap-3 border px-3 py-2.5 text-left',
+        small ? 'filter-option-small' : 'filter-option-regular',
         active
           ? 'filter-option-active border-border-subtle bg-surface-soft text-primary'
-          : 'filter-option-inactive border-transparent bg-surface-paper text-secondary hover:border-border-subtle hover:bg-surface-soft hover:text-primary'
-      }`}
+          : 'filter-option-inactive border-transparent bg-surface-paper text-secondary hover:border-border-subtle hover:bg-surface-soft hover:text-primary',
+      ].join(' ')}
     >
       <span
-        className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
+        className={[
+          'flex h-4 w-4 shrink-0 items-center justify-center border transition-colors',
           active
             ? 'border-primary bg-surface-paper text-primary'
-            : 'border-border bg-surface-paper'
-        }`}
+            : 'border-border bg-surface-paper',
+        ].join(' ')}
         aria-hidden="true"
       >
         {active ? <Check size={12} strokeWidth={2.5} /> : null}

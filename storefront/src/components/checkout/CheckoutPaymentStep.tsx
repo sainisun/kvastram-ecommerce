@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { Button } from '@/design-system';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import RazorpayButton from '@/components/checkout/RazorpayButton';
 import PayPalButton from '@/components/checkout/PayPalButton';
+import RazorpayButton from '@/components/checkout/RazorpayButton';
 import { storefrontTrust } from '@/config/storefront-trust';
+import Link from 'next/link';
 
 interface CheckoutPaymentStepProps {
   currency: string;
@@ -15,8 +15,8 @@ interface CheckoutPaymentStepProps {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  onSuccess: () => void;
-  onError: (message: string) => void;
+  onPaymentSuccess: () => void;
+  onPaymentError: (message: string) => void;
   onBackToShipping: () => void;
 }
 
@@ -28,11 +28,11 @@ export default function CheckoutPaymentStep({
   customerName,
   customerEmail,
   customerPhone,
-  onSuccess,
-  onError,
+  onPaymentSuccess,
+  onPaymentError,
   onBackToShipping,
 }: CheckoutPaymentStepProps) {
-  const isIndianCurrency = currency.toLowerCase() === 'inr';
+  const isInr = currency.toLowerCase() === 'inr';
 
   return (
     <div>
@@ -40,49 +40,39 @@ export default function CheckoutPaymentStep({
         Payment
       </h3>
       <p className="mb-4 text-body-sm text-muted">
-        {isIndianCurrency
+        {isInr
           ? storefrontTrust.paymentMethodsIndia
           : storefrontTrust.paymentMethodsInternational}
       </p>
 
-      {isIndianCurrency &&
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID &&
-        checkoutPaymentToken && (
-          <ErrorBoundary
-            fallback={
-              <p className="text-body-sm text-error py-2">
-                Payment failed to load. Please refresh.
-              </p>
-            }
-          >
-            <RazorpayButton
-              orderId={orderUUID}
-              checkoutToken={checkoutPaymentToken}
-              amount={finalTotal}
-              currency="INR"
-              customerName={customerName}
-              customerEmail={customerEmail}
-              customerPhone={customerPhone}
-              onSuccess={onSuccess}
-              onError={onError}
-            />
-          </ErrorBoundary>
-        )}
-
-      {!isIndianCurrency && process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
+      {isInr && process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && checkoutPaymentToken && (
         <ErrorBoundary
-          fallback={
-            <p className="text-body-sm text-error py-2">
-              PayPal failed to load. Please use card below.
-            </p>
-          }
+          fallback={<p className="text-body-sm text-error py-2">Payment failed to load. Please refresh.</p>}
+        >
+          <RazorpayButton
+            orderId={orderUUID}
+            checkoutToken={checkoutPaymentToken}
+            amount={finalTotal}
+            currency="INR"
+            customerName={customerName}
+            customerEmail={customerEmail}
+            customerPhone={customerPhone}
+            onSuccess={onPaymentSuccess}
+            onError={onPaymentError}
+          />
+        </ErrorBoundary>
+      )}
+
+      {!isInr && process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
+        <ErrorBoundary
+          fallback={<p className="text-body-sm text-error py-2">PayPal failed to load. Please use card below.</p>}
         >
           <PayPalButton
             orderId={orderUUID}
             checkoutToken={checkoutPaymentToken}
             currency={currency.toUpperCase()}
-            onSuccess={onSuccess}
-            onError={onError}
+            onSuccess={onPaymentSuccess}
+            onError={onPaymentError}
           />
         </ErrorBoundary>
       )}
@@ -103,28 +93,13 @@ export default function CheckoutPaymentStep({
         <p className="mt-2">{storefrontTrust.paymentSummary}</p>
         <p className="mt-2">{storefrontTrust.shippingSummary}</p>
         <div className="mt-3 flex flex-wrap gap-3">
-          <Link
-            href={storefrontTrust.policyRoutes.shipping}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
+          <Link href={storefrontTrust.policyRoutes.shipping} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
             Shipping
           </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.returns}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
+          <Link href={storefrontTrust.policyRoutes.returns} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
             Returns
           </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.paymentHelp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
+          <Link href={storefrontTrust.policyRoutes.paymentHelp} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
             Payment Help
           </Link>
         </div>

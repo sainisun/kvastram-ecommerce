@@ -365,7 +365,7 @@ export default function ProductsPage() {
           </button>
           <Link
             href="/dashboard/products/new"
-            className="flex items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--kv-card)] hover:opacity-90 transition-opacity"
           >
             <Plus size={13} /> Add product
           </Link>
@@ -425,7 +425,7 @@ export default function ProductsPage() {
                 onClick={() => { setStatusFilter(tab.value); setPage(1); }}
                 className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
                   statusFilter === tab.value
-                    ? 'bg-[var(--primary)] text-white'
+                    ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                     : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-high)]'
                 }`}
               >
@@ -442,7 +442,7 @@ export default function ProductsPage() {
                 onClick={() => setViewMode(mode)}
                 className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
                   viewMode === mode
-                    ? 'bg-[var(--primary)] text-white'
+                    ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                     : 'text-[var(--on-surface-variant)]'
                 }`}
               >
@@ -813,7 +813,7 @@ export default function ProductsPage() {
                 Close
               </button>
               {quickViewProduct && (
-                <Link href={`/dashboard/products/${quickViewProduct.id}`} className="flex-1 py-3 text-center font-bold text-sm bg-[var(--primary)] text-white rounded-xl hover:opacity-90 transition-opacity">
+                <Link href={`/dashboard/products/${quickViewProduct.id}`} className="flex-1 py-3 text-center font-bold text-sm bg-[var(--primary)] text-[var(--kv-card)] rounded-xl hover:opacity-90 transition-opacity">
                   Full Edit
                 </Link>
               )}
