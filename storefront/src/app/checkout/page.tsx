@@ -33,6 +33,10 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { useCurrency } from '@/context/currency-context';
 import { formatMoney } from '@/lib/currency';
 import { resolveRegionForCountry } from '@/lib/regions';
+import {
+  calculateCheckoutShippingCost,
+  calculateCheckoutTotal,
+} from '@/lib/checkout-total-policy';
 
 interface ShippingOption {
   id: string;
@@ -472,11 +476,11 @@ export default function CheckoutPage() {
   // PHASE 1.3: Calculate shipping cost
   const shippingCost =
     confirmedOrderTotals?.shipping_total ??
-    (selectedShipping
-      ? cartTotal >= freeShippingThreshold
-        ? 0
-        : selectedShipping.price || 0
-      : 0);
+    calculateCheckoutShippingCost({
+      subtotal: cartTotal,
+      freeShippingThreshold,
+      selectedShippingPrice: selectedShipping?.price,
+    });
 
   // Gift wrapping is stored in INR paise to match cart totals.
   const giftWrappingFee = 29900;
@@ -488,11 +492,13 @@ export default function CheckoutPage() {
   // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
     confirmedOrderTotals?.total ??
-    (cartTotal -
-      (discount?.amount || 0) +
-      shippingCost +
-      displayedTaxAmount +
-      giftWrappingCost);
+    calculateCheckoutTotal({
+      subtotal: cartTotal,
+      discountAmount: discount?.amount,
+      shippingCost,
+      taxAmount: displayedTaxAmount,
+      giftWrappingCost,
+    });
 
   // Local cart amounts are INR paise and need conversion. Confirmed order totals
   // are already in the backend-selected regional currency and need formatting only.
