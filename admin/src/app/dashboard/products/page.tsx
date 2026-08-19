@@ -297,7 +297,7 @@ export default function ProductsPage() {
       setActiveMenuId(null);
     }
   };
-  
+
   const handleDuplicate = async (id: string) => {
     try {
       await api.duplicateProduct(id);
@@ -524,7 +524,7 @@ export default function ProductsPage() {
               <div key={product.id} className={`bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] transition-all ${isSelected ? 'ring-2 ring-[var(--primary)]' : ''}`}>
                 <div className="relative aspect-[4/3] bg-[var(--surface-container-low)] group rounded-t-2xl overflow-hidden">
                   <div className="absolute top-3 left-3 z-10">
-                    <button onClick={() => handleSelect(product.id)} className="bg-white/80 backdrop-blur rounded p-1 shadow hover:bg-white transition-colors">
+                    <button onClick={() => handleSelect(product.id)} className="bg-[var(--kv-card)]/80 backdrop-blur rounded p-1 shadow hover:bg-[var(--kv-card)] transition-colors">
                       {isSelected ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} className="text-[var(--on-surface-variant)]" />}
                     </button>
                   </div>
@@ -532,11 +532,11 @@ export default function ProductsPage() {
                     {product.status}
                   </span>
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                    <button onClick={() => handleOpenQuickView(product)} className="pointer-events-auto bg-white text-black px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all">
+                    <button onClick={() => handleOpenQuickView(product)} className="pointer-events-auto bg-[var(--kv-card)] text-black px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all">
                       <Eye size={14}/> Quick View
                     </button>
                   </div>
-                  
+
                   {product.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={toDisplayUrl(product.thumbnail)} onClick={() => handleOpenQuickView(product)} alt={product.title} className="h-full w-full object-cover cursor-pointer hover:scale-105 transition-transform"
@@ -554,7 +554,7 @@ export default function ProductsPage() {
                       <p className="text-sm font-bold text-[var(--on-surface)] line-clamp-2 leading-tight" title={product.title}>{product.title}</p>
                       <p className="text-sm font-black text-[var(--primary)] mt-1">{formatCurrency(price)}</p>
                     </div>
-                    
+
                     <div className="relative">
                       <button onClick={() => setActiveMenuId(activeMenuId === product.id ? null : product.id)} className="p-1.5 rounded-full hover:bg-[var(--surface-container-low)] transition-colors">
                         <MoreVertical size={16} className="text-[var(--on-surface-variant)]" />
@@ -621,40 +621,40 @@ export default function ProductsPage() {
                   <button onClick={() => handleSelect(product.id)} className="text-[var(--on-surface-variant)] hover:text-[var(--primary)] transition-colors">
                     {isSelected ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} />}
                   </button>
-                  
+
                   <div onClick={() => handleOpenQuickView(product)} className="cursor-pointer h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center">
                     {product.thumbnail
                       ? <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
                       : <Package size={18} className="text-[var(--on-surface-variant)]" />}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <p onClick={() => handleOpenQuickView(product)} className="cursor-pointer text-sm font-bold text-[var(--on-surface)] truncate hover:underline">{product.title}</p>
                     <p className="text-[10px] font-medium text-[var(--on-surface-variant)] mt-1 uppercase tracking-wide">
                       {product.categories?.[0]?.name || product.sku || 'N/A'}
                     </p>
                   </div>
-                  
+
                   <div className="hidden md:block w-24 text-sm font-black text-[var(--primary)]">
                     {formatCurrency(price)}
                   </div>
-                  
+
                   <div className={`hidden md:block w-28 text-xs font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--on-secondary-container)]' : 'text-[var(--on-surface)]'}`}>
                     {isInlineEditing ? (
-                      <input 
-                        type="number" 
-                        value={inlineStock} 
-                        onChange={e => setInlineStock(e.target.value)} 
+                      <input
+                        type="number"
+                        value={inlineStock}
+                        onChange={e => setInlineStock(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleInlineSave(product.id)}
-                        className="w-16 p-1 text-xs border rounded bg-white text-black" 
-                        autoFocus 
+                        className="w-16 p-1 text-xs border rounded bg-[var(--kv-card)] text-black"
+                        autoFocus
                       />
                     ) : (
                       <div className="flex items-center gap-2">
-                        <div className="cursor-pointer group relative inline-flex items-center gap-1" onClick={() => { 
-                          if(product.variant_count <= 1) { 
-                            setInlineEditId(product.id); 
-                            setInlineStock(product.total_inventory.toString()); 
+                        <div className="cursor-pointer group relative inline-flex items-center gap-1" onClick={() => {
+                          if(product.variant_count <= 1) {
+                            setInlineEditId(product.id);
+                            setInlineStock(product.total_inventory.toString());
                           } else {
                             handleToggleVariants(product.id);
                           }
@@ -670,11 +670,11 @@ export default function ProductsPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="w-20">
                     <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{product.status}</span>
                   </div>
-                  
+
                   <div className="w-12 text-right relative">
                     <button onClick={() => setActiveMenuId(activeMenuId === product.id ? null : product.id)} className="p-1.5 rounded-full hover:bg-[var(--surface-container-high)] transition-colors inline-flex">
                       <MoreVertical size={16} className="text-[var(--on-surface-variant)]" />
@@ -700,7 +700,7 @@ export default function ProductsPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Variant Accordion */}
                 {expandedVariantId === product.id && (
                   <div className="bg-[var(--surface-container-lowest)] px-12 py-3 text-sm animate-in slide-in-from-top-2 border-t border-[var(--outline-variant)]/50">
@@ -757,7 +757,7 @@ export default function ProductsPage() {
                 <X size={20} />
               </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-6">
               {!quickViewProduct ? (
                 <div className="space-y-4 animate-pulse">
@@ -771,12 +771,12 @@ export default function ProductsPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={toDisplayUrl(quickViewProduct.thumbnail)} alt="Thumbnail" className="w-full aspect-square object-cover rounded-2xl bg-[var(--surface-container-low)]" />
                   )}
-                  
+
                   <div>
                     <h2 className="text-2xl font-black text-[var(--on-surface)] leading-tight">{quickViewProduct.title}</h2>
                     <p className="text-sm font-bold text-[var(--primary)] mt-2">{formatCurrency(getProductPrice(quickViewProduct))}</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[var(--surface-container-low)] p-3 rounded-xl">
                       <p className="text-[10px] uppercase font-bold text-[var(--on-surface-variant)] mb-1">Status</p>
@@ -787,7 +787,7 @@ export default function ProductsPage() {
                       <p className="font-bold text-sm">{quickViewProduct.total_inventory}</p>
                     </div>
                   </div>
-                  
+
                   {quickViewProduct.variants && quickViewProduct.variants.length > 0 && (
                     <div>
                       <h4 className="font-bold text-sm mb-3 border-b border-[var(--outline-variant)] pb-2">Variants</h4>
@@ -807,7 +807,7 @@ export default function ProductsPage() {
                 </div>
               )}
             </div>
-            
+
             <div className="p-4 border-t border-[var(--outline-variant)] bg-[var(--surface-container-low)] flex gap-3">
               <button onClick={() => setQuickViewProductId(null)} className="flex-1 py-3 font-bold text-sm bg-[var(--surface-container-high)] rounded-xl hover:bg-[var(--outline-variant)] transition-colors">
                 Close

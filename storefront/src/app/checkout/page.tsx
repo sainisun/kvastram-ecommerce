@@ -19,6 +19,7 @@ import { Textarea } from '@/design-system';
 import { Button } from '@/design-system';
 import { CheckoutSkeleton } from '@/design-system';
 import CheckoutSuccess from '@/components/checkout/CheckoutSuccess';
+import CheckoutAuthStep from '@/components/checkout/CheckoutAuthStep';
 import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
 import CheckoutPaymentStep from '@/components/checkout/CheckoutPaymentStep';
 import { storefrontTrust } from '@/config/storefront-trust';
@@ -155,6 +156,8 @@ export default function CheckoutPage() {
 
   // PHASE 1.3: Fetch shipping options when country changes
   useEffect(() => {
+    let active = true;
+
     const fetchShippingOptions = async () => {
       if (!formData.country_code) {
         setShippingOptions([]);
@@ -170,6 +173,7 @@ export default function CheckoutPage() {
           currentRegion?.id,
           formData.postal_code
         );
+        if (!active) return;
         setShippingPreviewMessage(data.serviceability?.message || '');
         if (data.options && data.options.length > 0) {
           setShippingOptions(data.options);
@@ -182,21 +186,27 @@ export default function CheckoutPage() {
         }
       } catch (error) {
         console.error('Failed to fetch shipping options:', error);
+        if (!active) return;
         setShippingOptions([]);
         setSelectedShipping(null);
         setShippingPreviewMessage('');
       } finally {
-        setShippingLoading(false);
+        if (active) setShippingLoading(false);
       }
     };
 
     // Debounce the fetch
     const timer = setTimeout(fetchShippingOptions, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [formData.country_code, formData.postal_code, currentRegion?.id]);
 
   // PHASE 1.4: Fetch tax when country or cart total changes
   useEffect(() => {
+    let active = true;
+
     const fetchTax = async () => {
       if (!formData.country_code || cartTotal === 0) {
         setTaxAmount(0);
@@ -214,20 +224,25 @@ export default function CheckoutPage() {
           currentRegion?.id,
           settings || undefined
         );
+        if (!active) return;
         if (data.tax_amount) {
           setTaxAmount(data.tax_amount);
           setTaxName(data.tax_name || 'Tax');
         }
       } catch (error) {
         console.error('Failed to calculate tax:', error);
+        if (!active) return;
         setTaxAmount(0);
       } finally {
-        setTaxLoading(false);
+        if (active) setTaxLoading(false);
       }
     };
 
     const timer = setTimeout(fetchTax, 500);
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id, settings]);
 
   const handleApplyPromo = async () => {
@@ -246,6 +261,43 @@ export default function CheckoutPage() {
       setPromoMessage({ type: 'error', text: 'Invalid promo code' });
     } finally {
       setPromoLoading(false);
+    }
+  };
+
+  const handleSendCheckoutOtp = async () => {
+    if (!authEmail) return;
+    setAuthLoadingStep(true);
+    setAuthError('');
+    try {
+      await api.sendCheckoutOtp(authEmail);
+      setAuthStage('otp');
+    } catch (err: unknown) {
+      const authRequestError = err as Error;
+      setAuthError(authRequestError.message || 'Failed to send OTP');
+    } finally {
+      setAuthLoadingStep(false);
+    }
+  };
+
+  const handleVerifyCheckoutOtp = async () => {
+    if (authOtp.length !== 6) return;
+    setAuthLoadingStep(true);
+    setAuthError('');
+    try {
+      const res = await api.verifyCheckoutOtp(authEmail, authOtp);
+      setFormData((prev) => ({
+        ...prev,
+        email: res.customer.email || prev.email,
+        first_name: res.customer.first_name || prev.first_name,
+        last_name: res.customer.last_name || prev.last_name,
+        phone: res.customer.phone || prev.phone,
+      }));
+      setStep('shipping');
+    } catch (err: unknown) {
+      const verificationError = err as Error;
+      setAuthError(verificationError.message || 'Invalid OTP');
+    } finally {
+      setAuthLoadingStep(false);
     }
   };
 
@@ -568,106 +620,18 @@ export default function CheckoutPage() {
             )}
 
             {step === 'auth' ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                    {authStage === 'email' ? 'Enter Email' : 'Verify OTP'}
-                  </h3>
-                  
-                  {authError && (
-                    <div className="bg-danger-bg text-error p-3 text-body-sm mb-4">
-                      {authError}
-                    </div>
-                  )}
-
-                  {authStage === 'email' ? (
-                    <div className="space-y-4">
-                      <p className="text-body-sm text-muted">Please enter your email to proceed with checkout.</p>
-                      <Input
-                        id="auth_email"
-                        type="email"
-                        name="auth_email"
-                        label="Email Address"
-                        required
-                        value={authEmail}
-                        onChange={(e) => setAuthEmail(e.target.value)}
-                        autoComplete="email"
-                      />
-                      <Button
-                        onClick={async () => {
-                          if (!authEmail) return;
-                          setAuthLoadingStep(true);
-                          setAuthError('');
-                          try {
-                            await api.sendCheckoutOtp(authEmail);
-                            setAuthStage('otp');
-                          } catch (err: unknown) {
-                            const error = err as Error;
-                            setAuthError(error.message || 'Failed to send OTP');
-                          } finally {
-                            setAuthLoadingStep(false);
-                          }
-                        }}
-                        disabled={authLoadingStep}
-                        className="w-full mt-4"
-                        variant="primary"
-                      >
-                        Send OTP
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <p className="text-body-sm text-muted">Enter the 6-digit code sent to {authEmail}</p>
-                      <Input
-                        id="auth_otp"
-                        type="text"
-                        name="auth_otp"
-                        label="6-Digit OTP"
-                        required
-                        value={authOtp}
-                        onChange={(e) => setAuthOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      />
-                      <Button
-                        onClick={async () => {
-                          if (authOtp.length !== 6) return;
-                          setAuthLoadingStep(true);
-                          setAuthError('');
-                          try {
-                            const res = await api.verifyCheckoutOtp(authEmail, authOtp);
-                            // Pre-fill form data
-                            setFormData(prev => ({
-                              ...prev,
-                              email: res.customer.email || prev.email,
-                              first_name: res.customer.first_name || prev.first_name,
-                              last_name: res.customer.last_name || prev.last_name,
-                              phone: res.customer.phone || prev.phone,
-                            }));
-                            setStep('shipping');
-                          } catch (err: unknown) {
-                            const error = err as Error;
-                            setAuthError(error.message || 'Invalid OTP');
-                          } finally {
-                            setAuthLoadingStep(false);
-                          }
-                        }}
-                        disabled={authLoadingStep || authOtp.length !== 6}
-                        className="w-full mt-4"
-                        variant="primary"
-                      >
-                        Verify OTP
-                      </Button>
-                      <Button
-                        onClick={() => setAuthStage('email')}
-                        variant="inline"
-                        fullWidth
-                        type="button"
-                      >
-                        Change Email
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <CheckoutAuthStep
+                authEmail={authEmail}
+                authOtp={authOtp}
+                authStage={authStage}
+                authLoading={authLoadingStep}
+                authError={authError}
+                onEmailChange={setAuthEmail}
+                onOtpChange={(value) => setAuthOtp(value.replace(/\D/g, '').slice(0, 6))}
+                onSendOtp={handleSendCheckoutOtp}
+                onVerifyOtp={handleVerifyCheckoutOtp}
+                onChangeEmail={() => setAuthStage('email')}
+              />
             ) : step === 'shipping' ? (
               <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <div>

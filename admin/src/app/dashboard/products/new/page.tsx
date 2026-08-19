@@ -39,9 +39,9 @@ function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
 
 // ─── Shared input classes ─────────────────────────────────────────────────────
 const inputCls =
-  'w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm';
-const labelCls = 'block text-sm font-medium text-gray-700 mb-1';
-const cardCls  = 'bg-white rounded-xl border border-gray-200 shadow-sm p-6';
+  'w-full px-4 py-2.5 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none transition-all text-sm';
+const labelCls = 'block text-sm font-medium text-[var(--kv-text)] mb-1';
+const cardCls  = 'bg-[var(--kv-card)] rounded-xl border border-[var(--kv-border)] shadow-sm p-6';
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function NewProductPage() {
@@ -67,7 +67,7 @@ export default function NewProductPage() {
     hs_code: '', origin_country: '', material: '', size_guide: '',
     care_instructions: '', seo_title: '', seo_description: '', thumbnail: '', sku: '',
   });
-  
+
   const [metadata, setMetadata] = useState<any>({});
   const [faqItems, setFaqItems] = useState<{question: string, answer: string}[]>([]);
   const [seoNoIndex, setSeoNoIndex] = useState(false);
@@ -230,7 +230,7 @@ export default function NewProductPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/products"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--kv-border)] bg-white text-[var(--kv-muted)] transition hover:text-[var(--kv-text)]"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] text-[var(--kv-muted)] transition hover:text-[var(--kv-text)]"
           >
             <ArrowLeft size={20} />
           </Link>
@@ -250,7 +250,7 @@ export default function NewProductPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="rounded-2xl border border-[var(--kv-border)] bg-white px-5 py-2.5 text-sm font-semibold text-[var(--kv-text)] hover:bg-gray-50 transition"
+            className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] px-5 py-2.5 text-sm font-semibold text-[var(--kv-text)] hover:bg-[var(--kv-soft)] transition"
           >
             Cancel
           </button>
@@ -275,8 +275,8 @@ export default function NewProductPage() {
 
           {/* 1 ── Media Upload (TOP) */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-1">Product Media</h2>
-            <p className="text-sm text-gray-500 mb-5">
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-1">Product Media</h2>
+            <p className="text-sm text-[var(--kv-muted)] mb-5">
               Upload at least 3 photos or videos. Portrait images (4:5) work best on mobile.
               The first image becomes the cover photo.
             </p>
@@ -289,11 +289,11 @@ export default function NewProductPage() {
 
           {/* 2 + 3 ── Title & Subtitle */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-5">Basic Information</h2>
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-5">Basic Information</h2>
             <div className="space-y-4">
               <div>
                 <label htmlFor="title" className={labelCls}>
-                  Product Title <span className="text-red-500">*</span>
+                  Product Title <span className="text-[var(--kv-danger)]">*</span>
                 </label>
                 <input
                   id="title" type="text" name="title"
@@ -314,7 +314,7 @@ export default function NewProductPage() {
 
           {/* 4 ── Description, Size Guide, Care */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-5">Details</h2>
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-5">Details</h2>
             <div className="space-y-5">
               <div>
                 <label htmlFor="description" className={labelCls}>Description</label>
@@ -346,15 +346,15 @@ export default function NewProductPage() {
           {/* 5 ── Pricing */}
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-2">
-              <DollarSign size={18} className="text-green-600" />
-              <h2 className="text-base font-bold text-gray-800">Price</h2>
+              <DollarSign size={18} className="text-[var(--kv-success)]" />
+              <h2 className="text-base font-bold text-[var(--kv-text)]">Price</h2>
             </div>
             <div className="flex gap-3 mb-5">
-              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'fixed' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'fixed' ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]' : 'border-[var(--kv-border)] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]'}`}>
                 <input type="radio" name="price_type" value="fixed" checked={priceType === 'fixed'} onChange={() => setPriceType('fixed')} className="sr-only" />
                 Fixed Price
               </label>
-              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'on_request' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'on_request' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-[var(--kv-border)] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]'}`}>
                 <input type="radio" name="price_type" value="on_request" checked={priceType === 'on_request'} onChange={() => setPriceType('on_request')} className="sr-only" />
                 On Request (WhatsApp)
               </label>
@@ -366,27 +366,27 @@ export default function NewProductPage() {
             ) : (
               <div className="max-w-xs">
                 <label htmlFor="inr_price" className={labelCls}>
-                  Price (INR ₹) <span className="text-red-500">*</span>
+                  Price (INR ₹) <span className="text-[var(--kv-danger)]">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--kv-muted)] font-bold text-sm">₹</span>
                   <input
                     id="inr_price" type="number" min="0" step="1"
                     value={inrPrice}
                     onChange={(e) => setInrPrice(e.target.value)}
-                    className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
+                    className="w-full pl-8 pr-4 py-2.5 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none text-sm"
                     placeholder="e.g. 1999"
                   />
                 </div>
                 {inrPrice && (
-                  <p className="mt-2 text-xs text-gray-500">
+                  <p className="mt-2 text-xs text-[var(--kv-muted)]">
                     ≈ ${(Number(inrPrice) * 0.012).toFixed(2)} USD &nbsp;·&nbsp;
                     €{(Number(inrPrice) * 0.011).toFixed(2)} EUR
-                    <span className="ml-1 text-gray-400">(indicative)</span>
+                    <span className="ml-1 text-[var(--kv-muted)]">(indicative)</span>
                   </p>
                 )}
                 {!inrRegion && (
-                  <p className="mt-2 text-xs text-red-600">
+                  <p className="mt-2 text-xs text-[var(--kv-danger)]">
                     India (INR) region not found.{' '}
                     <Link href="/dashboard/regions" className="underline font-semibold">Create it here.</Link>
                   </p>
@@ -397,7 +397,7 @@ export default function NewProductPage() {
 
           {/* 6 ── Inventory */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-5">Inventory</h2>
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-5">Inventory</h2>
             <div>
               <label htmlFor="inventory_quantity" className={labelCls}>
                 Quantity in Stock
@@ -412,7 +412,7 @@ export default function NewProductPage() {
 
           {/* 7 ── Shipping & Dimensions */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-5">Shipping & Dimensions</h2>
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-5">Shipping & Dimensions</h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
               {[
                 { id: 'weight', label: 'Weight (g)' },
@@ -421,13 +421,13 @@ export default function NewProductPage() {
                 { id: 'height', label: 'Height (cm)' },
               ].map(({ id, label }) => (
                 <div key={id}>
-                  <label htmlFor={id} className="block text-xs font-medium text-gray-500 mb-1">
+                  <label htmlFor={id} className="block text-xs font-medium text-[var(--kv-muted)] mb-1">
                     {label}
                   </label>
                   <input
                     id={id} type="number" name={id}
                     value={(formData as any)[id]} onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
+                    className="w-full px-3 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none text-sm"
                   />
                 </div>
               ))}
@@ -462,7 +462,7 @@ export default function NewProductPage() {
 
           {/* 2 ── Organisation */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-4">Organisation</h2>
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-4">Organisation</h2>
             <div className="space-y-4">
 
               {/* Status */}
@@ -485,7 +485,7 @@ export default function NewProductPage() {
                 <input id="sku" type="text" name="sku"
                   value={formData.sku} onChange={handleChange}
                   className={inputCls} placeholder="e.g. TSHIRT-L-BLU" />
-                <p className="text-xs text-gray-500 mt-1">Stock Keeping Unit — unique product identifier</p>
+                <p className="text-xs text-[var(--kv-muted)] mt-1">Stock Keeping Unit — unique product identifier</p>
               </div>
 
               {/* Collection */}
@@ -506,16 +506,16 @@ export default function NewProductPage() {
               {/* URL Handle */}
               <div>
                 <label htmlFor="handle" className={labelCls}>
-                  URL Handle <span className="text-red-500">*</span>
+                  URL Handle <span className="text-[var(--kv-danger)]">*</span>
                 </label>
-                <div className="flex rounded-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition">
-                  <span className="inline-flex items-center px-3 bg-gray-50 text-gray-400 text-xs border-r border-gray-200 whitespace-nowrap">
+                <div className="flex rounded-lg overflow-hidden border border-[var(--kv-border)] focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-[var(--kv-accent)] transition">
+                  <span className="inline-flex items-center px-3 bg-[var(--kv-soft)] text-[var(--kv-muted)] text-xs border-r border-[var(--kv-border)] whitespace-nowrap">
                     /products/
                   </span>
                   <input
                     id="handle" type="text" name="handle"
                     value={formData.handle} onChange={handleChange} required
-                    className="flex-1 px-3 py-2 outline-none text-sm bg-white"
+                    className="flex-1 px-3 py-2 outline-none text-sm bg-[var(--kv-card)]"
                     placeholder="url-handle"
                   />
                 </div>
@@ -526,16 +526,16 @@ export default function NewProductPage() {
           {/* 3 ── Categorization */}
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-4">
-              <Tag size={15} className="text-gray-400" />
-              <h2 className="text-base font-bold text-gray-800">Categorization</h2>
+              <Tag size={15} className="text-[var(--kv-muted)]" />
+              <h2 className="text-base font-bold text-[var(--kv-text)]">Categorization</h2>
             </div>
 
             {/* Categories */}
             <div className="mb-5">
               <label className={labelCls}>Categories</label>
-              <div className="max-h-44 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+              <div className="max-h-44 overflow-y-auto border border-[var(--kv-border)] rounded-lg p-3 space-y-2">
                 {categories.length === 0 ? (
-                  <p className="text-sm text-gray-400">No categories found.</p>
+                  <p className="text-sm text-[var(--kv-muted)]">No categories found.</p>
                 ) : (
                   categories.map((cat) => (
                     <div key={cat.id} className="flex items-center gap-2">
@@ -543,10 +543,10 @@ export default function NewProductPage() {
                         type="checkbox" id={`cat-${cat.id}`}
                         checked={selectedCategoryIds.includes(cat.id)}
                         onChange={() => toggleCategory(cat.id)}
-                        className="rounded border-gray-300 text-black focus:ring-black"
+                        className="rounded border-[var(--kv-border)] text-black focus:ring-black"
                       />
                       <label htmlFor={`cat-${cat.id}`}
-                        className="text-sm text-gray-700 cursor-pointer select-none">
+                        className="text-sm text-[var(--kv-text)] cursor-pointer select-none">
                         {cat.name}
                       </label>
                     </div>
@@ -560,15 +560,15 @@ export default function NewProductPage() {
               <label className={labelCls}>Tags</label>
               <div className="flex flex-wrap gap-2">
                 {tags.length === 0 ? (
-                  <p className="text-sm text-gray-400">No tags found.</p>
+                  <p className="text-sm text-[var(--kv-muted)]">No tags found.</p>
                 ) : (
                   tags.map((tag) => (
                     <button
                       key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
                       className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                         selectedTagIds.includes(tag.id)
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500'
+                          ? 'bg-[var(--kv-text)] text-white border-[var(--kv-text)]'
+                          : 'bg-[var(--kv-card)] text-[var(--kv-text)] border-[var(--kv-border)] hover:border-[var(--kv-muted)]'
                       }`}
                     >
                       {tag.name}
@@ -581,10 +581,10 @@ export default function NewProductPage() {
 
           {/* 4 ── SEO */}
           <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-4">
+            <h2 className="text-base font-bold text-[var(--kv-text)] mb-4">
               Search Engine Optimisation
             </h2>
-            <p className="mb-4 text-xs leading-relaxed text-gray-500">
+            <p className="mb-4 text-xs leading-relaxed text-[var(--kv-muted)]">
               On save, Odhvica auto-creates the advanced SEO baseline: canonical, robots, schema-ready discovery document,
               structured attribute guesses, media SEO, Merchant draft fields, and vector-ready product text. Review the full
               SEO & Discovery panel on the next screen.
@@ -607,35 +607,35 @@ export default function NewProductPage() {
                   className={inputCls}
                   placeholder="Compelling summary for search results…"
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-[var(--kv-muted)] mt-1">
                   Recommended: 150–160 characters
                 </p>
               </div>
 
-              <GoogleSerpPreview 
-                title={formData.seo_title || formData.title} 
-                description={formData.seo_description || 'Compelling summary for search results…'} 
-                url={formData.handle} 
+              <GoogleSerpPreview
+                title={formData.seo_title || formData.title}
+                description={formData.seo_description || 'Compelling summary for search results…'}
+                url={formData.handle}
               />
-              
-              <div className="pt-4 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-800 mb-3">Advanced Technical SEO</h3>
+
+              <div className="pt-4 border-t border-[var(--kv-border)]">
+                <h3 className="text-sm font-semibold text-[var(--kv-text)] mb-3">Advanced Technical SEO</h3>
                 <div className="space-y-4">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <div className="flex items-center h-5">
-                      <input 
-                        type="checkbox" 
-                        checked={seoNoIndex} 
-                        onChange={(e) => setSeoNoIndex(e.target.checked)} 
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" 
+                      <input
+                        type="checkbox"
+                        checked={seoNoIndex}
+                        onChange={(e) => setSeoNoIndex(e.target.checked)}
+                        className="w-4 h-4 text-[var(--kv-accent-deep)] bg-[var(--kv-soft)] border-[var(--kv-border)] rounded focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-700">Hide from search engines (noindex)</span>
-                      <p className="text-xs text-gray-500">Prevent Google from indexing this product page.</p>
+                      <span className="text-sm font-medium text-[var(--kv-text)]">Hide from search engines (noindex)</span>
+                      <p className="text-xs text-[var(--kv-muted)]">Prevent Google from indexing this product page.</p>
                     </div>
                   </label>
-                  
+
                   <div>
                     <label htmlFor="canonical_url" className={labelCls}>Custom Canonical URL</label>
                     <input
@@ -645,7 +645,7 @@ export default function NewProductPage() {
                       className={inputCls}
                       placeholder="e.g. https://odhvica.com/products/original-shirt"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Leave blank to auto-generate.</p>
+                    <p className="text-xs text-[var(--kv-muted)] mt-1">Leave blank to auto-generate.</p>
                   </div>
                 </div>
               </div>
@@ -665,21 +665,21 @@ export default function NewProductPage() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className={labelCls} style={{ marginBottom: 0 }}>Product FAQs (SEO)</label>
-                  <button type="button" onClick={() => setFaqItems(p => [...p, { question: '', answer: '' }])} className="text-xs text-blue-600 hover:underline flex items-center"><Plus size={12} className="mr-1"/> Add FAQ</button>
+                  <button type="button" onClick={() => setFaqItems(p => [...p, { question: '', answer: '' }])} className="text-xs text-[var(--kv-accent-deep)] hover:underline flex items-center"><Plus size={12} className="mr-1"/> Add FAQ</button>
                 </div>
                 {faqItems.map((faq, idx) => (
-                  <div key={idx} className="mb-3 p-3 border border-gray-200 rounded-lg bg-gray-50 relative">
-                    <button type="button" onClick={() => setFaqItems(p => p.filter((_, i) => i !== idx))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><Trash2 size={14}/></button>
+                  <div key={idx} className="mb-3 p-3 border border-[var(--kv-border)] rounded-lg bg-[var(--kv-soft)] relative">
+                    <button type="button" onClick={() => setFaqItems(p => p.filter((_, i) => i !== idx))} className="absolute top-2 right-2 text-[var(--kv-muted)] hover:text-[var(--kv-danger)]"><Trash2 size={14}/></button>
                     <input type="text" value={faq.question} onChange={e => {
                       const newFaqs = [...faqItems];
                       newFaqs[idx].question = e.target.value;
                       setFaqItems(newFaqs);
-                    }} placeholder="Question?" className="w-full mb-2 px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-black" />
+                    }} placeholder="Question?" className="w-full mb-2 px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-black" />
                     <textarea value={faq.answer} onChange={e => {
                       const newFaqs = [...faqItems];
                       newFaqs[idx].answer = e.target.value;
                       setFaqItems(newFaqs);
-                    }} placeholder="Answer..." rows={2} className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-black"></textarea>
+                    }} placeholder="Answer..." rows={2} className="w-full px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-black"></textarea>
                   </div>
                 ))}
               </div>
