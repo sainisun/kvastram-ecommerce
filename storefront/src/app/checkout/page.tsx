@@ -8,15 +8,8 @@ import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { api } from '@/lib/api';
 import { useState, useEffect } from 'react';
-import {
-  ArrowLeft,
-  CheckCircle,
-  Lock,
-  ShieldCheck,
-} from 'lucide-react';
-import { SecurityBadges,  PaymentIcons  } from '@/design-system';
+import { ArrowLeft, Lock } from 'lucide-react';
 import Link from 'next/link';
-import { OptimizedImage } from '@/design-system';
 import { CountrySelect, Select } from '@/design-system';
 import { getCountryName } from '@/config/countries';
 import { INDIAN_STATES } from '@/config/indian-states';
@@ -25,10 +18,9 @@ import { Input } from '@/design-system';
 import { Textarea } from '@/design-system';
 import { Button } from '@/design-system';
 import { CheckoutSkeleton } from '@/design-system';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import RazorpayButton from '@/components/checkout/RazorpayButton';
-import PayPalButton from '@/components/checkout/PayPalButton';
-import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import CheckoutSuccess from '@/components/checkout/CheckoutSuccess';
+import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
+import CheckoutPaymentStep from '@/components/checkout/CheckoutPaymentStep';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useCurrency } from '@/context/currency-context';
 import { formatMoney } from '@/lib/currency';
@@ -282,61 +274,7 @@ export default function CheckoutPage() {
   }
 
   if (step === 'success') {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface-paper">
-        {/* Animated check */}
-        <div className="relative w-24 h-24 mb-8">
-          <div className="w-24 h-24 rounded-full bg-success-bg flex items-center justify-center animate-scale-in">
-            <CheckCircle
-              size={48}
-              strokeWidth={1.5}
-              className="text-success"
-            />
-          </div>
-        </div>
-        <span className="mb-3 block text-body-xs font-bold tracking-token-wider text-muted">
-          Order Placed Successfully
-        </span>
-        <Heading role="page" className="mb-3 font-display text-display-xl text-primary">Thank You!</Heading>
-        <p className="mb-2 max-w-md text-body-xl font-light text-muted">
-          Your order{' '}
-          <span className="font-semibold text-primary">#{orderId}</span> has
-          been confirmed.
-        </p>
-        <p className="mb-10 max-w-md text-body-sm font-light text-muted">
-          We&apos;re preparing your order for shipment. You&apos;ll receive an
-          email confirmation shortly.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 mb-10">
-          <Link
-            href="/"
-            className="bg-primary px-8 py-3 text-body-xs font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
-          >
-            Continue Shopping
-          </Link>
-          <Link
-            href="/account"
-            className="border border-border-subtle px-8 py-3 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-surface"
-          >
-            Track My Order
-          </Link>
-        </div>
-        {/* WhatsApp support */}
-        <div className="mt-4 w-full max-w-md border-t border-border-subtle pt-6">
-          <p className="mb-3 text-body-xs text-muted">
-            Need help with your order?
-          </p>
-          <a
-            href={buildWhatsAppHref('Hi, I need help with checkout on Odhvica')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-body-xs text-success font-bold hover:text-success transition-colors"
-          >
-            <span className="text-body-md">💬</span> Chat with us on WhatsApp
-          </a>
-        </div>
-      </div>
-    );
+    return <CheckoutSuccess orderId={orderId} />;
   }
 
   const handleChange = (
@@ -1084,341 +1022,44 @@ export default function CheckoutPage() {
                 </Button>
               </form>
             ) : (
-              <div>
-                <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
-                  Payment
-                </h3>
-                <p className="mb-4 text-body-sm text-muted">
-                  {currency.toLowerCase() === 'inr'
-                    ? storefrontTrust.paymentMethodsIndia
-                    : storefrontTrust.paymentMethodsInternational}
-                </p>
-
-                {/* Razorpay — Indian customers (INR) */}
-                {currency.toLowerCase() === 'inr' &&
-                  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID &&
-                  checkoutPaymentToken && (
-                    <ErrorBoundary fallback={
-                      <p className="text-body-sm text-error py-2">Payment failed to load. Please refresh.</p>
-                    }>
-                      <RazorpayButton
-                        orderId={orderUUID}
-                        checkoutToken={checkoutPaymentToken}
-                        amount={finalTotal}
-                        currency="INR"
-                        customerName={`${formData.first_name} ${formData.last_name}`.trim()}
-                        customerEmail={formData.email}
-                        customerPhone={formData.phone}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                      />
-                    </ErrorBoundary>
-                  )}
-
-                {/* PayPal — International customers (non-INR) */}
-                {currency.toLowerCase() !== 'inr' &&
-                  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
-                    <ErrorBoundary fallback={
-                      <p className="text-body-sm text-error py-2">PayPal failed to load. Please use card below.</p>
-                    }>
-                      <PayPalButton
-                        orderId={orderUUID}
-                        checkoutToken={checkoutPaymentToken}
-                        currency={currency.toUpperCase()}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                      />
-                    </ErrorBoundary>
-                  )}
-
-                {/* Stripe Express (Apple Pay / Google Pay) — shown when Stripe is the active provider */}
-                {/* [STRIPE HIDDEN] - Disabled Stripe UI elements completely
-                {clientSecret && (
-                  <>
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-border-subtle"></div>
-                      </div>
-                      <div className="relative flex justify-center text-body-sm">
-                        <span className="bg-surface-paper px-2 text-muted">or express checkout</span>
-                      </div>
-                    </div>
-                    <ErrorBoundary fallback={
-                      <p className="py-2 text-body-sm text-muted">Express checkout unavailable.</p>
-                    }>
-                      <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <ExpressCheckoutForm
-                          orderId={orderId}
-                          onSuccess={handlePaymentSuccess}
-                          onError={handlePaymentError}
-                        />
-                      </Elements>
-                    </ErrorBoundary>
-
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-border-subtle"></div>
-                      </div>
-                      <div className="relative flex justify-center text-body-sm">
-                        <span className="bg-surface-paper px-2 text-muted">or pay with card</span>
-                      </div>
-                    </div>
-                    <ErrorBoundary fallback={
-                      <div className="p-4 border border-danger bg-danger-bg rounded text-body-sm text-error">
-                        Payment form failed to load. Please refresh the page.
-                      </div>
-                    }>
-                      <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <PaymentForm
-                          orderId={orderId}
-                          onSuccess={handlePaymentSuccess}
-                          onError={handlePaymentError}
-                        />
-                      </Elements>
-                    </ErrorBoundary>
-                  </>
-                )}
-                */}
-
-                <Button
-                  type="button"
-                  onClick={() => setStep('shipping')}
-                  variant="outline"
-                  size="md"
-                  fullWidth
-                  className="mt-4"
-                >
-                  Back to Shipping
-                </Button>
-
-                <div className="mt-6 border border-border-subtle bg-surface p-4 text-body-xs text-muted">
-                  <p className="font-medium text-primary">Payment and policy help</p>
-                  <p className="mt-2">{storefrontTrust.paymentSummary}</p>
-                  <p className="mt-2">{storefrontTrust.shippingSummary}</p>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    <Link
-                      href={storefrontTrust.policyRoutes.shipping}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline underline-offset-4"
-                    >
-                      Shipping
-                    </Link>
-                    <Link
-                      href={storefrontTrust.policyRoutes.returns}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline underline-offset-4"
-                    >
-                      Returns
-                    </Link>
-                    <Link
-                      href={storefrontTrust.policyRoutes.paymentHelp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline underline-offset-4"
-                    >
-                      Payment Help
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <CheckoutPaymentStep
+                currency={currency}
+                orderUUID={orderUUID}
+                checkoutPaymentToken={checkoutPaymentToken}
+                finalTotal={finalTotal}
+                customerName={`${formData.first_name} ${formData.last_name}`}
+                customerEmail={formData.email}
+                customerPhone={formData.phone}
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+                onBackToShipping={() => setStep('shipping')}
+              />
             )}
           </div>
         </div>
 
-        {/* Right: Summary - Mobile on top, Desktop on right */}
-        <div className="checkout-summary-column order-1 bg-surface p-4 md:p-8 lg:order-2 lg:p-20">
-          <div className="max-w-lg mx-auto sticky top-24">
-            <h2 className="checkout-summary-title mb-8 text-display-sm font-display text-primary">
-              Order Summary
-            </h2>
-
-            <div className="space-y-6 mb-8">
-              {items.map((item) => (
-                <div key={item.variantId} className="flex gap-4">
-                  <div className="relative w-20 h-24 bg-surface-paper border border-border-subtle">
-                    {item.thumbnail ? (
-                      <OptimizedImage
-                        src={item.thumbnail}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                        sizes="80px"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-border-subtle p-1 text-center text-body-xs text-muted">
-                        No Image
-                      </div>
-                    )}
-                    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-body-xs text-inverse">
-                      {item.quantity}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-display text-primary">{item.title}</p>
-                    <p className="mt-1 text-body-xs tracking-token-wider text-muted">
-                      Qty: {item.quantity}
-                    </p>
-                    {(item.material || item.origin || item.sku) && (
-                      <div className="mt-1 text-body-xs text-muted">
-                        {item.material && <span>{item.material}</span>}
-                        {item.material && (item.origin || item.sku) && (
-                          <span> · </span>
-                        )}
-                        {item.origin && <span>{item.origin}</span>}
-                        {item.origin && item.sku && <span> · </span>}
-                        {item.sku && <span>{item.sku}</span>}
-                      </div>
-                    )}
-                  </div>
-                  <p className="font-medium text-primary">
-                    {displayMoney(item.price * item.quantity)}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Promo Code Input */}
-            {step === 'shipping' && (
-              <div className="mb-6 border-b border-border-subtle pb-6">
-                <label className="mb-2 block text-body-xs font-bold tracking-token-wider text-muted">
-                  Promo Code
-                </label>
-                <div className="flex gap-0 border-b border-border-subtle transition-colors focus-within:border-primary">
-                  <Input
-                    type="text"
-                    aria-label="Promo code"
-                    placeholder="ENTER CODE"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    containerClassName="flex-1"
-                    className="h-auto border-0 bg-transparent px-0 py-2 font-display  focus:border-transparent"
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleApplyPromo}
-                    disabled={promoLoading || !promoCode}
-                    variant="ghost"
-                    size="sm"
-                    className="px-2"
-                  >
-                    {promoLoading ? 'Adjusting...' : 'Apply'}
-                  </Button>
-                </div>
-                {promoMessage && (
-                  <p
-                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-success' : 'text-error'}`}
-                  >
-                    {promoMessage.text}
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div className="border-t border-border-subtle pt-6 space-y-3 text-body-sm">
-              <div className="flex justify-between text-muted">
-                <span>Subtotal</span>
-                <span>
-                  {displayMoney(cartTotal)}
-                </span>
-              </div>
-              {discount && (
-                <div className="flex justify-between text-success">
-                  <div className="flex items-center gap-2">
-                    <span>Discount</span>
-                    <span className="rounded bg-surface-soft px-1 py-0.5 text-body-xs text-muted">
-                      {discount.code}
-                    </span>
-                  </div>
-                  <span>
-                    -
-                    {displayMoney(discount.amount)}
-                  </span>
-                </div>
-              )}
-              {/* PHASE 1.3: Shipping Cost Display */}
-              {step === 'payment' || selectedShipping ? (
-                <div className="flex justify-between text-muted">
-                  <span>
-                    Shipping
-                    {selectedShipping ? ` (${selectedShipping.name})` : ''}
-                  </span>
-                  <span className={shippingCost === 0 ? 'text-success' : ''}>
-                    {shippingCost === 0
-                      ? 'FREE'
-                       : confirmedOrderTotals
-                         ? displayConfirmedMoney(shippingCost)
-                         : displayMoney(shippingCost)}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex justify-between text-muted">
-                  <span>Shipping</span>
-                  <span>Calculated at next step</span>
-                </div>
-              )}
-              {/* PHASE 1.4: Tax Display */}
-              {(taxLoading || displayedTaxAmount > 0) && (
-                <div className="flex justify-between text-muted">
-                  <span>{taxName}</span>
-                  <span>
-                    {taxLoading ? (
-                      <span className="text-muted">Calculating...</span>
-                    ) : (
-                      confirmedOrderTotals
-                        ? displayConfirmedMoney(displayedTaxAmount)
-                        : displayMoney(displayedTaxAmount)
-                    )}
-                  </span>
-                </div>
-              )}
-              {/* Gift Wrapping line */}
-              {giftWrapping && (
-                <div className="flex justify-between text-muted">
-                  <span className="flex items-center gap-1.5">
-                    <span>🎁</span> Gift Wrapping
-                  </span>
-                  <span>
-                    {confirmedOrderTotals
-                      ? displayConfirmedMoney(giftWrappingCost)
-                      : displayMoney(giftWrappingCost)}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between border-t border-border-subtle pt-4 text-body-xl font-display text-primary">
-                <span>Total</span>
-                <span>
-                  {confirmedOrderTotals
-                    ? displayConfirmedMoney(finalTotal)
-                    : displayMoney(finalTotal)}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-8 flex gap-3 border border-border-subtle bg-surface-paper p-4 text-body-xs text-muted">
-              <ShieldCheck size={32} className="shrink-0 text-muted" />
-              <p>
-                Every purchase is backed by our Authenticity Guarantee. We
-                ensure the highest standards of craftsmanship.
-              </p>
-            </div>
-
-            {/* PHASE 7.3: Payment Icons */}
-            <div className="mt-6">
-              <p className="mb-3 text-center text-body-xs tracking-token-wider text-muted">
-                Accepted Payment Methods
-              </p>
-              <PaymentIcons />
-            </div>
-
-            {/* PHASE 7.3: Security Badges */}
-            <div className="mt-6 border-t border-border-subtle pt-6">
-              <SecurityBadges />
-            </div>
-          </div>
-        </div>
+        <CheckoutOrderSummary
+          items={items}
+          step={step}
+          cartTotal={cartTotal}
+          discount={discount}
+          promoCode={promoCode}
+          promoLoading={promoLoading}
+          promoMessage={promoMessage}
+          onPromoCodeChange={setPromoCode}
+          onApplyPromo={handleApplyPromo}
+          shippingCost={shippingCost}
+          selectedShipping={selectedShipping}
+          taxLoading={taxLoading}
+          displayedTaxAmount={displayedTaxAmount}
+          taxName={taxName}
+          giftWrapping={giftWrapping}
+          giftWrappingCost={giftWrappingCost}
+          finalTotal={finalTotal}
+          hasConfirmedOrderTotals={Boolean(confirmedOrderTotals)}
+          displayMoney={displayMoney}
+          displayConfirmedMoney={displayConfirmedMoney}
+        />
       </div>
     </div>
   );
