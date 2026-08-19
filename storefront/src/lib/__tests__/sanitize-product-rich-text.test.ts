@@ -25,6 +25,18 @@ describe('sanitizeProductRichText', () => {
     expect(result).not.toContain('javascript:');
   });
 
+  it('drops dangerous attributes, embeds, and data URLs', () => {
+    const result = sanitizeProductRichText(
+      '<p style="color:red" onclick="alert(1)">Text</p><iframe src="https://evil.example"></iframe><a href="data:text/html,attack">Data</a>'
+    );
+
+    expect(result).toContain('<p>Text</p>');
+    expect(result).not.toContain('style=');
+    expect(result).not.toContain('onclick');
+    expect(result).not.toContain('<iframe');
+    expect(result).not.toContain('data:text/html');
+  });
+
   it('returns an empty string for empty content', () => {
     expect(sanitizeProductRichText(undefined)).toBe('');
     expect(sanitizeProductRichText(null)).toBe('');
