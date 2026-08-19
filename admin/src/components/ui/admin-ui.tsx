@@ -73,7 +73,7 @@ export function ActionButton({
   variant?: 'primary' | 'secondary' | 'danger';
 }) {
   const className = clsx(
-    'inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold',
+    'inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)] active:scale-[0.98]',
     variant === 'primary' &&
       'bg-[var(--kv-accent)] text-white hover:bg-[var(--kv-accent-deep)]',
     variant === 'secondary' &&
@@ -219,7 +219,7 @@ export function SegmentedTabs<T extends string>({
             type="button"
             onClick={() => onChange(option.value)}
             className={clsx(
-              'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium',
+              'inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)]',
               active
                 ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
                 : 'border-[var(--kv-border)] bg-white text-[var(--kv-muted)] hover:text-[var(--kv-text)]'
@@ -259,7 +259,7 @@ export function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group flex items-center justify-between rounded-[1.2rem] border border-[var(--kv-border)] bg-white px-4 py-4 shadow-[0_14px_30px_rgba(26,26,26,0.03)] transition hover:border-[var(--kv-accent)]/45 hover:bg-[var(--kv-accent-soft)]"
+      className="group flex min-h-16 items-center justify-between rounded-[1.2rem] border border-[var(--kv-border)] bg-white px-4 py-4 shadow-[0_14px_30px_rgba(26,26,26,0.03)] transition hover:border-[var(--kv-accent)]/45 hover:bg-[var(--kv-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)]"
     >
       <div className="flex items-center gap-3">
         <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
