@@ -200,3 +200,20 @@ a, button, input, select, textarea {
 /* ─── No scrollbar utility ─── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Odhvica admin shell contract ─── */
+.admin-shell {
+  color-scheme: light;
+}
+
+.admin-shell-backdrop {
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.admin-shell-content {
+  background: var(--surface);
+}
+
+.admin-shell-main {
+  isolation: isolate;
+}

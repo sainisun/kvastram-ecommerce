@@ -420,3 +420,22 @@
   --radius-md: var(--ds-radius-md);
   --radius-lg: var(--ds-radius-lg);
 }
+
+/* ─── Odhvica wholesale shell contract ─── */
+.wholesale-header {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--ds-border-subtle) 70%, transparent);
+}
+
+.wholesale-header-inner {
+  min-height: 4.5rem;
+}
+
+.wholesale-header-nav a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wholesale-header-cta {
+  min-height: 2.75rem;
+}

@@ -109,11 +109,11 @@ export default function AdminShell({
     <ProtectedRoute>
       <div
         data-admin-shell
-        className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)]"
+        className="admin-shell min-h-screen bg-[var(--surface)] text-[var(--on-surface)]"
       >
         <div
           onClick={closeDrawer}
-          className={`fixed inset-0 z-[60] bg-[var(--primary)]/40 backdrop-blur-sm transition-opacity duration-300 ${
+          className={`admin-shell-backdrop fixed inset-0 z-[60] bg-[var(--primary)]/40 backdrop-blur-sm transition-opacity duration-300 ${
             drawerOpen
               ? 'pointer-events-auto opacity-100'
               : 'pointer-events-none opacity-0'
@@ -126,10 +126,10 @@ export default function AdminShell({
           onClose={closeDrawer}
         />
 
-        <div className="relative min-h-screen md:pl-[240px]">
+        <div className="admin-shell-content relative min-h-screen md:pl-[240px]">
           <TopHeader onMenuOpen={openDrawer} />
 
-          <main className="min-h-screen pb-28 pt-20 md:pb-10 md:pt-[72px]">
+          <main className="admin-shell-main min-h-screen pb-28 pt-20 md:pb-10 md:pt-[72px]">
             <div className="mx-auto max-w-[1560px] page-fade" key={pathname}>
               {children}
             </div>
