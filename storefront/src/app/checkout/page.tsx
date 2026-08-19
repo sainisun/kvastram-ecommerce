@@ -503,11 +503,11 @@ export default function CheckoutPage() {
     formatMoney(amount, confirmedOrderTotals?.currency_code || currency);
 
   return (
-    <div className="min-h-screen bg-surface-paper">
+    <div className="checkout-page min-h-screen bg-surface-paper">
       {/* PHASE 3.2: Mobile-first responsive layout */}
-      <div className="grid lg:grid-cols-2 min-h-screen">
+      <div className="checkout-layout grid min-h-screen lg:grid-cols-2">
         {/* Left: Form */}
-        <div className="order-2 border-border-subtle p-4 md:p-8 lg:order-1 lg:border-r lg:p-20">
+        <div className="checkout-form-column order-2 border-border-subtle p-4 md:p-8 lg:order-1 lg:border-r lg:p-20">
           <div className="max-w-lg mx-auto">
             <Link
               href="/"
@@ -528,7 +528,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* D1: Premium Progress Bar — 3 steps */}
-            <div className="mb-10">
+            <div className="checkout-stepper mb-10">
               <div className="flex items-center">
                 {/* Step 1: Shipping */}
                 <div className="flex flex-col items-center">
@@ -589,7 +589,7 @@ export default function CheckoutPage() {
 
             {error && (
               <div className="mb-6 space-y-3">
-                <div className="bg-danger-bg border border-danger text-error p-4 text-body-sm">
+                <div className="checkout-error bg-danger-bg border border-danger text-error p-4 text-body-sm">
                   {error}
                 </div>
                 <div className="border border-border-subtle bg-surface p-4 text-body-xs text-muted">
@@ -1222,9 +1222,9 @@ export default function CheckoutPage() {
         </div>
 
         {/* Right: Summary - Mobile on top, Desktop on right */}
-        <div className="bg-surface p-4 md:p-8 lg:p-20 order-1 lg:order-2">
+        <div className="checkout-summary-column order-1 bg-surface p-4 md:p-8 lg:order-2 lg:p-20">
           <div className="max-w-lg mx-auto sticky top-24">
-            <h2 className="mb-8 text-display-sm font-display text-primary">
+            <h2 className="checkout-summary-title mb-8 text-display-sm font-display text-primary">
               Order Summary
             </h2>
 

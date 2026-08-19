@@ -55,13 +55,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             )}
         </span>
       }
-      className="sm:max-w-[400px]"
+      className="cart-drawer sm:max-w-[400px]"
       bodyClassName="flex flex-col p-0"
     >
 
         {/* Free Shipping Progress Bar */}
         {items.length > 0 && (
-          <div className="border-b border-border-subtle bg-surface px-[var(--ds-space-md)] py-[var(--ds-space-xs)]">
+          <div className="cart-free-shipping border-b border-border-subtle bg-surface px-[var(--ds-space-md)] py-[var(--ds-space-xs)]">
             {hasFreeShipping ? (
               <div className="flex items-center gap-2 text-body-xs text-success font-medium">
                 <Truck size={14} />
@@ -93,7 +93,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center h-full px-[var(--ds-space-md)] text-center">
+            <div className="cart-empty-state flex flex-col items-center justify-center h-full px-[var(--ds-space-md)] text-center">
               <div className="w-20 h-20 rounded-[var(--ds-radius-pill)] bg-surface flex items-center justify-center mb-5">
                 <ShoppingBag className="h-8 w-8 text-muted" />
               </div>
@@ -112,7 +112,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </Link>
             </div>
           ) : (
-            <ul className="divide-y divide-border-subtle">
+            <ul className="cart-drawer-items divide-y divide-border-subtle">
               {items.map((item, index) => (
                 <li
                   key={item.variantId}
@@ -206,7 +206,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
         {/* Footer — Subtotal + Checkout */}
         {items.length > 0 && (
-          <div className="border-t border-border-subtle bg-surface-paper">
+          <div className="cart-drawer-footer border-t border-border-subtle bg-surface-paper">
             {/* Subtotal */}
             <div className="px-[var(--ds-space-md)] py-[var(--ds-space-sm)] space-y-2">
               <div className="flex items-center justify-between">
@@ -236,7 +236,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="flex min-h-[var(--ds-control-md)] w-full items-center justify-center gap-2 bg-primary py-3.5 text-body-xs font-bold tracking-token-wider text-inverse transition-opacity hover:opacity-90"
+                className="cart-primary-cta flex min-h-[var(--ds-control-md)] w-full items-center justify-center gap-2 bg-primary py-3.5 text-body-xs font-bold tracking-token-wider text-inverse transition-opacity hover:opacity-90"
               >
                 Checkout — {formatPrice(cartTotal)}
               </Link>
