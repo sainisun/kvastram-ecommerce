@@ -42,6 +42,7 @@ import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
 import { buildProductImageAlt, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
 import { getProductPrimaryImage } from '@/lib/storefront-product-quality';
+import { sanitizeProductRichText } from '@/lib/sanitize-product-rich-text';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
 import { storefrontTrust } from '@/config/storefront-trust';
 import styles from './pdp.module.css';
@@ -284,10 +285,10 @@ export default function ProductView({ product }: { product: Product }) {
       hint: `${product.material || 'Handmade textile'} · Reversible · Artisan finished`,
       icon: <ClipboardList size={18} />,
       content: product.description ? (
-        <div 
-          className={[styles['pdp-description'], 'prose', 'prose-sm', 'max-w-none', 'text-[var(--kv-muted)]'].filter(Boolean).join(' ')}
-          dangerouslySetInnerHTML={{ __html: product.description }} 
-        />
+          <div
+            className={[styles['pdp-description'], 'prose', 'prose-sm', 'max-w-none', 'text-[var(--kv-muted)]'].filter(Boolean).join(' ')}
+            dangerouslySetInnerHTML={{ __html: sanitizeProductRichText(product.description) }}
+          />
       ) : (
         <p className="kv-sub">Handmade in small batches with natural craft details.</p>
       ),
@@ -298,9 +299,9 @@ export default function ProductView({ product }: { product: Product }) {
       hint: 'Machine wash cold · Gentle cycle',
       icon: <Leaf size={18} />,
       content: product.care_instructions ? (
-        <div 
-          className="prose prose-sm max-w-none text-[var(--kv-muted)]" 
-          dangerouslySetInnerHTML={{ __html: product.care_instructions }} 
+        <div
+          className="prose prose-sm max-w-none text-[var(--kv-muted)]"
+          dangerouslySetInnerHTML={{ __html: sanitizeProductRichText(product.care_instructions) }}
         />
       ) : (
         <p className="kv-sub">
