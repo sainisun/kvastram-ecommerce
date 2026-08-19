@@ -19,6 +19,10 @@ import { RecentlyViewedRow } from '@/components/product/RecentlyViewedRow';
 import { Button, Drawer, IconButton, Select, UnstyledButton } from '@/design-system';
 import { api } from '@/lib/api';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
+import {
+  clearCatalogFilterQuery,
+  formatCatalogPriceFilter,
+} from '@/lib/catalog-filter-policy';
 import { Product } from '@/types';
 
 interface Category {
@@ -235,7 +239,9 @@ export default function CatalogClient({
       | 'min_price'
       | 'max_price'
   ) => {
-    updateQuery((params) => params.delete(key));
+    updateQuery((params) => {
+      clearCatalogFilterQuery(params, [key]);
+    });
   };
 
   const startItem = total > 0 ? (page - 1) * limit + 1 : 0;
@@ -243,9 +249,9 @@ export default function CatalogClient({
 
   return (
     <div className="min-h-screen bg-surface-paper">
-      <div className="bg-surface-paper">
+      <div className="catalog-shell bg-surface-paper">
         <div className="ds-home-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4">
+          <div className="catalog-intro-toolbar flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4">
             <div className="min-w-0">
               <h1 className="catalog-page-heading">Products</h1>
               <p className="catalog-page-subcopy">
@@ -265,7 +271,7 @@ export default function CatalogClient({
                 ref={filterButtonRef}
                 type="button"
                 onClick={() => setFilterDrawerOpen(true)}
-                className="group inline-flex h-10 items-center gap-2 border border-primary bg-surface-paper px-4 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-primary hover:text-inverse"
+                className="catalog-filter-trigger group inline-flex h-10 items-center gap-2 border border-primary bg-surface-paper px-4 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-primary hover:text-inverse"
                 aria-label="Open filters"
               >
                 <SlidersHorizontal size={14} />
@@ -284,7 +290,7 @@ export default function CatalogClient({
               </div>
 
               <div
-                className="hidden items-center overflow-hidden border border-border-subtle bg-surface-paper sm:flex"
+                className="catalog-density-toggle hidden items-center overflow-hidden border border-border-subtle bg-surface-paper sm:flex"
                 aria-label="Product grid density"
               >
                 <UnstyledButton
@@ -315,7 +321,7 @@ export default function CatalogClient({
                 </UnstyledButton>
               </div>
 
-              <div className="flex h-10 items-center gap-2 border border-border-subtle px-3">
+              <div className="catalog-sort-control flex h-10 items-center gap-2 border border-border-subtle px-3">
                 <ArrowUpDown size={14} className="text-muted" />
                 <Select
                   aria-label="Sort products"
@@ -334,7 +340,7 @@ export default function CatalogClient({
           </div>
 
           {activeFilterCount > 0 ? (
-            <div className="mt-[var(--ds-space-sm)] flex flex-wrap items-center gap-[var(--ds-space-xs)]">
+            <div className="catalog-active-filters mt-[var(--ds-space-sm)] flex flex-wrap items-center gap-[var(--ds-space-xs)]">
               {activeCategory ? (
                 <Button
                   type="button"
@@ -409,17 +415,7 @@ export default function CatalogClient({
                   className="catalog-active-chip px-3 py-1"
                   aria-label="Remove price filter"
                 >
-                  Price:{' '}
-                  {[
-                    currentMinPrice
-                      ? `${Math.round(Number(currentMinPrice) / 100)}+`
-                      : null,
-                    currentMaxPrice
-                      ? `up to ${Math.round(Number(currentMaxPrice) / 100)}`
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                  {formatCatalogPriceFilter(currentMinPrice, currentMaxPrice)}
                   <X size={12} />
                 </Button>
               ) : null}

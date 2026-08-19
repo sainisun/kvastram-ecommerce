@@ -5,6 +5,10 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button, IconButton, Input } from '@/design-system';
+import {
+  applyCatalogFilterQuery,
+  clearCatalogFilterQuery,
+} from '@/lib/catalog-filter-policy';
 
 interface Category {
   id: string;
@@ -37,17 +41,6 @@ type DraftFilters = {
   tag_id: string;
   collection_id: string;
 };
-
-const FILTER_QUERY_KEYS = [
-  'category_id',
-  'tag_id',
-  'collection_id',
-  'attribute_code',
-  'attribute_value',
-  'min_price',
-  'max_price',
-  'page',
-];
 
 export default function FilterSidebar({
   categories,
@@ -104,27 +97,13 @@ export default function FilterSidebar({
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    FILTER_QUERY_KEYS.forEach((key) => params.delete(key));
-
-    if (draftFilters.category_id) {
-      params.set('category_id', draftFilters.category_id);
-    }
-
-    if (draftFilters.collection_id) {
-      params.set('collection_id', draftFilters.collection_id);
-    }
-
-    if (draftFilters.tag_id) {
-      params.set('tag_id', draftFilters.tag_id);
-    }
-
-    if (minPrice.trim()) {
-      params.set('min_price', String(Number(minPrice) * 100));
-    }
-
-    if (maxPrice.trim()) {
-      params.set('max_price', String(Number(maxPrice) * 100));
-    }
+    applyCatalogFilterQuery(params, {
+      category_id: draftFilters.category_id,
+      collection_id: draftFilters.collection_id,
+      tag_id: draftFilters.tag_id,
+      min_price: minPrice.trim() ? String(Number(minPrice) * 100) : undefined,
+      max_price: maxPrice.trim() ? String(Number(maxPrice) * 100) : undefined,
+    });
 
     pushProductsUrl(params);
     onApply?.();
@@ -132,7 +111,7 @@ export default function FilterSidebar({
 
   const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    FILTER_QUERY_KEYS.forEach((key) => params.delete(key));
+    clearCatalogFilterQuery(params);
 
     setDraftFilters({
       category_id: '',
