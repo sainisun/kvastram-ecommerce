@@ -75,11 +75,11 @@ export function ActionButton({
   const className = clsx(
     'inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)] active:scale-[0.98]',
     variant === 'primary' &&
-      'bg-[var(--kv-accent)] text-white hover:bg-[var(--kv-accent-deep)]',
+      'bg-[var(--kv-accent)] text-[var(--kv-card)] hover:bg-[var(--kv-accent-deep)]',
     variant === 'secondary' &&
-      'border border-[var(--kv-border)] bg-white text-[var(--kv-text)] hover:bg-[var(--kv-soft)]',
+      'border border-[var(--kv-border)] bg-[var(--kv-card)] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]',
     variant === 'danger' &&
-      'bg-[var(--kv-danger)] text-white hover:bg-[#a62f23]'
+      'bg-[var(--kv-danger)] text-[var(--kv-card)] hover:bg-[#a62f23]'
   );
 
   const content = (
@@ -154,7 +154,7 @@ export function MetricCard({
             <p className="mt-2 text-sm text-[var(--kv-muted)]">{hint}</p>
           ) : null}
         </div>
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--kv-card)] text-[var(--kv-accent-deep)]">
           <Icon size={20} />
         </span>
       </div>
@@ -222,7 +222,7 @@ export function SegmentedTabs<T extends string>({
               'inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)]',
               active
                 ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
-                : 'border-[var(--kv-border)] bg-white text-[var(--kv-muted)] hover:text-[var(--kv-text)]'
+                : 'border-[var(--kv-border)] bg-[var(--kv-card)] text-[var(--kv-muted)] hover:text-[var(--kv-text)]'
             )}
           >
             {option.label}
@@ -231,7 +231,7 @@ export function SegmentedTabs<T extends string>({
                 className={clsx(
                   'inline-flex min-w-6 items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold',
                   active
-                    ? 'bg-white text-[var(--kv-accent-deep)]'
+                    ? 'bg-[var(--kv-card)] text-[var(--kv-accent-deep)]'
                     : 'bg-[var(--kv-soft)] text-[var(--kv-muted)]'
                 )}
               >
@@ -259,7 +259,7 @@ export function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group flex min-h-16 items-center justify-between rounded-[1.2rem] border border-[var(--kv-border)] bg-white px-4 py-4 shadow-[0_14px_30px_rgba(26,26,26,0.03)] transition hover:border-[var(--kv-accent)]/45 hover:bg-[var(--kv-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)]"
+      className="group flex min-h-16 items-center justify-between rounded-[1.2rem] border border-[var(--kv-border)] bg-[var(--kv-card)] px-4 py-4 shadow-[0_14px_30px_rgba(26,26,26,0.03)] transition hover:border-[var(--kv-accent)]/45 hover:bg-[var(--kv-accent-soft)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--kv-accent)]"
     >
       <div className="flex items-center gap-3">
         <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">

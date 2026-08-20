@@ -264,17 +264,17 @@ export default function ReelCollectionsManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Reel Collections</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Reel Collections</h1>
+          <p className="mt-1 text-sm text-[var(--kv-text)]">
             Manage the hero carousel and collection filters on the storefront reels page.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
         >
           <Plus size={18} />
           Create Collection
@@ -282,37 +282,37 @@ export default function ReelCollectionsManager() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total Collections</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{collections.length}</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Total Collections</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-text)]">{collections.length}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Active</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Active</p>
           <p className="mt-2 text-3xl font-bold text-emerald-600">{activeCount}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Available Reels</p>
-          <p className="mt-2 text-3xl font-bold text-blue-600">{reels.length}</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Available Reels</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-accent-deep)]">{reels.length}</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-10 text-center text-[var(--kv-muted)] shadow-sm">
           Loading reel collections...
         </div>
       ) : collections.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+        <div className="rounded-2xl border border-dashed border-[var(--kv-border)] bg-[var(--kv-card)] p-12 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]">
             <Layers size={24} />
           </div>
-          <h2 className="mt-4 text-lg font-semibold text-gray-900">No reel collections yet</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h2 className="mt-4 text-lg font-semibold text-[var(--kv-text)]">No reel collections yet</h2>
+          <p className="mt-2 text-sm text-[var(--kv-muted)]">
             Create collection slides to make the reels page feel curated.
           </p>
           <button
             type="button"
             onClick={openCreateModal}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
           >
             <Plus size={18} />
             Create Collection
@@ -323,9 +323,9 @@ export default function ReelCollectionsManager() {
           {collections.map((collection) => (
             <div
               key={collection.id}
-              className="grid gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
+              className="grid gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
             >
-              <div className="relative h-[150px] overflow-hidden rounded-xl bg-gray-100">
+              <div className="relative h-[150px] overflow-hidden rounded-xl bg-[var(--kv-soft)]">
                 {collection.hero_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -334,7 +334,7 @@ export default function ReelCollectionsManager() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-gray-400">
+                  <div className="flex h-full items-center justify-center text-[var(--kv-muted)]">
                     <ImageIcon size={28} />
                   </div>
                 )}
@@ -342,10 +342,10 @@ export default function ReelCollectionsManager() {
 
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                  <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-xs font-medium text-[var(--kv-text)]">
                     Sort #{collection.sort_order}
                   </span>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                  <span className="rounded-full bg-[var(--kv-accent)]/10 px-3 py-1 text-xs font-medium text-[var(--kv-accent-deep)]">
                     {(collection.reel_ids || []).length} reels
                   </span>
                   <span
@@ -360,15 +360,15 @@ export default function ReelCollectionsManager() {
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{collection.title}</h2>
-                  <p className="mt-1 text-sm text-gray-600">/{collection.handle}</p>
+                  <h2 className="text-lg font-semibold text-[var(--kv-text)]">{collection.title}</h2>
+                  <p className="mt-1 text-sm text-[var(--kv-text)]">/{collection.handle}</p>
                   {collection.subtitle ? (
-                    <p className="mt-2 text-sm text-gray-700">{collection.subtitle}</p>
+                    <p className="mt-2 text-sm text-[var(--kv-text)]">{collection.subtitle}</p>
                   ) : null}
                 </div>
 
-                <p className="text-sm text-gray-600">
-                  CTA: <span className="font-medium text-gray-900">{collection.cta_label}</span>
+                <p className="text-sm text-[var(--kv-text)]">
+                  CTA: <span className="font-medium text-[var(--kv-text)]">{collection.cta_label}</span>
                   {collection.cta_url ? ` -> ${collection.cta_url}` : ' -> filters this page'}
                 </p>
               </div>
@@ -378,7 +378,7 @@ export default function ReelCollectionsManager() {
                   type="button"
                   onClick={() => handleToggle(collection.id)}
                   disabled={togglingId === collection.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {collection.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                   {togglingId === collection.id
@@ -390,7 +390,7 @@ export default function ReelCollectionsManager() {
                 <button
                   type="button"
                   onClick={() => openEditModal(collection)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   <Pencil size={16} />
                   Edit
@@ -399,7 +399,7 @@ export default function ReelCollectionsManager() {
                   type="button"
                   onClick={() => handleDelete(collection.id)}
                   disabled={deletingId === collection.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-danger)]/30 px-4 py-2 text-sm font-medium text-[var(--kv-danger)] transition hover:bg-[var(--kv-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Trash2 size={16} />
                   {deletingId === collection.id ? 'Deleting...' : 'Delete'}
@@ -412,13 +412,13 @@ export default function ReelCollectionsManager() {
 
       {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-[var(--kv-card)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--kv-border)] px-6 py-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[var(--kv-text)]">
                   {editingCollection ? 'Edit Reel Collection' : 'Create Reel Collection'}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-[var(--kv-muted)]">
                   This powers the reels page hero carousel and collection chips.
                 </p>
               </div>
@@ -426,7 +426,7 @@ export default function ReelCollectionsManager() {
                 type="button"
                 onClick={closeModal}
                 aria-label="Close reel collection form"
-                className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-full p-2 text-[var(--kv-muted)] transition hover:bg-[var(--kv-soft)] hover:text-[var(--kv-text)]"
               >
                 <X size={18} />
               </button>
@@ -436,10 +436,10 @@ export default function ReelCollectionsManager() {
               <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Hero Image
                     </label>
-                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center transition hover:border-blue-400 hover:bg-blue-50/40">
+                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-8 text-center transition hover:border-[var(--kv-accent)]/60 hover:bg-[var(--kv-accent)]/10/40">
                       {form.heroImagePreview ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -448,14 +448,14 @@ export default function ReelCollectionsManager() {
                           className="mb-4 h-[180px] w-full rounded-xl object-cover"
                         />
                       ) : (
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-card)] text-[var(--kv-accent-deep)] shadow-sm">
                           <Upload size={22} />
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-[var(--kv-text)]">
                         Upload hero image
                       </span>
-                      <span className="mt-1 text-xs text-gray-500">
+                      <span className="mt-1 text-xs text-[var(--kv-muted)]">
                         Optional if assigned reels have thumbnails.
                       </span>
                       <input
@@ -470,7 +470,7 @@ export default function ReelCollectionsManager() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Existing Hero Image URL
                     </label>
                     <input
@@ -482,13 +482,13 @@ export default function ReelCollectionsManager() {
                           heroImagePreview: event.target.value || current.heroImagePreview,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="https://res.cloudinary.com/..."
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Hero Video URL
                     </label>
                     <input
@@ -499,7 +499,7 @@ export default function ReelCollectionsManager() {
                           heroVideoUrl: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="Optional Cloudinary video URL"
                     />
                   </div>
@@ -508,7 +508,7 @@ export default function ReelCollectionsManager() {
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         Title
                       </label>
                       <input
@@ -521,12 +521,12 @@ export default function ReelCollectionsManager() {
                             handle: current.handle || slugify(title),
                           }));
                         }}
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                         required
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         Handle
                       </label>
                       <input
@@ -537,14 +537,14 @@ export default function ReelCollectionsManager() {
                             handle: slugify(event.target.value),
                           }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Subtitle
                     </label>
                     <input
@@ -552,12 +552,12 @@ export default function ReelCollectionsManager() {
                       onChange={(event) =>
                         setForm((current) => ({ ...current, subtitle: event.target.value }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Description
                     </label>
                     <textarea
@@ -565,13 +565,13 @@ export default function ReelCollectionsManager() {
                       onChange={(event) =>
                         setForm((current) => ({ ...current, description: event.target.value }))
                       }
-                      className="min-h-24 w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="min-h-24 w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         CTA Label
                       </label>
                       <input
@@ -579,12 +579,12 @@ export default function ReelCollectionsManager() {
                         onChange={(event) =>
                           setForm((current) => ({ ...current, ctaLabel: event.target.value }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                         required
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         CTA URL
                       </label>
                       <input
@@ -592,7 +592,7 @@ export default function ReelCollectionsManager() {
                         onChange={(event) =>
                           setForm((current) => ({ ...current, ctaUrl: event.target.value }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                         placeholder="/collections/festive"
                       />
                     </div>
@@ -600,7 +600,7 @@ export default function ReelCollectionsManager() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         Sort Order
                       </label>
                       <input
@@ -610,11 +610,11 @@ export default function ReelCollectionsManager() {
                         onChange={(event) =>
                           setForm((current) => ({ ...current, sortOrder: event.target.value }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       />
                     </div>
                     <div className="flex items-end">
-                      <label className="inline-flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700">
+                      <label className="inline-flex items-center gap-3 rounded-xl border border-[var(--kv-border)] px-4 py-3 text-sm font-medium text-[var(--kv-text)]">
                         <input
                           type="checkbox"
                           checked={form.isActive}
@@ -624,7 +624,7 @@ export default function ReelCollectionsManager() {
                               isActive: event.target.checked,
                             }))
                           }
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-accent-deep)] focus:ring-blue-500"
                         />
                         Active on storefront
                       </label>
@@ -633,15 +633,15 @@ export default function ReelCollectionsManager() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+              <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-soft)] p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Assign Reels</h3>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <h3 className="text-sm font-semibold text-[var(--kv-text)]">Assign Reels</h3>
+                    <p className="mt-1 text-xs text-[var(--kv-muted)]">
                       Selected order follows the order you choose them in.
                     </p>
                   </div>
-                  <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600">
+                  <span className="rounded-full bg-[var(--kv-card)] px-3 py-1 text-xs font-medium text-[var(--kv-text)]">
                     {form.reelIds.length} selected
                   </span>
                 </div>
@@ -650,15 +650,15 @@ export default function ReelCollectionsManager() {
                   {reels.map((reel) => (
                     <label
                       key={reel.id}
-                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 transition hover:border-blue-300"
+                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-3 transition hover:border-[var(--kv-accent)]/40"
                     >
                       <input
                         type="checkbox"
                         checked={form.reelIds.includes(reel.id)}
                         onChange={() => toggleReelSelection(reel.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-accent-deep)] focus:ring-blue-500"
                       />
-                      <div className="h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                      <div className="h-14 w-10 shrink-0 overflow-hidden rounded-lg bg-[var(--kv-soft)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={reel.thumbnail_url}
@@ -667,10 +667,10 @@ export default function ReelCollectionsManager() {
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-gray-900">
+                        <p className="truncate text-sm font-medium text-[var(--kv-text)]">
                           {reel.product_name}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[var(--kv-muted)]">
                           Sort #{reel.sort_order} {reel.is_active ? 'Active' : 'Inactive'}
                         </p>
                       </div>
@@ -679,18 +679,18 @@ export default function ReelCollectionsManager() {
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-4 sm:flex-row sm:justify-end">
+              <div className="flex flex-col-reverse gap-3 border-t border-[var(--kv-border)] pt-4 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="rounded-xl border border-[var(--kv-border)] px-4 py-2.5 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
                     ? 'Saving...'

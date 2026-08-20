@@ -72,38 +72,38 @@ export default function ProductAssignmentPicker({
   };
 
   return (
-    <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <section className="space-y-4 rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
       <div>
-        <h2 className="text-base font-bold text-gray-900">{label}</h2>
-        <p className="mt-1 text-sm text-gray-500">{helpText}</p>
+        <h2 className="text-base font-bold text-[var(--kv-text)]">{label}</h2>
+        <p className="mt-1 text-sm text-[var(--kv-muted)]">{helpText}</p>
       </div>
 
       <div className="relative">
         <Search
           size={16}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--kv-muted)]"
         />
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          className="w-full rounded-xl border border-[var(--kv-border)] py-2.5 pl-10 pr-3 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
           placeholder="Search products by name or SKU"
         />
       </div>
 
-      {searching ? <p className="text-sm text-gray-500">Searching products...</p> : null}
+      {searching ? <p className="text-sm text-[var(--kv-muted)]">Searching products...</p> : null}
 
       {results.length > 0 ? (
-        <div className="max-h-64 space-y-2 overflow-y-auto rounded-2xl border border-gray-200 p-3">
+        <div className="max-h-64 space-y-2 overflow-y-auto rounded-2xl border border-[var(--kv-border)] p-3">
           {results.map((product) => (
             <button
               key={product.id}
               type="button"
               onClick={() => addProduct(product)}
               disabled={selectedIds.has(product.id)}
-              className="flex w-full items-center gap-3 rounded-xl border border-gray-200 px-3 py-2 text-left transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full items-center gap-3 rounded-xl border border-[var(--kv-border)] px-3 py-2 text-left transition hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-gray-100">
+              <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-[var(--kv-soft)]">
                 {product.thumbnail ? (
                   <Image
                     src={product.thumbnail}
@@ -115,10 +115,10 @@ export default function ProductAssignmentPicker({
                 ) : null}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-gray-900">
+                <p className="truncate text-sm font-semibold text-[var(--kv-text)]">
                   {product.title}
                 </p>
-                <p className="truncate text-xs uppercase tracking-[0.14em] text-gray-500">
+                <p className="truncate text-xs uppercase tracking-[0.14em] text-[var(--kv-muted)]">
                   {product.skus?.join(', ') || product.status || 'Product'}
                 </p>
               </div>
@@ -132,12 +132,12 @@ export default function ProductAssignmentPicker({
           {selectedProducts.map((product, index) => (
             <div
               key={product.id}
-              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2"
+              className="flex items-center gap-3 rounded-xl border border-[var(--kv-border)] bg-[var(--kv-soft)] px-3 py-2"
             >
-              <span className="w-6 text-xs font-bold text-gray-400">
+              <span className="w-6 text-xs font-bold text-[var(--kv-muted)]">
                 {index + 1}
               </span>
-              <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-100">
+              <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-[var(--kv-soft)]">
                 {product.thumbnail ? (
                   <Image
                     src={product.thumbnail}
@@ -149,17 +149,17 @@ export default function ProductAssignmentPicker({
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-gray-900">
+                <p className="truncate text-sm font-semibold text-[var(--kv-text)]">
                   {product.title}
                 </p>
-                <p className="truncate text-xs text-gray-500">
+                <p className="truncate text-xs text-[var(--kv-muted)]">
                   {product.handle ? `/products/${product.handle}` : product.status || 'Selected'}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => removeProduct(product.id)}
-                className="rounded-full p-2 text-gray-400 transition hover:bg-white hover:text-red-600"
+                className="rounded-full p-2 text-[var(--kv-muted)] transition hover:bg-[var(--kv-card)] hover:text-[var(--kv-danger)]"
                 aria-label={`Remove ${product.title}`}
               >
                 <X size={16} />
@@ -168,7 +168,7 @@ export default function ProductAssignmentPicker({
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed border-[var(--kv-border)] p-6 text-center text-sm text-[var(--kv-muted)]">
           No products selected yet.
         </div>
       )}

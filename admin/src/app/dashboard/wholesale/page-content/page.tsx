@@ -53,7 +53,7 @@ export default function WholesalePageManagerPage() {
   const showSuccess = (message: string) => {
     const successMsg = document.createElement('div');
     successMsg.className =
-      'fixed top-4 right-4 z-[100] bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg';
+      'fixed top-4 right-4 z-[100] bg-[var(--kv-success)]/10 border border-[var(--kv-success)]/30 text-[var(--kv-success)] px-4 py-3 rounded-lg';
     successMsg.textContent = message;
     document.body.appendChild(successMsg);
     window.setTimeout(() => successMsg.remove(), 3000);
@@ -94,8 +94,8 @@ export default function WholesalePageManagerPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8 text-gray-500">
-        <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
+      <div className="flex items-center justify-center p-8 text-[var(--kv-muted)]">
+        <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--kv-text)]" />
         Loading page...
       </div>
     );
@@ -104,7 +104,7 @@ export default function WholesalePageManagerPage() {
   if (!page) {
     return (
       <div className="mx-auto max-w-4xl p-8">
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-700">
+        <div className="rounded-lg border border-[var(--kv-accent)]/30 bg-[var(--kv-accent)]/10 px-4 py-3 text-[var(--kv-accent-deep)]">
           Wholesale page not found. You may need to create it first.
         </div>
       </div>
@@ -115,8 +115,8 @@ export default function WholesalePageManagerPage() {
     <div className="mx-auto max-w-6xl p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Wholesale Page</h1>
-          <p className="mt-1 text-gray-500">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Wholesale Page</h1>
+          <p className="mt-1 text-[var(--kv-muted)]">
             Manage the wholesale section content and visibility
           </p>
         </div>
@@ -126,8 +126,8 @@ export default function WholesalePageManagerPage() {
             disabled={saving}
             className={`flex items-center gap-2 rounded-lg px-4 py-2 transition-colors ${
               page.is_published
-                ? 'border border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
-                : 'border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'border border-[var(--kv-success)]/30 bg-[var(--kv-success)]/10 text-[var(--kv-success)] hover:bg-[var(--kv-success)]/10'
+                : 'border border-[var(--kv-border)] bg-[var(--kv-soft)] text-[var(--kv-text)] hover:bg-[var(--kv-border)]'
             } disabled:opacity-50`}
           >
             {page.is_published ? (
@@ -145,7 +145,7 @@ export default function WholesalePageManagerPage() {
           {!editing ? (
             <button
               onClick={() => setEditing(true)}
-              className="flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-white transition-colors hover:bg-gray-800"
+              className="flex items-center gap-2 rounded-lg bg-[var(--kv-text)] px-4 py-2 text-[var(--kv-card)] transition-colors hover:bg-[var(--kv-text)]"
             >
               <Edit2 size={18} />
               Edit
@@ -154,7 +154,7 @@ export default function WholesalePageManagerPage() {
             <>
               <button
                 onClick={() => setEditing(false)}
-                className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
+                className="flex items-center gap-2 rounded-lg bg-[var(--kv-soft)] px-4 py-2 text-[var(--kv-text)] transition-colors hover:bg-[var(--kv-border)]"
               >
                 <X size={18} />
                 Cancel
@@ -162,7 +162,7 @@ export default function WholesalePageManagerPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-[var(--kv-accent)] px-4 py-2 text-[var(--kv-card)] transition-colors hover:bg-[var(--kv-accent-deep)] disabled:opacity-50"
               >
                 <Save size={18} />
                 {saving ? 'Saving...' : 'Save'}
@@ -173,15 +173,15 @@ export default function WholesalePageManagerPage() {
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        <div className="mb-6 rounded-lg border border-[var(--kv-danger)]/30 bg-[var(--kv-danger)]/10 px-4 py-3 text-[var(--kv-danger)]">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <div className="rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--kv-text)]">
               Page Title
             </h3>
             {editing ? (
@@ -189,20 +189,20 @@ export default function WholesalePageManagerPage() {
                 type="text"
                 value={page.title}
                 onChange={(e) => setPage({ ...page, title: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             ) : (
-              <p className="text-lg font-semibold text-gray-900">{page.title}</p>
+              <p className="text-lg font-semibold text-[var(--kv-text)]">{page.title}</p>
             )}
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <div className="rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--kv-text)]">
               Hero Section
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-600">
+                <label className="mb-2 block text-xs font-medium text-[var(--kv-text)]">
                   Hero Title
                 </label>
                 {editing ? (
@@ -212,16 +212,16 @@ export default function WholesalePageManagerPage() {
                     onChange={(e) =>
                       setPage({ ...page, hero_title: e.target.value })
                     }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <p className="text-gray-700">
+                  <p className="text-[var(--kv-text)]">
                     {page.hero_title || 'No hero title'}
                   </p>
                 )}
               </div>
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-600">
+                <label className="mb-2 block text-xs font-medium text-[var(--kv-text)]">
                   Hero Subtitle
                 </label>
                 {editing ? (
@@ -231,10 +231,10 @@ export default function WholesalePageManagerPage() {
                       setPage({ ...page, hero_subtitle: e.target.value })
                     }
                     rows={3}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <p className="text-gray-600">
+                  <p className="text-[var(--kv-text)]">
                     {page.hero_subtitle || 'No subtitle'}
                   </p>
                 )}
@@ -242,8 +242,8 @@ export default function WholesalePageManagerPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <div className="rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--kv-text)]">
               Body Content
             </h3>
             {editing ? (
@@ -251,7 +251,7 @@ export default function WholesalePageManagerPage() {
                 value={page.body_html || ''}
                 onChange={(e) => setPage({ ...page, body_html: e.target.value })}
                 rows={10}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             ) : (
               <div
@@ -265,13 +265,13 @@ export default function WholesalePageManagerPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <div className="rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--kv-text)]">
               SEO
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-600">
+                <label className="mb-2 block text-xs font-medium text-[var(--kv-text)]">
                   Meta Title
                 </label>
                 {editing ? (
@@ -281,16 +281,16 @@ export default function WholesalePageManagerPage() {
                     onChange={(e) =>
                       setPage({ ...page, meta_title: e.target.value })
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-[var(--kv-text)]">
                     {page.meta_title || 'Not set'}
                   </p>
                 )}
               </div>
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-600">
+                <label className="mb-2 block text-xs font-medium text-[var(--kv-text)]">
                   Meta Description
                 </label>
                 {editing ? (
@@ -300,10 +300,10 @@ export default function WholesalePageManagerPage() {
                       setPage({ ...page, meta_description: e.target.value })
                     }
                     rows={3}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 ) : (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-[var(--kv-text)]">
                     {page.meta_description || 'Not set'}
                   </p>
                 )}
@@ -311,29 +311,29 @@ export default function WholesalePageManagerPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <div className="rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--kv-text)]">
               Preview
             </h3>
             <div className="space-y-3 text-sm">
               <div>
-                <p className="mb-1 text-xs text-gray-500">Title</p>
-                <p className="truncate font-semibold text-blue-600">
+                <p className="mb-1 text-xs text-[var(--kv-muted)]">Title</p>
+                <p className="truncate font-semibold text-[var(--kv-accent-deep)]">
                   {page.title}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs text-gray-500">Meta Description</p>
-                <p className="line-clamp-2 text-xs text-gray-700">
+                <p className="mb-1 text-xs text-[var(--kv-muted)]">Meta Description</p>
+                <p className="line-clamp-2 text-xs text-[var(--kv-text)]">
                   {page.meta_description || 'No description set'}
                 </p>
               </div>
-              <div className="border-t border-gray-200 pt-3">
-                <p className="mb-2 text-xs text-gray-500">Publishing</p>
+              <div className="border-t border-[var(--kv-border)] pt-3">
+                <p className="mb-2 text-xs text-[var(--kv-muted)]">Publishing</p>
                 {page.is_published ? (
-                  <span className="font-medium text-green-600">Published</span>
+                  <span className="font-medium text-[var(--kv-success)]">Published</span>
                 ) : (
-                  <span className="font-medium text-gray-600">Draft</span>
+                  <span className="font-medium text-[var(--kv-text)]">Draft</span>
                 )}
               </div>
             </div>

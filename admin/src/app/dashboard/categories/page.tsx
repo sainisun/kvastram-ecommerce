@@ -45,7 +45,7 @@ function CategoryItem({
 
   return (
     <>
-      <div className="flex items-center border-b border-gray-100 hover:bg-gray-50 transition-colors last:border-0">
+      <div className="flex items-center border-b border-[var(--kv-border)] hover:bg-[var(--kv-soft)] transition-colors last:border-0">
         <div
           className="flex-1 py-3 px-4 flex items-center"
           style={{ paddingLeft: `${depth * 24 + 16}px` }}
@@ -55,7 +55,7 @@ function CategoryItem({
               type="button"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${category.name}`}
-              className="mr-2 text-gray-500 hover:text-gray-700"
+              className="mr-2 text-[var(--kv-muted)] hover:text-[var(--kv-text)]"
             >
               {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
@@ -70,7 +70,7 @@ function CategoryItem({
               className="w-10 h-10 object-cover rounded mr-3"
             />
           ) : (
-            <span className="mr-2 text-gray-400">
+            <span className="mr-2 text-[var(--kv-muted)]">
               {hasChildren ? (
                 isOpen ? (
                   <FolderOpen size={16} />
@@ -87,26 +87,26 @@ function CategoryItem({
             <span className="text-lg mr-2">{category.emoji}</span>
           )}
 
-          <span className="font-medium text-gray-900">{category.name}</span>
+          <span className="font-medium text-[var(--kv-text)]">{category.name}</span>
           
           {category.display_order !== undefined && category.display_order !== 0 && (
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-[var(--kv-muted)]">
               (order: {category.display_order})
             </span>
           )}
           
-          <span className="ml-2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="ml-2 text-xs text-[var(--kv-muted)] bg-[var(--kv-soft)] px-2 py-0.5 rounded-full">
             {category.slug}
           </span>
 
           {category.show_in_header && (
-            <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+            <span className="ml-2 text-xs text-[var(--kv-accent-deep)] bg-[var(--kv-accent)]/10 px-2 py-0.5 rounded-full border border-[var(--kv-accent)]/20">
               IN HEADER
             </span>
           )}
 
           {!category.is_active && (
-            <span className="ml-2 text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
+            <span className="ml-2 text-xs text-[var(--kv-danger)] bg-[var(--kv-danger)]/10 px-2 py-0.5 rounded-full border border-[var(--kv-danger)]/20">
               Hidden
             </span>
           )}
@@ -116,7 +116,7 @@ function CategoryItem({
           <Link
             href={`/dashboard/categories/${category.id}`}
             aria-label={`Edit category ${category.name}`}
-            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+            className="p-1.5 text-[var(--kv-muted)] hover:text-[var(--kv-accent-deep)] hover:bg-[var(--kv-accent)]/10 rounded transition-colors"
             title="Edit"
           >
             <Edit size={16} />
@@ -125,7 +125,7 @@ function CategoryItem({
             type="button"
             onClick={() => onDelete(category.id)}
             aria-label={`Delete category ${category.name}`}
-            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            className="p-1.5 text-[var(--kv-muted)] hover:text-[var(--kv-danger)] hover:bg-[var(--kv-danger)]/10 rounded transition-colors"
             title="Delete"
           >
             <Trash2 size={16} />
@@ -183,8 +183,8 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center text-gray-500">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-3"></div>
+      <div className="p-8 flex items-center justify-center text-[var(--kv-muted)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kv-text)] mr-3"></div>
         Loading categories...
       </div>
     );
@@ -194,14 +194,14 @@ export default function CategoriesPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Categories</h1>
+          <p className="text-[var(--kv-muted)] mt-1">
             Manage product categories and hierarchy
           </p>
         </div>
         <Link
           href="/dashboard/categories/new"
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)] transition-colors"
         >
           <Plus size={20} />
           Add Category
@@ -209,8 +209,8 @@ export default function CategoriesPage() {
       </div>
 
       {/* Clarification Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <p className="text-sm text-blue-900">
+      <div className="bg-[var(--kv-accent)]/10 border border-[var(--kv-accent)]/30 rounded-lg p-4 mb-6">
+        <p className="text-sm text-[var(--kv-text)]">
           <strong>What are Categories?</strong> Categories form the product taxonomy and appear in the storefront header navigation. Customers use them to browse by product type. Use emojis and header images to make them visually appealing.
         </p>
       </div>
@@ -221,16 +221,16 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 flex text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <div className="bg-[var(--kv-card)] rounded-xl shadow-sm border border-[var(--kv-border)] overflow-hidden">
+        <div className="border-b border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-3 flex text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
           <div className="flex-1">Name</div>
           <div className="w-20 text-center">Actions</div>
         </div>
 
         {categories.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            <FolderOpen size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-900">
+          <div className="p-12 text-center text-[var(--kv-muted)]">
+            <FolderOpen size={48} className="mx-auto mb-4 text-[var(--kv-muted)]" />
+            <p className="text-lg font-medium text-[var(--kv-text)]">
               No categories found
             </p>
             <p className="mt-1 mb-6">
@@ -238,7 +238,7 @@ export default function CategoriesPage() {
             </p>
             <Link
               href="/dashboard/categories/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)]"
             >
               <Plus size={18} />
               Create Category

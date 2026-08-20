@@ -211,14 +211,14 @@ export default function TierManagementPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">
             Wholesale Tier Management
           </h1>
-          <p className="text-gray-600">Configure discount tiers and benefits</p>
+          <p className="text-[var(--kv-text)]">Configure discount tiers and benefits</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 bg-[var(--kv-accent)] text-[var(--kv-card)] px-4 py-2 rounded-lg hover:bg-[var(--kv-accent-deep)] transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Tier
@@ -227,13 +227,13 @@ export default function TierManagementPage() {
 
       {/* Alerts */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+        <div className="bg-[var(--kv-danger)]/10 border border-[var(--kv-danger)]/30 text-[var(--kv-danger)] px-4 py-3 rounded-lg flex items-center">
           <AlertCircle className="w-5 h-5 mr-2" />
           {error}
         </div>
       )}
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center">
+        <div className="bg-[var(--kv-success)]/10 border border-[var(--kv-success)]/30 text-[var(--kv-success)] px-4 py-3 rounded-lg flex items-center">
           <CheckCircle className="w-5 h-5 mr-2" />
           {success}
         </div>
@@ -241,7 +241,7 @@ export default function TierManagementPage() {
 
       {/* Tiers Grid */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">Loading tiers...</div>
+        <div className="text-center py-12 text-[var(--kv-muted)]">Loading tiers...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tiers.map((tier) => {
@@ -249,10 +249,10 @@ export default function TierManagementPage() {
             return (
               <div
                 key={tier.id}
-                className={`bg-white rounded-lg shadow-md overflow-hidden border-2 transition-all hover:shadow-lg ${
+                className={`bg-[var(--kv-card)] rounded-lg shadow-md overflow-hidden border-2 transition-all hover:shadow-lg ${
                   tier.active
                     ? 'border-transparent'
-                    : 'border-gray-300 opacity-75'
+                    : 'border-[var(--kv-border)] opacity-75'
                 }`}
               >
                 <div className="h-2" style={{ backgroundColor: tier.color }} />
@@ -263,20 +263,20 @@ export default function TierManagementPage() {
                         className="w-5 h-5"
                         style={{ color: tier.color }}
                       />
-                      <h3 className="text-lg font-bold text-gray-900">
+                      <h3 className="text-lg font-bold text-[var(--kv-text)]">
                         {tier.name}
                       </h3>
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => openEditModal(tier)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-1 text-[var(--kv-muted)] hover:text-[var(--kv-accent-deep)] transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(tier.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-1 text-[var(--kv-muted)] hover:text-[var(--kv-danger)] transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -285,7 +285,7 @@ export default function TierManagementPage() {
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Discount</span>
+                      <span className="text-[var(--kv-text)]">Discount</span>
                       <span
                         className="text-2xl font-bold"
                         style={{ color: tier.color }}
@@ -295,14 +295,14 @@ export default function TierManagementPage() {
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Default MOQ</span>
+                      <span className="text-[var(--kv-text)]">Default MOQ</span>
                       <span className="font-medium">
                         {tier.default_moq} units
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Payment Terms</span>
+                      <span className="text-[var(--kv-text)]">Payment Terms</span>
                       <span className="font-medium capitalize">
                         {tier.payment_terms.replace('_', ' ')}
                       </span>
@@ -310,7 +310,7 @@ export default function TierManagementPage() {
 
                     {tier.min_order_value > 0 && (
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Min Order Value</span>
+                        <span className="text-[var(--kv-text)]">Min Order Value</span>
                         <span className="font-medium">
                           {formatCurrency(tier.min_order_value)}
                         </span>
@@ -319,7 +319,7 @@ export default function TierManagementPage() {
 
                     {tier.min_order_quantity > 0 && (
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Min Order Qty</span>
+                        <span className="text-[var(--kv-text)]">Min Order Qty</span>
                         <span className="font-medium">
                           {tier.min_order_quantity} units
                         </span>
@@ -328,28 +328,28 @@ export default function TierManagementPage() {
                   </div>
 
                   {tier.description && (
-                    <p className="mt-4 text-sm text-gray-500">
+                    <p className="mt-4 text-sm text-[var(--kv-muted)]">
                       {tier.description}
                     </p>
                   )}
 
-                  <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-4">
+                  <div className="mt-4 pt-4 border-t border-[var(--kv-border)] grid grid-cols-2 gap-4">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
+                      <Users className="w-4 h-4 text-[var(--kv-muted)]" />
+                      <span className="text-sm text-[var(--kv-text)]">
                         {tierStats.customerCount} customers
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
+                      <ShoppingBag className="w-4 h-4 text-[var(--kv-muted)]" />
+                      <span className="text-sm text-[var(--kv-text)]">
                         {tierStats.orderCount} orders
                       </span>
                     </div>
                   </div>
 
                   {!tier.active && (
-                    <div className="mt-3 px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full inline-block">
+                    <div className="mt-3 px-3 py-1 bg-[var(--kv-soft)] text-[var(--kv-text)] text-xs rounded-full inline-block">
                       Inactive
                     </div>
                   )}
@@ -362,15 +362,15 @@ export default function TierManagementPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--kv-card)] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-[var(--kv-border)] flex justify-between items-center">
+              <h2 className="text-xl font-bold text-[var(--kv-text)]">
                 {editingTier ? 'Edit Tier' : 'Create New Tier'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[var(--kv-muted)] hover:text-[var(--kv-text)]"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -382,7 +382,7 @@ export default function TierManagementPage() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Tier Name *
                   </label>
                   <input
@@ -392,13 +392,13 @@ export default function TierManagementPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                     placeholder="e.g., Premium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Slug * (unique identifier)
                   </label>
                   <input
@@ -409,13 +409,13 @@ export default function TierManagementPage() {
                       setFormData({ ...formData, slug: e.target.value })
                     }
                     disabled={!!editingTier}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)] disabled:bg-[var(--kv-soft)]"
                     placeholder="e.g., premium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Discount % *
                   </label>
                   <input
@@ -430,12 +430,12 @@ export default function TierManagementPage() {
                         discount_percent: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Default MOQ *
                   </label>
                   <input
@@ -449,12 +449,12 @@ export default function TierManagementPage() {
                         default_moq: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Payment Terms *
                   </label>
                   <select
@@ -465,7 +465,7 @@ export default function TierManagementPage() {
                         payment_terms: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                   >
                     {PAYMENT_TERMS.map((term) => (
                       <option key={term.value} value={term.value}>
@@ -476,7 +476,7 @@ export default function TierManagementPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Color
                   </label>
                   <div className="flex items-center gap-2">
@@ -486,7 +486,7 @@ export default function TierManagementPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, color: e.target.value })
                       }
-                      className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
+                      className="w-12 h-10 border border-[var(--kv-border)] rounded cursor-pointer"
                     />
                     <input
                       type="text"
@@ -494,14 +494,14 @@ export default function TierManagementPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, color: e.target.value })
                       }
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                       placeholder="#3B82F6"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Min Order Value ($)
                   </label>
                   <input
@@ -515,13 +515,13 @@ export default function TierManagementPage() {
                         min_order_value: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                     placeholder="0"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Min Order Quantity
                   </label>
                   <input
@@ -534,13 +534,13 @@ export default function TierManagementPage() {
                         min_order_quantity: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                     placeholder="0"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                     Priority
                   </label>
                   <input
@@ -553,7 +553,7 @@ export default function TierManagementPage() {
                         priority: parseInt(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                     placeholder="0"
                   />
                 </div>
@@ -566,11 +566,11 @@ export default function TierManagementPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, active: e.target.checked })
                     }
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-[var(--kv-accent-deep)] border-[var(--kv-border)] rounded focus:ring-blue-500"
                   />
                   <label
                     htmlFor="active"
-                    className="ml-2 text-sm font-medium text-gray-700"
+                    className="ml-2 text-sm font-medium text-[var(--kv-text)]"
                   >
                     Active
                   </label>
@@ -578,7 +578,7 @@ export default function TierManagementPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Description
                 </label>
                 <textarea
@@ -587,7 +587,7 @@ export default function TierManagementPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
                   placeholder="Describe the benefits of this tier..."
                 />
               </div>
@@ -596,13 +596,13 @@ export default function TierManagementPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-[var(--kv-border)] text-[var(--kv-text)] rounded-lg hover:bg-[var(--kv-soft)] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-[var(--kv-accent)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-accent-deep)] transition-colors"
                 >
                   {editingTier ? 'Update Tier' : 'Create Tier'}
                 </button>

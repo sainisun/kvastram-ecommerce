@@ -29,7 +29,7 @@ export default function Sidebar({
   return (
     <>
       {/* ── Desktop sidebar (always visible ≥ md) ── */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] bg-[#01071c] text-white md:flex md:flex-col">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] bg-[#01071c] text-[var(--kv-card)] md:flex md:flex-col">
         <SidebarContent
           user={user}
           pathname={pathname}
@@ -44,7 +44,7 @@ export default function Sidebar({
 
       {/* ── Mobile drawer (slides in) ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] w-[280px] bg-[#01071c] text-white flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-y-0 left-0 z-[70] w-[280px] bg-[#01071c] text-[var(--kv-card)] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -96,7 +96,7 @@ function SidebarContent({
             {initial}
           </div>
           <div>
-            <span className="block font-['Inter'] uppercase tracking-widest text-[0.6875rem] font-bold text-white leading-none">
+            <span className="block font-['Inter'] uppercase tracking-widest text-[0.6875rem] font-bold text-[var(--kv-card)] leading-none">
               {mode === 'wholesale' ? 'Odhvica Wholesale' : 'Odhvica Admin'}
             </span>
             <span className="block text-[10px] text-slate-400 font-medium mt-0.5 capitalize">
@@ -107,7 +107,7 @@ function SidebarContent({
         {showClose && (
           <button
             onClick={onClose}
-            className="text-white opacity-60 hover:opacity-100 transition-opacity"
+            className="text-[var(--kv-card)] opacity-60 hover:opacity-100 transition-opacity"
             aria-label="Close menu"
           >
             <X size={20} />
@@ -151,12 +151,12 @@ function SidebarContent({
           );
         })}
 
-        <div className="h-px bg-white/10 my-4 mx-8" />
+        <div className="h-px bg-[var(--kv-card)]/10 my-4 mx-8" />
 
         <button
           type="button"
           onClick={logout}
-          className="w-full flex items-center gap-3 px-8 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+          className="w-full flex items-center gap-3 px-8 py-3 text-slate-400 hover:text-[var(--kv-card)] hover:bg-[var(--kv-card)]/5 transition-colors"
         >
           <LogOut size={18} className="flex-shrink-0" />
           <span className="font-['Inter'] uppercase tracking-widest text-[0.6875rem]">
@@ -189,7 +189,7 @@ function SidebarLink({
       className={`flex items-center gap-3 py-2.5 transition-all ${
         active
           ? 'bg-[var(--surface-container-lowest)] text-[var(--primary)] rounded-l-full ml-4 pl-4 font-bold'
-          : 'text-slate-400 hover:text-white px-8 hover:bg-white/5'
+          : 'text-slate-400 hover:text-[var(--kv-card)] px-8 hover:bg-[var(--kv-card)]/5'
       }`}
     >
       <Icon size={18} className="flex-shrink-0" />
@@ -197,7 +197,7 @@ function SidebarLink({
         {item.label}
       </span>
       {item.badge === 'pendingOrders' && pendingOrders > 0 && (
-        <span className="ml-auto rounded-full bg-[var(--error)] px-2 py-0.5 text-[9px] font-bold text-white">
+        <span className="ml-auto rounded-full bg-[var(--error)] px-2 py-0.5 text-[9px] font-bold text-[var(--kv-card)]">
           {pendingOrders > 99 ? '99+' : pendingOrders}
         </span>
       )}

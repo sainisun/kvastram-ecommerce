@@ -9,13 +9,15 @@ import {
 
 describe('token lifecycle service', () => {
   it('issues a versioned, audience-bound token with lifecycle claims', async () => {
+    const now = new Date(Date.now() - 60_000);
+    const issuedAt = Math.floor(now.getTime() / 1000);
     const token = await issueAccessToken({
       subject: 'customer-1',
       email: 'customer@example.com',
       role: 'customer',
       audience: 'customer',
       tokenVersion: 3,
-      now: new Date('2026-08-13T00:00:00.000Z'),
+      now,
     });
 
     const claims = await verifyAccessToken(token, 'customer');
@@ -26,8 +28,8 @@ describe('token lifecycle service', () => {
       aud: 'customer',
       iss: TOKEN_ISSUER,
       tv: 3,
-      iat: 1786579200,
-      exp: 1786579200 + ACCESS_TOKEN_TTL_SECONDS,
+      iat: issuedAt,
+      exp: issuedAt + ACCESS_TOKEN_TTL_SECONDS,
     });
     expect(claims.jti).toEqual(expect.any(String));
   });

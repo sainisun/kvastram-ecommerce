@@ -328,7 +328,7 @@ export default function CustomerDetailPage() {
                 <Link
                   key={order.id}
                   href={`/dashboard/orders/${order.id}`}
-                  className="block rounded-[1.2rem] border border-[var(--kv-border)] bg-white p-4"
+                  className="block rounded-[1.2rem] border border-[var(--kv-border)] bg-[var(--kv-card)] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>

@@ -182,11 +182,11 @@ function SortableMediaCard({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`group relative overflow-hidden rounded-[24px] border bg-white shadow-sm ${
-        item.is_thumbnail ? 'border-black' : 'border-gray-200'
+      className={`group relative overflow-hidden rounded-[24px] border bg-[var(--kv-card)] shadow-sm ${
+        item.is_thumbnail ? 'border-[var(--kv-text)]' : 'border-[var(--kv-border)]'
       }`}
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
+      <div className="relative aspect-[4/5] overflow-hidden bg-[var(--kv-soft)]">
         {previewUrl ? (
           <img
             src={previewUrl}
@@ -194,14 +194,14 @@ function SortableMediaCard({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
+          <div className="flex h-full w-full items-center justify-center bg-[var(--kv-soft)] text-[var(--kv-muted)]">
             {mediaType === 'video' ? <Video size={28} /> : <ImageIcon size={28} />}
           </div>
         )}
 
         {mediaType === 'video' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white">
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--kv-text)]/15">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--kv-text)]/55 text-[var(--kv-card)]">
               <Play size={18} className="ml-0.5" fill="currentColor" />
             </div>
           </div>
@@ -210,7 +210,7 @@ function SortableMediaCard({
         <div
           {...attributes}
           {...listeners}
-          className="absolute left-3 top-3 flex h-10 w-10 cursor-grab items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm transition active:cursor-grabbing md:opacity-0 md:group-hover:opacity-100"
+          className="absolute left-3 top-3 flex h-10 w-10 cursor-grab items-center justify-center rounded-full bg-[var(--kv-card)]/90 text-[var(--kv-text)] shadow-sm transition active:cursor-grabbing md:opacity-0 md:group-hover:opacity-100"
           aria-label="Reorder media"
         >
           <GripVertical size={18} />
@@ -219,18 +219,18 @@ function SortableMediaCard({
         <button
           type="button"
           onClick={() => onRemove(item.id)}
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm transition hover:text-red-600 md:opacity-0 md:group-hover:opacity-100"
+          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--kv-card)]/90 text-[var(--kv-text)] shadow-sm transition hover:text-[var(--kv-danger)] md:opacity-0 md:group-hover:opacity-100"
           aria-label="Delete media"
         >
           <X size={18} />
         </button>
 
         <div className="absolute left-3 bottom-3 flex items-center gap-2">
-          <span className="rounded-full bg-black/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+          <span className="rounded-full bg-[var(--kv-text)]/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-card)]">
             {mediaType}
           </span>
           {item.is_thumbnail && (
-            <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-black">
+            <span className="rounded-full bg-[var(--kv-card)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]">
               Cover
             </span>
           )}
@@ -244,15 +244,15 @@ function SortableMediaCard({
             onClick={() => onSetCover(item.id)}
             className={`min-h-12 flex-1 rounded-2xl border px-3 text-sm font-semibold transition ${
               item.is_thumbnail
-                ? 'border-black bg-black text-white'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                ? 'border-[var(--kv-text)] bg-[var(--kv-text)] text-[var(--kv-card)]'
+                : 'border-[var(--kv-border)] bg-[var(--kv-card)] text-[var(--kv-text)] hover:border-[var(--kv-border)]'
             }`}
           >
             {item.is_thumbnail ? 'Cover Media' : 'Set as Cover'}
           </button>
 
           {mediaType === 'video' && (
-            <label className="min-h-12 cursor-pointer rounded-2xl border border-gray-200 px-3 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 flex items-center justify-center">
+            <label className="min-h-12 cursor-pointer rounded-2xl border border-[var(--kv-border)] px-3 text-sm font-semibold text-[var(--kv-text)] transition hover:border-[var(--kv-border)] hover:bg-[var(--kv-soft)] flex items-center justify-center">
               Poster
               <input
                 type="file"
@@ -268,15 +268,15 @@ function SortableMediaCard({
           )}
         </div>
 
-        <p className="truncate text-xs text-gray-500">
+        <p className="truncate text-xs text-[var(--kv-muted)]">
           {item.url.split('/').pop() || item.url}
         </p>
 
-        <div className="pt-2 border-t border-gray-100">
-          <label className="text-xs font-semibold text-gray-700 block mb-1">Alt Text (SEO)</label>
+        <div className="pt-2 border-t border-[var(--kv-border)]">
+          <label className="text-xs font-semibold text-[var(--kv-text)] block mb-1">Alt Text (SEO)</label>
           <input
             type="text"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 transition focus:border-black focus:ring-1 focus:ring-black focus:outline-none placeholder-gray-400"
+            className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2 text-sm text-[var(--kv-text)] transition focus:border-[var(--kv-text)] focus:ring-1 focus:ring-black focus:outline-none placeholder-gray-400"
             placeholder="Describe this image for SEO..."
             value={item.alt_text || ''}
             onChange={(e) => onUpdateAltText(item.id, e.target.value)}
@@ -533,13 +533,13 @@ export default function ProductMediaUpload({
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Product Media</h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <h3 className="text-lg font-bold text-[var(--kv-text)]">Product Media</h3>
+          <p className="mt-1 text-sm text-[var(--kv-muted)]">
             Mix images and reels, drag to reorder, and choose the cover asset.
           </p>
         </div>
 
-        <div className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700">
+        <div className="rounded-full border border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-2 text-sm font-semibold text-[var(--kv-text)]">
           {slotsUsed} / {MAX_MEDIA_ITEMS} media added
         </div>
       </div>
@@ -548,14 +548,14 @@ export default function ProductMediaUpload({
         {...getRootProps()}
         className={`rounded-[28px] border-2 border-dashed p-8 text-center transition ${
           !canAddMore
-            ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-60'
+            ? 'cursor-not-allowed border-[var(--kv-border)] bg-[var(--kv-soft)] opacity-60'
             : isDragActive
-              ? 'border-black bg-gray-50'
-              : 'cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+              ? 'border-[var(--kv-text)] bg-[var(--kv-soft)]'
+              : 'cursor-pointer border-[var(--kv-border)] hover:border-[var(--kv-muted)] hover:bg-[var(--kv-soft)]'
         }`}
       >
         <input {...getInputProps()} />
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-black text-white">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-text)] text-[var(--kv-card)]">
           {uploadCount > 0 ? (
             <LoaderCircle size={26} className="animate-spin" />
           ) : (
@@ -563,28 +563,28 @@ export default function ProductMediaUpload({
           )}
         </div>
 
-        <p className="text-base font-semibold text-gray-900">
+        <p className="text-base font-semibold text-[var(--kv-text)]">
           {isDragActive
             ? 'Drop files to add them to the gallery'
             : 'Drag and drop media, or click to browse'}
         </p>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-[var(--kv-muted)]">
           JPG, PNG, or WEBP up to 50MB each. MP4 or MOV up to 50MB each.
         </p>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-[var(--kv-muted)]">
           Portrait media works best for the new mobile-first product page.
         </p>
       </div>
 
-      <div className="rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+      <div className="rounded-[24px] border border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-3 text-sm text-[var(--kv-text)]">
         {summaryText}
       </div>
 
       {uploads.length > 0 && (
-        <div className="space-y-3 rounded-[24px] border border-gray-200 bg-white p-4">
+        <div className="space-y-3 rounded-[24px] border border-[var(--kv-border)] bg-[var(--kv-card)] p-4">
           {uploads.map((upload) => (
-            <div key={upload.id} className="flex gap-4 rounded-[20px] border border-gray-100 p-3">
-              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+            <div key={upload.id} className="flex gap-4 rounded-[20px] border border-[var(--kv-border)] p-3">
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-2xl bg-[var(--kv-soft)]">
                 {upload.previewUrl ? (
                   upload.mediaType === 'video' ? (
                     <>
@@ -595,8 +595,8 @@ export default function ProductMediaUpload({
                         preload="metadata"
                         className="h-full w-full object-cover"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--kv-text)]/15">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--kv-text)]/55 text-[var(--kv-card)]">
                           <Play size={16} className="ml-0.5" fill="currentColor" />
                         </div>
                       </div>
@@ -609,7 +609,7 @@ export default function ProductMediaUpload({
                     />
                   )
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-gray-400">
+                  <div className="flex h-full w-full items-center justify-center text-[var(--kv-muted)]">
                     {upload.mediaType === 'video' ? <Video size={20} /> : <ImageIcon size={20} />}
                   </div>
                 )}
@@ -617,20 +617,20 @@ export default function ProductMediaUpload({
 
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="truncate font-medium text-gray-700">
+                  <span className="truncate font-medium text-[var(--kv-text)]">
                     {upload.label}
                   </span>
-                  <span className="text-xs uppercase tracking-[0.16em] text-gray-500">
+                  <span className="text-xs uppercase tracking-[0.16em] text-[var(--kv-muted)]">
                     {upload.status}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+                <div className="h-2 overflow-hidden rounded-full bg-[var(--kv-soft)]">
                   <div
-                    className="h-full rounded-full bg-black transition-[width]"
+                    className="h-full rounded-full bg-[var(--kv-text)] transition-[width]"
                     style={{ width: `${upload.progress}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--kv-muted)]">
                   Preview is shown while the file finishes uploading.
                 </p>
               </div>

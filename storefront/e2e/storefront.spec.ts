@@ -188,6 +188,28 @@ test.describe('Storefront visual contract', () => {
     await expect(page.locator('input[type="email"]').first()).toBeVisible();
   });
 
+  test('catalog filters expose keyboard and accessible group controls', async ({ page }) => {
+    await page.goto('/products', { waitUntil: 'domcontentloaded' });
+    const filterTrigger = page.getByRole('button', { name: 'Open filters' });
+    await expect(filterTrigger).toBeVisible();
+    await filterTrigger.focus();
+    await expect(filterTrigger).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading', { name: 'Filters' }).first()).toBeVisible();
+
+    const priceToggle = page.getByRole('button', { name: 'Price', exact: true }).first();
+    if (await priceToggle.count()) {
+      await expect(priceToggle).toHaveAttribute('aria-controls', 'filter-panel-price');
+      await expect(priceToggle).toHaveAttribute('aria-expanded', 'true');
+    }
+
+    const minimumPrice = page.getByRole('spinbutton', { name: 'Minimum price' });
+    if (await minimumPrice.count()) {
+      await expect(minimumPrice.first()).toBeVisible();
+      await minimumPrice.first().fill('100');
+    }
+  });
+
   test('categories navigation resolves to the active discovery index', async ({ page }) => {
     const response = await page.goto('/categories', { waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBeLessThan(400);

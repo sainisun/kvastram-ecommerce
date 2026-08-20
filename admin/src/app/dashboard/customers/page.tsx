@@ -160,7 +160,7 @@ export default function CustomersPage() {
               onClick={() => { setFilter(tab.value); setPage(1); }}
               className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
                 filter === tab.value
-                  ? 'bg-[var(--primary)] text-white'
+                  ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                   : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-high)]'
               }`}
             >
@@ -363,7 +363,7 @@ export default function CustomersPage() {
                   Cancel
                 </button>
                 <button type="submit" disabled={savingEdit}
-                  className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white disabled:opacity-60">
+                  className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[var(--kv-card)] disabled:opacity-60">
                   {savingEdit ? 'Saving…' : 'Save changes'}
                 </button>
               </div>
@@ -390,7 +390,7 @@ export default function CustomersPage() {
                 Cancel
               </button>
               <button type="button" onClick={() => void handleDelete()} disabled={deleting}
-                className="rounded-full bg-[var(--error)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white disabled:opacity-60">
+                className="rounded-full bg-[var(--error)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[var(--kv-card)] disabled:opacity-60">
                 {deleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>

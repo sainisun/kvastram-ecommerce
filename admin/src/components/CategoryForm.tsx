@@ -203,27 +203,27 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
       <div className="mb-8 flex items-center justify-between">
         <Link
           href="/dashboard/categories"
-          className="flex items-center text-gray-500 transition-colors hover:text-gray-900"
+          className="flex items-center text-[var(--kv-muted)] transition-colors hover:text-[var(--kv-text)]"
         >
           <ArrowLeft size={20} className="mr-2" />
           Back to Categories
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-[var(--kv-text)]">
           {initialData ? 'Edit Category' : 'New Category'}
         </h1>
       </div>
 
       {error && (
-        <div className="mb-6 flex items-center rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        <div className="mb-6 flex items-center rounded-lg border border-[var(--kv-danger)]/30 bg-[var(--kv-danger)]/10 px-4 py-3 text-[var(--kv-danger)]">
           <AlertCircle size={20} className="mr-2" />
           {error}
         </div>
       )}
 
-      <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+      <div className="space-y-6 rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-8 shadow-sm">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-[var(--kv-text)]">
               Name
             </label>
             <input
@@ -231,13 +231,13 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+              className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black"
               placeholder="e.g. Summer Collection"
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-[var(--kv-text)]">
               Slug
             </label>
             <input
@@ -246,7 +246,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
               value={formData.slug}
               onChange={handleChange}
               readOnly={Boolean(initialData?.id && selectedProducts.length > 0)}
-              className={`w-full rounded-lg border px-4 py-2 text-gray-600 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black ${initialData?.id && selectedProducts.length > 0 ? 'border-amber-300 bg-amber-50 cursor-not-allowed' : 'border-gray-300 bg-gray-50'}`}
+              className={`w-full rounded-lg border px-4 py-2 text-[var(--kv-text)] outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black ${initialData?.id && selectedProducts.length > 0 ? 'border-amber-300 bg-amber-50 cursor-not-allowed' : 'border-[var(--kv-border)] bg-[var(--kv-soft)]'}`}
               required
             />
             {initialData?.id && selectedProducts.length > 0 && (
@@ -258,14 +258,14 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[var(--kv-text)]">
             Parent Category
           </label>
           <select
             name="parent_id"
             value={formData.parent_id}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+            className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black"
           >
             <option value="">None (Top Level)</option>
             {categories.map((cat) => (
@@ -277,7 +277,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[var(--kv-text)]">
             Description (Optional)
           </label>
           <textarea
@@ -285,7 +285,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+            className="w-full resize-none rounded-lg border border-[var(--kv-border)] px-4 py-2 outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black"
             placeholder="Describe this category..."
           />
         </div>
@@ -299,7 +299,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         />
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[var(--kv-text)]">
             Emoji (Optional)
           </label>
           <input
@@ -308,16 +308,16 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
             value={formData.emoji}
             onChange={handleChange}
             maxLength={2}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+            className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black"
             placeholder="e.g. bed"
           />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-[var(--kv-muted)]">
             Copy-paste emoji from{' '}
             <a
               href="https://emojipedia.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-[var(--kv-accent-deep)] hover:underline"
             >
               Emojipedia
             </a>
@@ -326,7 +326,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-[var(--kv-text)]">
               Display Order
             </label>
             <input
@@ -335,10 +335,10 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
               value={formData.display_order}
               onChange={handleChange}
               min="0"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+              className="w-full rounded-lg border border-[var(--kv-border)] px-4 py-2 outline-none transition-all focus:border-[var(--kv-text)] focus:ring-2 focus:ring-black"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--kv-muted)]">
               Lower values appear first in the header
             </p>
           </div>
@@ -361,11 +361,11 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
             name="show_in_header"
             checked={formData.show_in_header}
             onChange={handleCheckboxChange}
-            className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+            className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-text)] focus:ring-black"
           />
           <label
             htmlFor="show_in_header"
-            className="cursor-pointer text-sm font-medium text-gray-700"
+            className="cursor-pointer text-sm font-medium text-[var(--kv-text)]"
           >
             Show in Header Navigation?
           </label>
@@ -378,11 +378,11 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
             name="is_active"
             checked={formData.is_active}
             onChange={handleCheckboxChange}
-            className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+            className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-text)] focus:ring-black"
           />
           <label
             htmlFor="is_active"
-            className="cursor-pointer text-sm font-medium text-gray-700"
+            className="cursor-pointer text-sm font-medium text-[var(--kv-text)]"
           >
             Visible on Storefront?
           </label>
@@ -398,11 +398,11 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
       />
 
 
-      <div className="flex justify-end rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex justify-end rounded-xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-4 shadow-sm">
         <button
           type="submit"
           disabled={loading || (Boolean(initialData?.id) && !productsLoaded)}
-          className="flex items-center gap-2 rounded-lg bg-black px-6 py-2 text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-[var(--kv-text)] px-6 py-2 text-[var(--kv-card)] transition-colors hover:bg-[var(--kv-text)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
             'Saving...'

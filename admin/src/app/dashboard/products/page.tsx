@@ -531,8 +531,8 @@ export default function ProductsPage() {
                   <span className={`absolute top-3 right-3 z-10 ${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shadow-sm`}>
                     {product.status}
                   </span>
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                    <button onClick={() => handleOpenQuickView(product)} className="pointer-events-auto bg-[var(--kv-card)] text-black px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all">
+                  <div className="absolute inset-0 bg-[var(--kv-text)]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    <button onClick={() => handleOpenQuickView(product)} className="pointer-events-auto bg-[var(--kv-card)] text-[var(--kv-text)] px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all">
                       <Eye size={14}/> Quick View
                     </button>
                   </div>
@@ -646,7 +646,7 @@ export default function ProductsPage() {
                         value={inlineStock}
                         onChange={e => setInlineStock(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleInlineSave(product.id)}
-                        className="w-16 p-1 text-xs border rounded bg-[var(--kv-card)] text-black"
+                        className="w-16 p-1 text-xs border rounded bg-[var(--kv-card)] text-[var(--kv-text)]"
                         autoFocus
                       />
                     ) : (
@@ -663,7 +663,7 @@ export default function ProductsPage() {
                           {product.variant_count <= 1 && <Edit2 size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
                         </div>
                         {product.variant_count > 1 && (
-                          <button onClick={() => handleToggleVariants(product.id)} className="p-1 rounded hover:bg-black/10">
+                          <button onClick={() => handleToggleVariants(product.id)} className="p-1 rounded hover:bg-[var(--kv-text)]/10">
                             {expandedVariantId === product.id ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                           </button>
                         )}
@@ -749,7 +749,7 @@ export default function ProductsPage() {
       {/* ── Quick View Drawer ── */}
       {quickViewProductId && (
         <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-in fade-in" onClick={() => setQuickViewProductId(null)} />
+          <div className="absolute inset-0 bg-[var(--kv-text)]/20 backdrop-blur-sm animate-in fade-in" onClick={() => setQuickViewProductId(null)} />
           <div className="relative w-full max-w-md bg-[var(--surface-container-lowest)] shadow-2xl h-full flex flex-col animate-in slide-in-from-right-full">
             <div className="flex items-center justify-between p-4 border-b border-[var(--outline-variant)]">
               <h3 className="font-black text-lg">Quick View</h3>

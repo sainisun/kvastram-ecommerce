@@ -137,12 +137,12 @@ export default function WholesaleOverviewPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-8">
-        <div className="h-10 w-72 animate-pulse rounded-xl bg-gray-200" />
+        <div className="h-10 w-72 animate-pulse rounded-xl bg-[var(--kv-border)]" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {[...Array(4)].map((_, index) => (
             <div
               key={index}
-              className="h-28 animate-pulse rounded-xl bg-gray-200"
+              className="h-28 animate-pulse rounded-xl bg-[var(--kv-border)]"
             />
           ))}
         </div>
@@ -168,13 +168,13 @@ export default function WholesaleOverviewPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/dashboard/wholesale/inquiries"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[var(--kv-card)] transition hover:opacity-90"
           >
             Review inquiries <ArrowRight size={14} />
           </Link>
           <Link
             href="/dashboard/wholesale/orders"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-800 transition hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-[var(--kv-card)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-800 transition hover:bg-slate-50"
           >
             View orders
           </Link>
@@ -212,7 +212,7 @@ export default function WholesaleOverviewPage() {
           return (
             <div
               key={card.label}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-[var(--kv-card)] p-5 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -234,7 +234,7 @@ export default function WholesaleOverviewPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-[var(--kv-card)] p-6 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
@@ -274,9 +274,9 @@ export default function WholesaleOverviewPage() {
                   <span
                     className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
                       inquiry.status === 'approved'
-                        ? 'bg-green-100 text-green-700'
+                        ? 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]'
                         : inquiry.status === 'rejected'
-                          ? 'bg-red-100 text-red-700'
+                          ? 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]'
                           : 'bg-amber-100 text-amber-800'
                     }`}
                   >
@@ -288,7 +288,7 @@ export default function WholesaleOverviewPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-[var(--kv-card)] p-6 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
@@ -342,7 +342,7 @@ export default function WholesaleOverviewPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-6 text-[var(--kv-card)] shadow-sm">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">
             Quick Actions
           </p>
@@ -374,7 +374,7 @@ export default function WholesaleOverviewPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:bg-white/10"
+                  className="flex items-center justify-between rounded-xl border border-[var(--kv-card)]/10 bg-[var(--kv-card)]/5 px-4 py-3 transition hover:bg-[var(--kv-card)]/10"
                 >
                   <div className="flex items-center gap-3">
                     <Icon size={16} />
@@ -387,7 +387,7 @@ export default function WholesaleOverviewPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-[var(--kv-card)] p-6 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">

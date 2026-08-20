@@ -19,13 +19,13 @@ export default function GoogleSerpPreview({ title, description, url }: GoogleSer
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 font-sans text-[14px] leading-normal shadow-sm mt-6">
-      <h3 className="mb-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Search Engine Preview</h3>
+    <div className="rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)] p-4 font-sans text-[14px] leading-normal shadow-sm mt-6">
+      <h3 className="mb-3 text-xs font-semibold text-[var(--kv-muted)] uppercase tracking-wide">Search Engine Preview</h3>
       <div className="max-w-[600px]">
         {/* URL and Breadcrumb */}
         <div className="flex items-center gap-2 mb-1">
-          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 p-1">
-            <span className="text-xs font-bold text-gray-600">O</span>
+          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--kv-soft)] p-1">
+            <span className="text-xs font-bold text-[var(--kv-text)]">O</span>
           </div>
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-[14px] text-[#202124] leading-tight font-medium truncate">Odhvica</span>

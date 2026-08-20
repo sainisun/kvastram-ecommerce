@@ -92,14 +92,14 @@ export default function WholesaleOrdersPage() {
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800',
-      cancelled: 'bg-red-100 text-red-800',
+      pending: 'bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]',
+      processing: 'bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]',
+      completed: 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]',
+      cancelled: 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]',
     };
     return (
       <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-800'}`}
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || 'bg-[var(--kv-soft)] text-[var(--kv-text)]'}`}
       >
         {(status || 'unknown').charAt(0).toUpperCase() +
           (status || 'unknown').slice(1)}
@@ -110,12 +110,12 @@ export default function WholesaleOrdersPage() {
   const getPaymentStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       awaiting: 'bg-amber-100 text-amber-800',
-      paid: 'bg-green-100 text-green-800',
-      overdue: 'bg-red-100 text-red-800',
+      paid: 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]',
+      overdue: 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]',
     };
     return (
       <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-800'}`}
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || 'bg-[var(--kv-soft)] text-[var(--kv-text)]'}`}
       >
         {status === 'awaiting'
           ? 'Awaiting Payment'
@@ -135,70 +135,70 @@ export default function WholesaleOrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Wholesale Orders</h1>
-        <p className="text-gray-600">Manage wholesale customer orders</p>
+        <h1 className="text-2xl font-bold text-[var(--kv-text)]">Wholesale Orders</h1>
+        <p className="text-[var(--kv-text)]">Manage wholesale customer orders</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-[var(--kv-card)] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Package className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-[var(--kv-accent)]/10 rounded-lg">
+              <Package className="w-6 h-6 text-[var(--kv-accent-deep)]" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Total Orders</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-[var(--kv-muted)]">Total Orders</p>
+              <p className="text-2xl font-bold text-[var(--kv-text)]">{stats.total}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-[var(--kv-card)] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <Clock className="w-6 h-6 text-yellow-600" />
+            <div className="p-3 bg-[var(--kv-accent)]/10 rounded-lg">
+              <Clock className="w-6 h-6 text-[var(--kv-accent-deep)]" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-[var(--kv-muted)]">Pending</p>
+              <p className="text-2xl font-bold text-[var(--kv-text)]">
                 {stats.pending}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-[var(--kv-card)] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-[var(--kv-accent)]/10 rounded-lg">
+              <AlertCircle className="w-6 h-6 text-[var(--kv-accent-deep)]" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Processing</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-[var(--kv-muted)]">Processing</p>
+              <p className="text-2xl font-bold text-[var(--kv-text)]">
                 {stats.processing}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-[var(--kv-card)] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-[var(--kv-success)]/10 rounded-lg">
+              <CheckCircle className="w-6 h-6 text-[var(--kv-success)]" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-[var(--kv-muted)]">Completed</p>
+              <p className="text-2xl font-bold text-[var(--kv-text)]">
                 {stats.completed}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-[var(--kv-card)] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 rounded-lg">
               <DollarSign className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Total Value</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-[var(--kv-muted)]">Total Value</p>
+              <p className="text-2xl font-bold text-[var(--kv-text)]">
                 {formatCurrency(stats.total_value, 'USD')}
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function WholesaleOrdersPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4">
+      <div className="bg-[var(--kv-card)] rounded-lg shadow p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <select
             value={statusFilter}
@@ -215,7 +215,7 @@ export default function WholesaleOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[var(--kv-accent)]"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -227,55 +227,55 @@ export default function WholesaleOrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-[var(--kv-card)] rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-[var(--kv-border)]">
+          <thead className="bg-[var(--kv-soft)]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Order
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 PO Number
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Total
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Payment
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                 Date
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-[var(--kv-card)] divide-y divide-[var(--kv-border)]">
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-4 text-center text-[var(--kv-muted)]">
                   Loading...
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-4 text-center text-[var(--kv-muted)]">
                   No wholesale orders found
                 </td>
               </tr>
             ) : (
               orders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
+                <tr key={order.id} className="hover:bg-[var(--kv-soft)]">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-[var(--kv-text)]">
                       {order.order_number}
                     </div>
                     {order.metadata?.wholesale_tier && (
-                      <div className="text-xs text-gray-500 capitalize">
+                      <div className="text-xs text-[var(--kv-muted)] capitalize">
                         {order.metadata.wholesale_tier} tier
                       </div>
                     )}
@@ -283,34 +283,34 @@ export default function WholesaleOrdersPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {order.customer ? (
                       <div>
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--kv-text)]">
                           {order.customer.company_name ||
                             `${order.customer.first_name} ${order.customer.last_name}`}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-[var(--kv-muted)]">
                           {order.customer.email}
                         </div>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400">Unknown</span>
+                      <span className="text-sm text-[var(--kv-muted)]">Unknown</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-[var(--kv-text)]">
                       {order.metadata?.po_number || '-'}
                     </div>
                     {order.metadata?.payment_terms && (
-                      <div className="text-xs text-gray-500 capitalize">
+                      <div className="text-xs text-[var(--kv-muted)] capitalize">
                         {order.metadata.payment_terms.replace('_', ' ')}
                       </div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-[var(--kv-text)]">
                       {formatCurrency(order.total, order.currency_code)}
                     </div>
                     {(order.metadata?.tier_discount ?? 0) > 0 && (
-                      <div className="text-xs text-green-600">
+                      <div className="text-xs text-[var(--kv-success)]">
                         Tier discount applied
                       </div>
                     )}
@@ -321,7 +321,7 @@ export default function WholesaleOrdersPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getPaymentStatusBadge(order.payment_status)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--kv-muted)]">
                     {new Date(order.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -334,7 +334,7 @@ export default function WholesaleOrdersPage() {
       {/* Pagination */}
       {pagination.pages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-[var(--kv-text)]">
             Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
             {pagination.total} results
@@ -343,14 +343,14 @@ export default function WholesaleOrdersPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={pagination.page === 1}
-              className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="p-2 border border-[var(--kv-border)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--kv-soft)]"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
               disabled={pagination.page === pagination.pages}
-              className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="p-2 border border-[var(--kv-border)] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--kv-soft)]"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

@@ -187,8 +187,8 @@ export default function CollectionsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center text-gray-500">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-3"></div>
+      <div className="p-8 flex items-center justify-center text-[var(--kv-muted)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kv-text)] mr-3"></div>
         Loading collections...
       </div>
     );
@@ -198,8 +198,8 @@ export default function CollectionsPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Collections</h1>
-          <p className="text-gray-500 mt-1">Manage product collections</p>
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Collections</h1>
+          <p className="text-[var(--kv-muted)] mt-1">Manage product collections</p>
         </div>
         <button
           onClick={() => {
@@ -209,7 +209,7 @@ export default function CollectionsPage() {
             setSelectedProducts([]);
             setProductsLoaded(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)] transition-colors"
         >
           <Plus size={20} />
           Add Collection
@@ -224,14 +224,14 @@ export default function CollectionsPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">
+        <div className="bg-[var(--kv-card)] p-6 rounded-xl border border-[var(--kv-border)] shadow-sm mb-6">
+          <h2 className="text-lg font-bold text-[var(--kv-text)] mb-4">
             {editingId ? 'Edit Collection' : 'Create Collection'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Title
                 </label>
                 <input
@@ -241,12 +241,12 @@ export default function CollectionsPage() {
                     setFormData({ ...formData, title: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none"
                   placeholder="e.g. Summer Collection"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Handle
                 </label>
                 <input
@@ -259,19 +259,19 @@ export default function CollectionsPage() {
                     })
                   }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none"
                   placeholder="e.g. summer-collection"
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">Type <span className="text-[var(--kv-danger)]">*</span></label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none"
                 >
                   <option value="">Select type</option>
                   <option value="occasion">Occasion</option>
@@ -283,11 +283,11 @@ export default function CollectionsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none"
                 >
                   <option value="draft">🟡 Draft</option>
                   <option value="active">🟢 Active</option>
@@ -299,12 +299,12 @@ export default function CollectionsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={2}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none resize-none"
                 placeholder="Short description of this collection..."
               />
             </div>
@@ -317,11 +317,11 @@ export default function CollectionsPage() {
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Homepage Section</label>
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">Homepage Section</label>
                 <select
                   value={formData.homepage_section}
                   onChange={(e) => setFormData({ ...formData, homepage_section: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-[var(--kv-accent)] outline-none"
                 >
                   <option value="">None</option>
                   <option value="collections">Collections (Homepage Grid)</option>
@@ -338,16 +338,16 @@ export default function CollectionsPage() {
                   id="show_in_megamenu"
                   checked={formData.show_in_megamenu}
                   onChange={(e) => setFormData({ ...formData, show_in_megamenu: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300"
+                  className="w-4 h-4 rounded border-[var(--kv-border)]"
                 />
-                <label htmlFor="show_in_megamenu" className="text-sm font-medium text-gray-700">Show in Mega Menu</label>
+                <label htmlFor="show_in_megamenu" className="text-sm font-medium text-[var(--kv-text)]">Show in Mega Menu</label>
               </div>
             </div>
             <div className="flex gap-3">
               <button
                 type="submit"
                 disabled={Boolean(editingId) && !productsLoaded}
-                className="px-4 py-2 bg-black text-white rounded-lg transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg transition-colors hover:bg-[var(--kv-text)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {editingId ? 'Update' : 'Create'}
               </button>
@@ -360,7 +360,7 @@ export default function CollectionsPage() {
                   setSelectedProducts([]);
                   setProductsLoaded(true);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-[var(--kv-border)] text-[var(--kv-text)] rounded-lg hover:bg-[var(--kv-soft)] transition-colors"
               >
                 Cancel
               </button>
@@ -375,17 +375,17 @@ export default function CollectionsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 flex text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <div className="bg-[var(--kv-card)] rounded-xl shadow-sm border border-[var(--kv-border)] overflow-hidden">
+        <div className="border-b border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-3 flex text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
           <div className="flex-1">Name</div>
           <div className="w-40">Handle</div>
           <div className="w-20 text-center">Actions</div>
         </div>
 
         {collections.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            <Folder size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-900">
+          <div className="p-12 text-center text-[var(--kv-muted)]">
+            <Folder size={48} className="mx-auto mb-4 text-[var(--kv-muted)]" />
+            <p className="text-lg font-medium text-[var(--kv-text)]">
               No collections found
             </p>
             <p className="mt-1 mb-6">
@@ -393,7 +393,7 @@ export default function CollectionsPage() {
             </p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)]"
             >
               <Plus size={18} />
               Create Collection
@@ -403,18 +403,18 @@ export default function CollectionsPage() {
           collections.map((collection) => (
             <div
               key={collection.id}
-              className="flex items-center border-b border-gray-100 hover:bg-gray-50 transition-colors last:border-0"
+              className="flex items-center border-b border-[var(--kv-border)] hover:bg-[var(--kv-soft)] transition-colors last:border-0"
             >
               <div className="flex-1 py-3 px-4 flex items-center gap-3">
-                <Folder size={16} className="text-gray-400 shrink-0" />
-                <span className="font-medium text-gray-900">{collection.title}</span>
+                <Folder size={16} className="text-[var(--kv-muted)] shrink-0" />
+                <span className="font-medium text-[var(--kv-text)]">{collection.title}</span>
                 {collection.status && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${collection.status === 'active' ? 'bg-green-100 text-green-700' : collection.status === 'archived' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${collection.status === 'active' ? 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]' : collection.status === 'archived' ? 'bg-[var(--kv-soft)] text-[var(--kv-text)]' : 'bg-amber-100 text-amber-700'}`}>
                     {collection.status}
                   </span>
                 )}
                 {collection.type && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">{collection.type}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)] font-medium">{collection.type}</span>
                 )}
                 {collection.is_indexable === false && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 font-medium">noindex</span>
@@ -423,7 +423,7 @@ export default function CollectionsPage() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 font-medium">{collection.seasonal_flag}</span>
                 )}
               </div>
-              <div className="w-40 py-3 px-4 text-sm text-gray-500">
+              <div className="w-40 py-3 px-4 text-sm text-[var(--kv-muted)]">
                 /collections/{collection.handle}
               </div>
               <div className="w-20 py-3 px-4 flex items-center gap-2">
@@ -431,7 +431,7 @@ export default function CollectionsPage() {
                   type="button"
                   onClick={() => void handleEdit(collection)}
                   aria-label={`Edit collection ${collection.title}`}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                  className="p-1.5 text-[var(--kv-muted)] hover:text-[var(--kv-accent-deep)] hover:bg-[var(--kv-accent)]/10 rounded transition-colors"
                   title="Edit"
                 >
                   <Edit size={16} />
@@ -440,7 +440,7 @@ export default function CollectionsPage() {
                   type="button"
                   onClick={() => handleDelete(collection.id)}
                   aria-label={`Delete collection ${collection.title}`}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  className="p-1.5 text-[var(--kv-muted)] hover:text-[var(--kv-danger)] hover:bg-[var(--kv-danger)]/10 rounded transition-colors"
                   title="Delete"
                 >
                   <Trash2 size={16} />

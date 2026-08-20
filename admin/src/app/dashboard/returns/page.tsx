@@ -33,22 +33,22 @@ interface ReturnRequest {
 const STATUS_META = {
   pending: {
     label: 'Pending',
-    color: 'bg-yellow-100 text-yellow-800',
+    color: 'bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]',
     icon: Clock,
   },
   approved: {
     label: 'Approved',
-    color: 'bg-blue-100 text-blue-800',
+    color: 'bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]',
     icon: CheckCircle,
   },
   rejected: {
     label: 'Rejected',
-    color: 'bg-red-100 text-red-800',
+    color: 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]',
     icon: XCircle,
   },
   refunded: {
     label: 'Refunded',
-    color: 'bg-green-100 text-green-800',
+    color: 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]',
     icon: RotateCcw,
   },
 };
@@ -127,16 +127,16 @@ export default function ReturnsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">
             Returns & Refunds
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[var(--kv-muted)] mt-1">
             Manage return requests and process refunds
           </p>
         </div>
         <button
           onClick={fetchReturns}
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm bg-[var(--kv-card)] border border-[var(--kv-border)] rounded-lg hover:bg-[var(--kv-soft)] transition-colors"
         >
           <RefreshCw size={14} />
           Refresh
@@ -145,13 +145,13 @@ export default function ReturnsPage() {
 
       {/* Alerts */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
+        <div className="mb-4 p-4 bg-[var(--kv-danger)]/10 border border-[var(--kv-danger)]/30 rounded-lg flex items-center gap-2 text-[var(--kv-danger)] text-sm">
           <AlertTriangle size={16} />
           {error}
         </div>
       )}
       {successMsg && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700 text-sm">
+        <div className="mb-4 p-4 bg-[var(--kv-success)]/10 border border-[var(--kv-success)]/30 rounded-lg flex items-center gap-2 text-[var(--kv-success)] text-sm">
           <CheckCircle size={16} />
           {successMsg}
         </div>
@@ -164,34 +164,34 @@ export default function ReturnsPage() {
             label: 'Total Returns',
             value: stats.total,
             icon: Package,
-            color: 'text-gray-600',
+            color: 'text-[var(--kv-text)]',
           },
           {
             label: 'Pending',
             value: stats.pending,
             icon: Clock,
-            color: 'text-yellow-600',
+            color: 'text-[var(--kv-accent-deep)]',
           },
           {
             label: 'Approved',
             value: stats.approved,
             icon: CheckCircle,
-            color: 'text-blue-600',
+            color: 'text-[var(--kv-accent-deep)]',
           },
           {
             label: 'Total Refunded',
             value: `$${(stats.totalRefunded / 100).toFixed(2)}`,
             icon: DollarSign,
-            color: 'text-green-600',
+            color: 'text-[var(--kv-success)]',
           },
         ].map(({ label, value, icon: Icon, color }) => (
           <div
             key={label}
-            className="bg-white border border-gray-200 rounded-xl p-4"
+            className="bg-[var(--kv-card)] border border-[var(--kv-border)] rounded-xl p-4"
           >
             <div className="flex items-center gap-2 mb-2">
               <Icon size={16} className={color} />
-              <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+              <span className="text-xs text-[var(--kv-muted)] font-medium uppercase tracking-wider">
                 {label}
               </span>
             </div>
@@ -201,20 +201,20 @@ export default function ReturnsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200">
+      <div className="flex gap-2 mb-6 border-b border-[var(--kv-border)]">
         {['all', 'pending', 'approved', 'rejected', 'refunded'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveFilter(tab)}
             className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
               activeFilter === tab
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-[var(--kv-accent)] text-[var(--kv-accent-deep)]'
+                : 'border-transparent text-[var(--kv-muted)] hover:text-[var(--kv-text)]'
             }`}
           >
             {tab}
             {tab === 'pending' && stats.pending > 0 && (
-              <span className="ml-2 bg-yellow-100 text-yellow-700 text-xs px-1.5 py-0.5 rounded-full">
+              <span className="ml-2 bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)] text-xs px-1.5 py-0.5 rounded-full">
                 {stats.pending}
               </span>
             )}
@@ -224,19 +224,19 @@ export default function ReturnsPage() {
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center items-center h-48 text-gray-400">
+        <div className="flex justify-center items-center h-48 text-[var(--kv-muted)]">
           <RefreshCw size={24} className="animate-spin mr-2" />
           Loading returns...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-xl">
-          <Package size={48} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-gray-500">No returns found</p>
+        <div className="text-center py-16 bg-[var(--kv-card)] border border-[var(--kv-border)] rounded-xl">
+          <Package size={48} className="mx-auto text-[var(--kv-muted)] mb-3" />
+          <p className="text-[var(--kv-muted)]">No returns found</p>
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="bg-[var(--kv-card)] border border-[var(--kv-border)] rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-[var(--kv-soft)] border-b border-[var(--kv-border)]">
               <tr>
                 {[
                   'Order',
@@ -249,7 +249,7 @@ export default function ReturnsPage() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    className="px-4 py-3 text-left text-xs font-semibold text-[var(--kv-muted)] uppercase tracking-wider"
                   >
                     {h}
                   </th>
@@ -263,23 +263,23 @@ export default function ReturnsPage() {
                 return (
                   <tr
                     key={ret.id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-[var(--kv-soft)] transition-colors"
                   >
-                    <td className="px-4 py-3 font-medium text-blue-600">
+                    <td className="px-4 py-3 font-medium text-[var(--kv-accent-deep)]">
                       #{ret.order_display_id}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3 text-[var(--kv-text)]">
                       <div className="font-medium">
                         {ret.customer_name || '—'}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-[var(--kv-muted)]">
                         {ret.order_email}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 max-w-xs truncate">
+                    <td className="px-4 py-3 text-[var(--kv-text)] max-w-xs truncate">
                       {ret.reason}
                     </td>
-                    <td className="px-4 py-3 font-semibold text-gray-900">
+                    <td className="px-4 py-3 font-semibold text-[var(--kv-text)]">
                       ${((ret.refund_amount || 0) / 100).toFixed(2)}
                     </td>
                     <td className="px-4 py-3">
@@ -290,7 +290,7 @@ export default function ReturnsPage() {
                         {meta.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
+                    <td className="px-4 py-3 text-[var(--kv-muted)] text-xs">
                       {new Date(ret.created_at || '').toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
@@ -300,7 +300,7 @@ export default function ReturnsPage() {
                             setSelectedReturn(ret);
                             setAdminNote(ret.admin_notes || '');
                           }}
-                          className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                          className="p-1.5 text-[var(--kv-muted)] hover:text-[var(--kv-accent-deep)] hover:bg-[var(--kv-accent)]/10 rounded transition-colors"
                           title="View Details"
                         >
                           <Eye size={14} />
@@ -310,14 +310,14 @@ export default function ReturnsPage() {
                             <button
                               onClick={() => handleAction(ret.id, 'approve')}
                               disabled={!!actionLoading}
-                              className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors disabled:opacity-50"
+                              className="px-2 py-1 text-xs bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)] rounded hover:bg-[var(--kv-accent)]/10 transition-colors disabled:opacity-50"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleAction(ret.id, 'reject')}
                               disabled={!!actionLoading}
-                              className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded hover:bg-red-100 transition-colors disabled:opacity-50"
+                              className="px-2 py-1 text-xs bg-[var(--kv-danger)]/10 text-[var(--kv-danger)] rounded hover:bg-[var(--kv-danger)]/10 transition-colors disabled:opacity-50"
                             >
                               Reject
                             </button>
@@ -326,7 +326,7 @@ export default function ReturnsPage() {
                         {ret.status === 'approved' && (
                           <button
                             onClick={() => setSelectedReturn(ret)}
-                            className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"
+                            className="px-2 py-1 text-xs bg-[var(--kv-success)]/10 text-[var(--kv-success)] rounded hover:bg-[var(--kv-success)]/10 transition-colors"
                           >
                             Process Refund
                           </button>
@@ -343,44 +343,44 @@ export default function ReturnsPage() {
 
       {/* Detail / Action Modal */}
       {selectedReturn && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--kv-card)] rounded-xl p-6 w-full max-w-lg shadow-xl">
+            <h2 className="text-lg font-bold text-[var(--kv-text)] mb-4">
               Return Request — Order #{selectedReturn.order_display_id}
             </h2>
 
             <div className="space-y-3 mb-5 text-sm">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Status</p>
+                <div className="bg-[var(--kv-soft)] p-3 rounded-lg">
+                  <p className="text-xs text-[var(--kv-muted)] mb-1">Status</p>
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_META[selectedReturn.status]?.color}`}
                   >
                     {selectedReturn.status}
                   </span>
                 </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Refund Amount</p>
-                  <p className="font-bold text-green-700">
+                <div className="bg-[var(--kv-soft)] p-3 rounded-lg">
+                  <p className="text-xs text-[var(--kv-muted)] mb-1">Refund Amount</p>
+                  <p className="font-bold text-[var(--kv-success)]">
                     ${((selectedReturn.refund_amount || 0) / 100).toFixed(2)}
                   </p>
                 </div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">Customer</p>
+              <div className="bg-[var(--kv-soft)] p-3 rounded-lg">
+                <p className="text-xs text-[var(--kv-muted)] mb-1">Customer</p>
                 <p className="font-medium">
                   {selectedReturn.customer_name || 'Guest'}
                 </p>
-                <p className="text-gray-500">{selectedReturn.order_email}</p>
+                <p className="text-[var(--kv-muted)]">{selectedReturn.order_email}</p>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">Reason</p>
+              <div className="bg-[var(--kv-soft)] p-3 rounded-lg">
+                <p className="text-xs text-[var(--kv-muted)] mb-1">Reason</p>
                 <p>{selectedReturn.reason}</p>
               </div>
               <div>
                 <label
                   htmlFor="admin-note"
-                  className="block text-xs text-gray-500 mb-1 font-medium"
+                  className="block text-xs text-[var(--kv-muted)] mb-1 font-medium"
                 >
                   Admin Note
                 </label>
@@ -390,7 +390,7 @@ export default function ReturnsPage() {
                   onChange={(e) => setAdminNote(e.target.value)}
                   rows={2}
                   placeholder="Add an internal note..."
-                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[var(--kv-border)] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -401,7 +401,7 @@ export default function ReturnsPage() {
                   setSelectedReturn(null);
                   setAdminNote('');
                 }}
-                className="px-4 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-sm text-[var(--kv-text)] border border-[var(--kv-border)] rounded-lg hover:bg-[var(--kv-soft)] transition-colors"
               >
                 Close
               </button>
@@ -410,14 +410,14 @@ export default function ReturnsPage() {
                   <button
                     onClick={() => handleAction(selectedReturn.id, 'reject')}
                     disabled={!!actionLoading}
-                    className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 text-sm bg-[var(--kv-danger)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-danger)] transition-colors disabled:opacity-50"
                   >
                     Reject
                   </button>
                   <button
                     onClick={() => handleAction(selectedReturn.id, 'approve')}
                     disabled={!!actionLoading}
-                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 text-sm bg-[var(--kv-accent)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-accent-deep)] transition-colors disabled:opacity-50"
                   >
                     Approve
                   </button>
@@ -429,7 +429,7 @@ export default function ReturnsPage() {
                     handleAction(selectedReturn.id, 'process-refund')
                   }
                   disabled={!!actionLoading}
-                  className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-4 py-2 text-sm bg-[var(--kv-success)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-success)] transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   <DollarSign size={14} />
                   {actionLoading ? 'Processing...' : 'Process Refund & Restock'}

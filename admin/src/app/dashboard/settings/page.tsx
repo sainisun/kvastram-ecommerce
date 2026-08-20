@@ -366,7 +366,7 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-[var(--primary)] text-white'
+                        ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                         : 'text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-low)]'
                     }`}
                   >
@@ -519,7 +519,7 @@ export default function SettingsPage() {
                           Two-Factor Authentication
                         </p>
                         {user?.two_factor_enabled && (
-                          <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <span className="bg-[var(--kv-success)]/10 text-[var(--kv-success)] text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                             <CheckCircle size={10} /> Active
                           </span>
                         )}
@@ -533,14 +533,14 @@ export default function SettingsPage() {
                     {user?.two_factor_enabled ? (
                       <button
                         onClick={handleDisable2FA}
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium"
+                        className="px-4 py-2 bg-[var(--kv-danger)]/10 text-[var(--kv-danger)] rounded-lg hover:bg-[var(--kv-danger)]/20 font-medium"
                       >
                         Disable
                       </button>
                     ) : (
                       <button
                         onClick={handleEnable2FA}
-                        className="px-4 py-2 bg-[var(--surface-container-low)]0 text-white rounded-lg hover:bg-[var(--primary)] font-medium"
+                        className="px-4 py-2 bg-[var(--surface-container-low)]0 text-[var(--kv-card)] rounded-lg hover:bg-[var(--primary)] font-medium"
                       >
                         Enable 2FA
                       </button>
@@ -563,7 +563,7 @@ export default function SettingsPage() {
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-[var(--on-surface)]">Stripe</p>
                           {settings.stripe_publishable_key && (
-                            <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="bg-[var(--kv-success)]/10 text-[var(--kv-success)] text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                               <CheckCircle size={10} /> Configured
                             </span>
                           )}
@@ -574,7 +574,7 @@ export default function SettingsPage() {
                       </div>
                       <button
                         onClick={() => setShowStripeModal(true)}
-                        className="px-4 py-2 bg-gray-100 text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                        className="px-4 py-2 bg-[var(--kv-soft)] text-[var(--on-surface-variant)] rounded-lg hover:bg-[var(--kv-border)] flex items-center gap-2"
                       >
                         Configure
                       </button>
@@ -756,10 +756,10 @@ export default function SettingsPage() {
                       {EMAIL_NOTIFICATION_ITEMS.map((item) => (
                         <div
                           key={item.key}
-                          className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
+                          className="flex items-center justify-between bg-[var(--kv-soft)] rounded-lg p-4"
                         >
                           <div>
-                            <p className="font-medium text-gray-800">
+                            <p className="font-medium text-[var(--kv-text)]">
                               {item.label}
                             </p>
                             <p className="text-xs text-[var(--on-surface-variant)]">{item.desc}</p>
@@ -775,11 +775,11 @@ export default function SettingsPage() {
                             className={`relative w-12 h-6 rounded-full transition-colors ${
                               settings[item.key]
                                 ? 'bg-[var(--surface-container-low)]0'
-                                : 'bg-gray-300'
+                                : 'bg-[var(--kv-border)]'
                             }`}
                           >
                             <span
-                              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-[var(--kv-card)] rounded-full transition-transform shadow ${
                                 settings[item.key]
                                   ? 'translate-x-6'
                                   : ''
@@ -796,9 +796,9 @@ export default function SettingsPage() {
                     <h3 className="text-lg font-medium text-[var(--on-surface)] mb-2">
                       Review Request
                     </h3>
-                    <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-3">
+                    <div className="flex items-center justify-between bg-[var(--kv-soft)] rounded-lg p-4 mb-3">
                       <div>
-                        <p className="font-medium text-gray-800">
+                        <p className="font-medium text-[var(--kv-text)]">
                           Send Review Request Email
                         </p>
                         <p className="text-xs text-[var(--on-surface-variant)]">
@@ -817,18 +817,18 @@ export default function SettingsPage() {
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           settings.email_review_request
                             ? 'bg-[var(--surface-container-low)]0'
-                            : 'bg-gray-300'
+                            : 'bg-[var(--kv-border)]'
                         }`}
                       >
                         <span
-                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-[var(--kv-card)] rounded-full transition-transform shadow ${
                             settings.email_review_request ? 'translate-x-6' : ''
                           }`}
                         />
                       </button>
                     </div>
                     {settings.email_review_request && (
-                      <div className="pl-4 border-l-2 border-blue-200">
+                      <div className="pl-4 border-l-2 border-[var(--kv-accent)]/30">
                         <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Send after how many days of delivery?
                         </label>
@@ -862,8 +862,8 @@ export default function SettingsPage() {
                   Shipping & Tax Settings
                 </h2>
 
-                <div className="bg-[var(--surface-container-low)] border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-[var(--surface-container-low)] border border-[var(--kv-accent)]/30 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-[var(--kv-accent-deep)]">
                     Configure shipping origin, rates, free shipping rules, and
                     shipping zones.
                   </p>
@@ -1003,9 +1003,9 @@ export default function SettingsPage() {
                   <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Free Shipping
                   </h3>
-                  <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between bg-[var(--kv-soft)] rounded-lg p-4 mb-4">
                     <div>
-                      <p className="font-medium text-gray-800">
+                      <p className="font-medium text-[var(--kv-text)]">
                         Enable Free Shipping
                       </p>
                       <p className="text-xs text-[var(--on-surface-variant)]">
@@ -1022,11 +1022,11 @@ export default function SettingsPage() {
                       className={`relative w-12 h-6 rounded-full transition-colors ${
                         settings.shipping_free_enabled
                           ? 'bg-[var(--surface-container-low)]0'
-                          : 'bg-gray-300'
+                          : 'bg-[var(--kv-border)]'
                       }`}
                     >
                       <span
-                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-[var(--kv-card)] rounded-full transition-transform shadow ${
                           settings.shipping_free_enabled ? 'translate-x-6' : ''
                         }`}
                       />
@@ -1034,7 +1034,7 @@ export default function SettingsPage() {
                   </div>
 
                   {settings.shipping_free_enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-[var(--kv-accent)]/30">
                       <div>
                         <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Minimum Order Value (USD)
@@ -1153,7 +1153,7 @@ export default function SettingsPage() {
                         });
                         handleChange('shipping_zones', zones);
                       }}
-                      className="px-3 py-1.5 bg-[var(--surface-container-low)]0 text-white text-sm rounded-lg hover:bg-[var(--primary)]"
+                      className="px-3 py-1.5 bg-[var(--surface-container-low)]0 text-[var(--kv-card)] text-sm rounded-lg hover:bg-[var(--primary)]"
                     >
                       + Add Zone
                     </button>
@@ -1161,8 +1161,8 @@ export default function SettingsPage() {
 
                   {shippingZones.length > 0 ? (
                     <div className="border border-[var(--surface-container-low)] rounded-lg overflow-hidden">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                      <table className="min-w-full divide-y divide-[var(--kv-border)]">
+                        <thead className="bg-[var(--kv-soft)]">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Zone Name
@@ -1181,7 +1181,7 @@ export default function SettingsPage() {
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-[var(--kv-card)] divide-y divide-[var(--kv-border)]">
                           {shippingZones.map((zone, index) => (
                               <tr key={zone.id || index}>
                                 <td className="px-4 py-2">
@@ -1259,7 +1259,7 @@ export default function SettingsPage() {
                                       );
                                       handleChange('shipping_zones', zones);
                                     }}
-                                    className="text-red-500 hover:text-red-700 text-sm"
+                                    className="text-[var(--kv-danger)] hover:text-[var(--kv-danger)] text-sm"
                                   >
                                     Remove
                                   </button>
@@ -1309,7 +1309,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-full bg-[var(--primary)] px-6 py-3 text-xs font-bold uppercase tracking-widest text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                className="flex items-center gap-2 rounded-full bg-[var(--primary)] px-6 py-3 text-xs font-bold uppercase tracking-widest text-[var(--kv-card)] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               >
                 <Save size={20} />
                 {saving ? 'Saving...' : 'Save Changes'}
@@ -1321,8 +1321,8 @@ export default function SettingsPage() {
 
       {/* Stripe Config Modal */}
       {showStripeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--kv-card)] rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
                 <CreditCard size={24} className="text-[var(--primary)]" />
@@ -1336,7 +1336,7 @@ export default function SettingsPage() {
               </button>
             </div>
             <form onSubmit={handleSaveStripe} className="space-y-4">
-              <div className="bg-[var(--surface-container-low)] p-3 rounded-lg text-sm text-blue-800 border border-blue-200">
+              <div className="bg-[var(--surface-container-low)] p-3 rounded-lg text-sm text-[var(--kv-accent-deep)] border border-[var(--kv-accent)]/30">
                 Enter your Stripe API keys. These are stored safely and used for
                 payment processing.
               </div>
@@ -1391,13 +1391,13 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowStripeModal(false)}
-                  className="px-4 py-2 text-[var(--on-surface-variant)] hover:bg-gray-100 rounded border border-[var(--outline-variant)]"
+                  className="px-4 py-2 text-[var(--on-surface-variant)] hover:bg-[var(--kv-soft)] rounded border border-[var(--outline-variant)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[var(--primary)] text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-[var(--primary)] text-[var(--kv-card)] rounded hover:bg-[var(--kv-accent-deep)]"
                 >
                   Save Configuration
                 </button>
@@ -1409,8 +1409,8 @@ export default function SettingsPage() {
 
       {/* 2FA Modal - Enable */}
       {showTwoFactorModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--kv-card)] rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
                 <Shield size={24} className="text-[var(--primary)]" />
@@ -1431,7 +1431,7 @@ export default function SettingsPage() {
               </p>
 
               {qrCode && (
-                <div className="flex justify-center bg-gray-50 p-4 rounded-lg border border-[var(--surface-container-low)]">
+                <div className="flex justify-center bg-[var(--kv-soft)] p-4 rounded-lg border border-[var(--surface-container-low)]">
                   <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
                 </div>
               )}
@@ -1457,7 +1457,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleVerify2FA}
                 disabled={otp.length !== 6 || verifying2FA}
-                className="w-full py-3 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                className="w-full py-3 bg-[var(--primary)] text-[var(--kv-card)] rounded-lg font-medium hover:bg-[var(--kv-accent-deep)] disabled:opacity-50"
               >
                 {verifying2FA ? 'Verifying...' : 'Verify & Enable'}
               </button>
@@ -1468,8 +1468,8 @@ export default function SettingsPage() {
 
       {/* 2FA Modal - Disable */}
       {showDisable2FAModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--kv-card)] rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
                 <Shield size={24} className="text-[var(--error)]" />
@@ -1485,7 +1485,7 @@ export default function SettingsPage() {
 
             <div className="space-y-6">
               <div className="bg-[var(--error-container)] p-4 rounded-lg border border-[var(--error)]/20">
-                <p className="text-sm text-red-800">
+                <p className="text-sm text-[var(--kv-danger)]">
                   <strong>Warning:</strong> Disabling 2FA will remove the extra
                   layer of security from your account. You will only need your
                   password to log in.
@@ -1519,14 +1519,14 @@ export default function SettingsPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDisable2FAModal(false)}
-                  className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+                  className="flex-1 py-3 bg-[var(--kv-border)] text-[var(--kv-text)] rounded-lg font-medium hover:bg-[var(--kv-border)]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleConfirmDisable2FA}
                   disabled={otp.length !== 6 || disabling2FA}
-                  className="flex-1 py-3 bg-[var(--error)] text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 py-3 bg-[var(--error)] text-[var(--kv-card)] rounded-lg font-medium hover:bg-[var(--kv-danger)] disabled:opacity-50"
                 >
                   {disabling2FA ? 'Disabling...' : 'Disable 2FA'}
                 </button>

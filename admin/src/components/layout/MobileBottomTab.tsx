@@ -59,7 +59,7 @@ export default function MobileBottomTab({
   const tabs = mode === 'wholesale' ? wholesaleTabs : retailTabs;
 
   return (
-    <nav className="fixed bottom-0 left-0 z-40 flex w-full items-center justify-around rounded-t-3xl bg-white/90 px-4 pb-6 pt-3 shadow-[0_-8px_24px_-4px_rgba(25,28,30,0.08)] backdrop-blur-md md:hidden">
+    <nav className="fixed bottom-0 left-0 z-40 flex w-full items-center justify-around rounded-t-3xl bg-[var(--kv-card)]/90 px-4 pb-6 pt-3 shadow-[0_-8px_24px_-4px_rgba(25,28,30,0.08)] backdrop-blur-md md:hidden">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const active = isNavItemActive(pathname, tab.href);
@@ -69,7 +69,7 @@ export default function MobileBottomTab({
             <Link
               key={tab.href}
               href={tab.href}
-              className="h-14 w-14 -mt-10 rounded-full bg-[var(--primary)] text-white shadow-lg duration-150 active:scale-90 flex items-center justify-center"
+              className="h-14 w-14 -mt-10 rounded-full bg-[var(--primary)] text-[var(--kv-card)] shadow-lg duration-150 active:scale-90 flex items-center justify-center"
               aria-label="Add product"
             >
               <Icon size={22} />
@@ -92,7 +92,7 @@ export default function MobileBottomTab({
               {tab.label}
             </span>
             {tab.badge && pendingOrders > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--error)] px-1 text-[9px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--error)] px-1 text-[9px] font-bold text-[var(--kv-card)]">
                 {pendingOrders > 9 ? '9+' : pendingOrders}
               </span>
             )}

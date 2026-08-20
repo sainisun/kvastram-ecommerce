@@ -59,22 +59,22 @@ function SortableImage({
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group rounded-lg overflow-hidden border-2 ${image.is_thumbnail ? 'border-blue-500' : 'border-gray-200'} bg-white shadow-sm aspect-square`}
+      className={`relative group rounded-lg overflow-hidden border-2 ${image.is_thumbnail ? 'border-[var(--kv-accent)]' : 'border-[var(--kv-border)]'} bg-[var(--kv-card)] shadow-sm aspect-square`}
     >
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1.5 bg-white/80 backdrop-blur rounded-md cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        className="absolute top-2 left-2 p-1.5 bg-[var(--kv-card)]/80 backdrop-blur rounded-md cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity z-10"
       >
-        <GripVertical size={16} className="text-gray-600" />
+        <GripVertical size={16} className="text-[var(--kv-text)]" />
       </div>
 
       {/* Remove Button */}
       <button
         type="button"
         onClick={() => onRemove(image.id)}
-        className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur rounded-md hover:bg-red-50 text-gray-500 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        className="absolute top-2 right-2 p-1.5 bg-[var(--kv-card)]/80 backdrop-blur rounded-md hover:bg-[var(--kv-danger)]/10 text-[var(--kv-muted)] hover:text-[var(--kv-danger)] opacity-0 group-hover:opacity-100 transition-opacity z-10"
       >
         <X size={16} />
       </button>
@@ -92,7 +92,7 @@ function SortableImage({
           <button
             type="button"
             onClick={() => onSetThumbnail(image.id)}
-            className={`text-xs font-medium px-2 py-1 rounded ${image.is_thumbnail ? 'bg-blue-600 text-white' : 'bg-white/90 text-gray-800 hover:bg-white'}`}
+            className={`text-xs font-medium px-2 py-1 rounded ${image.is_thumbnail ? 'bg-[var(--kv-accent)] text-[var(--kv-card)]' : 'bg-[var(--kv-card)]/90 text-[var(--kv-text)] hover:bg-[var(--kv-card)]'}`}
           >
             {image.is_thumbnail ? 'Main Image' : 'Set as Main'}
           </button>
@@ -101,7 +101,7 @@ function SortableImage({
 
       {/* Thumbnail Badge */}
       {image.is_thumbnail && (
-        <div className="absolute bottom-2 left-2 px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded shadow-sm z-10 pointer-events-none">
+        <div className="absolute bottom-2 left-2 px-2 py-1 bg-[var(--kv-accent)] text-[var(--kv-card)] text-xs font-bold rounded shadow-sm z-10 pointer-events-none">
           MAIN
         </div>
       )}
@@ -202,26 +202,26 @@ export default function ImageUpload({
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
-                    ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}
+                    ${isDragActive ? 'border-[var(--kv-accent)] bg-[var(--kv-accent)]/10' : 'border-[var(--kv-border)] hover:bg-[var(--kv-soft)]'}
                     ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
       >
         <input {...getInputProps()} />
-        <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-12 h-12 bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)] rounded-full flex items-center justify-center mx-auto mb-4">
           {uploading ? (
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-[var(--kv-accent)] border-t-transparent"></div>
           ) : (
             <Upload size={24} />
           )}
         </div>
-        <p className="text-base font-medium text-gray-900">
+        <p className="text-base font-medium text-[var(--kv-text)]">
           {uploading
             ? 'Uploading...'
             : isDragActive
               ? 'Drop images here'
               : 'Click to upload or drag and drop'}
         </p>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-[var(--kv-muted)] mt-1">
           PNG, JPG, WebP or GIF (Max 50MB)
         </p>
       </div>

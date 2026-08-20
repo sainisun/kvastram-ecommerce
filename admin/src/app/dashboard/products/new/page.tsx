@@ -354,13 +354,13 @@ export default function NewProductPage() {
                 <input type="radio" name="price_type" value="fixed" checked={priceType === 'fixed'} onChange={() => setPriceType('fixed')} className="sr-only" />
                 Fixed Price
               </label>
-              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'on_request' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-[var(--kv-border)] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]'}`}>
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'on_request' ? 'border-orange-500 bg-[var(--kv-accent)]/10 text-orange-700' : 'border-[var(--kv-border)] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]'}`}>
                 <input type="radio" name="price_type" value="on_request" checked={priceType === 'on_request'} onChange={() => setPriceType('on_request')} className="sr-only" />
                 On Request (WhatsApp)
               </label>
             </div>
             {priceType === 'on_request' ? (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm text-orange-800">
+              <div className="bg-[var(--kv-accent)]/10 border border-orange-200 rounded-lg p-3 text-sm text-orange-800">
                 Customer will see a WhatsApp enquiry button instead of &ldquo;Add to Bag&rdquo;. No price required.
               </div>
             ) : (
@@ -543,7 +543,7 @@ export default function NewProductPage() {
                         type="checkbox" id={`cat-${cat.id}`}
                         checked={selectedCategoryIds.includes(cat.id)}
                         onChange={() => toggleCategory(cat.id)}
-                        className="rounded border-[var(--kv-border)] text-black focus:ring-black"
+                        className="rounded border-[var(--kv-border)] text-[var(--kv-text)] focus:ring-black"
                       />
                       <label htmlFor={`cat-${cat.id}`}
                         className="text-sm text-[var(--kv-text)] cursor-pointer select-none">
@@ -674,12 +674,12 @@ export default function NewProductPage() {
                       const newFaqs = [...faqItems];
                       newFaqs[idx].question = e.target.value;
                       setFaqItems(newFaqs);
-                    }} placeholder="Question?" className="w-full mb-2 px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-black" />
+                    }} placeholder="Question?" className="w-full mb-2 px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-[var(--kv-text)]" />
                     <textarea value={faq.answer} onChange={e => {
                       const newFaqs = [...faqItems];
                       newFaqs[idx].answer = e.target.value;
                       setFaqItems(newFaqs);
-                    }} placeholder="Answer..." rows={2} className="w-full px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-black"></textarea>
+                    }} placeholder="Answer..." rows={2} className="w-full px-3 py-1.5 text-sm border border-[var(--kv-border)] rounded focus:outline-none focus:border-[var(--kv-text)]"></textarea>
                   </div>
                 ))}
               </div>

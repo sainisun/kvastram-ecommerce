@@ -27,10 +27,10 @@ export default function ProductReadinessPanel({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-bold text-gray-900">
+          <h2 className="text-sm font-bold text-[var(--kv-text)]">
             Storefront readiness
           </h2>
-          <p className="mt-1 text-xs leading-relaxed text-gray-600">
+          <p className="mt-1 text-xs leading-relaxed text-[var(--kv-text)]">
             Public products must pass this gate before they can look premium on
             odhvica.com.
           </p>
@@ -47,7 +47,7 @@ export default function ProductReadinessPanel({
       </div>
 
       {isReady ? (
-        <p className="mt-4 rounded-lg bg-white/70 px-3 py-2 text-xs font-medium text-emerald-800">
+        <p className="mt-4 rounded-lg bg-[var(--kv-card)]/70 px-3 py-2 text-xs font-medium text-emerald-800">
           Ready to publish.
         </p>
       ) : (
@@ -55,7 +55,7 @@ export default function ProductReadinessPanel({
           {issues.map((issue) => (
             <li
               key={`${issue.field}-${issue.message}`}
-              className="rounded-lg bg-white/70 px-3 py-2 text-xs leading-relaxed text-amber-900"
+              className="rounded-lg bg-[var(--kv-card)]/70 px-3 py-2 text-xs leading-relaxed text-amber-900"
             >
               {issue.message}
             </li>

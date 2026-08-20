@@ -459,7 +459,7 @@ export default function OrderDetailsPage() {
                   value={normalizeStatus(order.status)}
                   onChange={(event) => void handleStatusChange(event.target.value)}
                   disabled={updating}
-                  className="w-full rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--kv-accent)]"
+                  className="w-full rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] px-4 py-3 text-sm outline-none focus:border-[var(--kv-accent)]"
                 >
                   {getStatusOptions(order.status).map((status) => (
                     <option key={status} value={status}>
@@ -476,7 +476,7 @@ export default function OrderDetailsPage() {
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
                       step.completed
-                        ? 'bg-[var(--kv-accent)] text-white'
+                        ? 'bg-[var(--kv-accent)] text-[var(--kv-card)]'
                         : step.current
                           ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
                           : 'bg-[var(--kv-soft)] text-[var(--kv-muted)]'
@@ -754,7 +754,7 @@ export default function OrderDetailsPage() {
               <button
                 type="submit"
                 disabled={updating}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 md:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-[var(--kv-card)] disabled:opacity-60 md:w-auto"
               >
                 <Save size={16} />
                 {updating ? 'Saving...' : 'Save fulfillment'}

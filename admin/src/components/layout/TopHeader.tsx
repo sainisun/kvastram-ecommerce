@@ -127,7 +127,7 @@ export default function TopHeader({
                 onClick={() => setAccountOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
                   mode === 'retail'
-                    ? 'bg-[var(--primary)] text-white'
+                    ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                     : 'text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]'
                 }`}
               >
@@ -137,7 +137,7 @@ export default function TopHeader({
                   <p
                     className={`text-[11px] ${
                       mode === 'retail'
-                        ? 'text-white/80'
+                        ? 'text-[var(--kv-card)]/80'
                         : 'text-[var(--on-surface-variant)]'
                     }`}
                   >
@@ -151,7 +151,7 @@ export default function TopHeader({
                 onClick={() => setAccountOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
                   mode === 'wholesale'
-                    ? 'bg-[var(--primary)] text-white'
+                    ? 'bg-[var(--primary)] text-[var(--kv-card)]'
                     : 'text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]'
                 }`}
               >
@@ -161,7 +161,7 @@ export default function TopHeader({
                   <p
                     className={`text-[11px] ${
                       mode === 'wholesale'
-                        ? 'text-white/80'
+                        ? 'text-[var(--kv-card)]/80'
                         : 'text-[var(--on-surface-variant)]'
                     }`}
                   >

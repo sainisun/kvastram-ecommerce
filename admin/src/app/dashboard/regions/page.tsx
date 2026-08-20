@@ -135,8 +135,8 @@ export default function RegionsPage() {
     return (
       <div className="p-8 flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
-          <Loader2 className="animate-spin text-blue-500" size={32} />
-          <p className="text-gray-500">Loading regions...</p>
+          <Loader2 className="animate-spin text-[var(--kv-accent-deep)]" size={32} />
+          <p className="text-[var(--kv-muted)]">Loading regions...</p>
         </div>
       </div>
     );
@@ -148,17 +148,17 @@ export default function RegionsPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-[var(--kv-text)] mb-2">
               Regions & Currencies
             </h1>
-            <p className="text-gray-600">
+            <p className="text-[var(--kv-text)]">
               Manage regional settings, currencies, and tax rates
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={handleQuickAddIndia}
-              className="px-4 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
+              className="px-4 py-2 border border-[var(--kv-accent)]/30 bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)] rounded-lg hover:bg-[var(--kv-accent)]/10"
             >
               Quick Add India
             </button>
@@ -173,7 +173,7 @@ export default function RegionsPage() {
                 });
                 setShowModal(true);
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--kv-accent)]/100 text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-accent)] flex items-center gap-2"
             >
               <Plus size={18} />
               Add Region
@@ -184,48 +184,48 @@ export default function RegionsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-[var(--kv-card)] p-6 rounded-lg shadow-sm border border-[var(--kv-border)]">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Globe className="text-blue-600" size={24} />
+            <div className="p-3 bg-[var(--kv-accent)]/10 rounded-lg">
+              <Globe className="text-[var(--kv-accent-deep)]" size={24} />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total Regions</p>
-          <p className="text-2xl font-bold text-gray-900">{regions.length}</p>
+          <p className="text-sm text-[var(--kv-text)] mb-1">Total Regions</p>
+          <p className="text-2xl font-bold text-[var(--kv-text)]">{regions.length}</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-[var(--kv-card)] p-6 rounded-lg shadow-sm border border-[var(--kv-border)]">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Check className="text-green-600" size={24} />
+            <div className="p-3 bg-[var(--kv-success)]/10 rounded-lg">
+              <Check className="text-[var(--kv-success)]" size={24} />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Active Regions</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-sm text-[var(--kv-text)] mb-1">Active Regions</p>
+          <p className="text-2xl font-bold text-[var(--kv-text)]">
             {regions.length} {/* Assuming all created are active for now */}
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-[var(--kv-card)] p-6 rounded-lg shadow-sm border border-[var(--kv-border)]">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-purple-100 rounded-lg">
               <DollarSign className="text-purple-600" size={24} />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Currencies</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-sm text-[var(--kv-text)] mb-1">Currencies</p>
+          <p className="text-2xl font-bold text-[var(--kv-text)]">
             {new Set(regions.map((r) => r.currency_code)).size}
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-[var(--kv-card)] p-6 rounded-lg shadow-sm border border-[var(--kv-border)]">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-amber-100 rounded-lg">
               <MapPin className="text-amber-600" size={24} />
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Countries Supported</p>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-sm text-[var(--kv-text)] mb-1">Countries Supported</p>
+          <p className="text-2xl font-bold text-[var(--kv-text)]">
             N/A{' '}
             {/* Simplification as we might dynamically key this in real app */}
           </p>
@@ -233,44 +233,44 @@ export default function RegionsPage() {
       </div>
 
       {/* Regions Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900">All Regions</h2>
+      <div className="bg-[var(--kv-card)] rounded-lg shadow-sm border border-[var(--kv-border)]">
+        <div className="p-6 border-b border-[var(--kv-border)]">
+          <h2 className="text-lg font-bold text-[var(--kv-text)]">All Regions</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-[var(--kv-soft)] border-b border-[var(--kv-border)]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                   Region
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                   Currency
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                   Tax Rate
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-[var(--kv-card)] divide-y divide-[var(--kv-border)]">
               {regions.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-6 py-8 text-center text-gray-500"
+                    className="px-6 py-8 text-center text-[var(--kv-muted)]"
                   >
                     <div className="flex flex-col items-center gap-3">
                       <span>No regions found. Add your first region!</span>
                       <button
                         type="button"
                         onClick={handleQuickAddIndia}
-                        className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                        className="rounded-lg border border-[var(--kv-accent)]/30 bg-[var(--kv-accent)]/10 px-3 py-2 text-sm font-medium text-[var(--kv-accent-deep)] hover:bg-[var(--kv-accent)]/10"
                       >
                         Create India (INR)
                       </button>
@@ -279,30 +279,30 @@ export default function RegionsPage() {
                 </tr>
               ) : (
                 regions.map((region) => (
-                  <tr key={region.id} className="hover:bg-gray-50">
+                  <tr key={region.id} className="hover:bg-[var(--kv-soft)]">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="p-2 bg-blue-100 rounded-lg mr-3">
-                          <Globe className="text-blue-600" size={20} />
+                        <div className="p-2 bg-[var(--kv-accent)]/10 rounded-lg mr-3">
+                          <Globe className="text-[var(--kv-accent-deep)]" size={20} />
                         </div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--kv-text)]">
                           {region.name}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <DollarSign size={16} className="text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900 uppercase">
+                        <DollarSign size={16} className="text-[var(--kv-muted)]" />
+                        <span className="text-sm font-medium text-[var(--kv-text)] uppercase">
                           {region.currency_code}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--kv-text)]">
                       {region.tax_rate}%
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <span className="px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-[var(--kv-success)]/10 text-[var(--kv-success)]">
                         <Check size={14} />
                         Active
                       </span>
@@ -313,7 +313,7 @@ export default function RegionsPage() {
                           type="button"
                           onClick={() => handleEdit(region)}
                           aria-label={`Edit ${region.name}`}
-                          className="text-blue-600 hover:text-blue-900 p-1"
+                          className="text-[var(--kv-accent-deep)] hover:text-[var(--kv-text)] p-1"
                           title="Edit"
                         >
                           <Edit size={18} />
@@ -323,7 +323,7 @@ export default function RegionsPage() {
                           onClick={() => handleDelete(region.id)}
                           disabled={deleting === region.id}
                           aria-label={`Delete ${region.name}`}
-                          className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
+                          className="text-[var(--kv-danger)] hover:text-[var(--kv-danger)] p-1 disabled:opacity-50"
                           title="Delete"
                         >
                           {deleting === region.id ? (
@@ -344,8 +344,8 @@ export default function RegionsPage() {
 
       {/* Create Region Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--kv-card)] rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">
                 {editingId ? 'Edit Region' : 'Add Region'}
@@ -357,7 +357,7 @@ export default function RegionsPage() {
                   setEditingId(null);
                 }}
                 aria-label="Close region form"
-                className="text-gray-500 hover:text-gray-700"
+                className="text-[var(--kv-muted)] hover:text-[var(--kv-text)]"
               >
                 <XIcon size={24} />
               </button>
@@ -365,14 +365,14 @@ export default function RegionsPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Region Name
                 </label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. North America"
-                  className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 bg-white placeholder-gray-400"
+                  className="w-full border border-[var(--kv-border)] rounded-lg p-2 text-[var(--kv-text)] bg-[var(--kv-card)] placeholder-gray-400"
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -381,7 +381,7 @@ export default function RegionsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Currency Code (3 chars)
                 </label>
                 <input
@@ -389,7 +389,7 @@ export default function RegionsPage() {
                   required
                   maxLength={3}
                   placeholder="USD"
-                  className="w-full border border-gray-300 rounded-lg p-2 uppercase text-gray-900 bg-white placeholder-gray-400"
+                  className="w-full border border-[var(--kv-border)] rounded-lg p-2 uppercase text-[var(--kv-text)] bg-[var(--kv-card)] placeholder-gray-400"
                   value={formData.currency_code}
                   onChange={(e) =>
                     setFormData({
@@ -401,14 +401,14 @@ export default function RegionsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Tax Rate (%)
                 </label>
                 <input
                   type="number"
                   step="0.1"
                   min="0"
-                  className="w-full border border-gray-300 rounded-lg p-2 text-gray-900 bg-white placeholder-gray-400"
+                  className="w-full border border-[var(--kv-border)] rounded-lg p-2 text-[var(--kv-text)] bg-[var(--kv-card)] placeholder-gray-400"
                   value={formData.tax_rate}
                   onChange={(e) =>
                     setFormData({ ...formData, tax_rate: e.target.value })
@@ -417,19 +417,19 @@ export default function RegionsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Countries (ISO Codes, comma separated)
                 </label>
                 <input
                   type="text"
                   placeholder="US, CA, MX"
-                  className="w-full border border-gray-300 rounded-lg p-2 uppercase text-gray-900 bg-white placeholder-gray-400"
+                  className="w-full border border-[var(--kv-border)] rounded-lg p-2 uppercase text-[var(--kv-text)] bg-[var(--kv-card)] placeholder-gray-400"
                   value={formData.countries}
                   onChange={(e) =>
                     setFormData({ ...formData, countries: e.target.value })
                   }
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-[var(--kv-muted)] mt-1">
                   Example: US, GB, IN, DE
                 </p>
               </div>
@@ -438,13 +438,13 @@ export default function RegionsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                  className="px-4 py-2 text-[var(--kv-text)] hover:bg-[var(--kv-soft)] rounded-lg"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-[var(--kv-accent)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-accent-deep)]"
                 >
                   {editingId ? 'Update Region' : 'Create Region'}
                 </button>

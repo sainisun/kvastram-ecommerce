@@ -175,7 +175,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ── Revenue highlight card ── */}
-      <section className="bg-[var(--primary)] text-white p-6 rounded-2xl overflow-hidden relative">
+      <section className="bg-[var(--primary)] text-[var(--kv-card)] p-6 rounded-2xl overflow-hidden relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--on-tertiary-container)]/20 blur-3xl -mr-16 -mt-16 rounded-full" />
         <div className="relative z-10">
           <p className="text-[0.6875rem] font-bold uppercase tracking-widest opacity-60">
@@ -195,14 +195,14 @@ export default function DashboardPage() {
                     return (
                       <div
                         key={p.date}
-                        className="flex-1 rounded-full bg-white/20"
+                        className="flex-1 rounded-full bg-[var(--kv-card)]/20"
                         style={{ height: `${pct}%` }}
                         title={fmtDate(p.date)}
                       />
                     );
                   })
                 : [40, 60, 48, 75, 85, 70, 90].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-full bg-white/20" style={{ height: `${h}%` }} />
+                    <div key={i} className="flex-1 rounded-full bg-[var(--kv-card)]/20" style={{ height: `${h}%` }} />
                   ))}
             </div>
             <Link

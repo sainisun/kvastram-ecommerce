@@ -136,47 +136,47 @@ export default function HomepageSocialPostsManager() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between rounded-2xl border bg-white p-6">
+      <div className="flex items-center justify-between rounded-2xl border bg-[var(--kv-card)] p-6">
         <div>
           <h1 className="text-2xl font-bold">Homepage Social Gallery</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-[var(--kv-muted)]">
             Only active Cloudinary images appear in Follow Our Journey.
           </p>
         </div>
-        <button onClick={create} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">
+        <button onClick={create} className="inline-flex items-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)]">
           <Plus size={18} /> Add post
         </button>
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border bg-white p-10 text-center text-gray-500">Loading…</div>
+        <div className="rounded-2xl border bg-[var(--kv-card)] p-10 text-center text-[var(--kv-muted)]">Loading…</div>
       ) : posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed bg-white p-12 text-center">
-          <Images className="mx-auto text-gray-400" />
-          <p className="mt-3 text-gray-600">No social gallery posts yet.</p>
+        <div className="rounded-2xl border border-dashed bg-[var(--kv-card)] p-12 text-center">
+          <Images className="mx-auto text-[var(--kv-muted)]" />
+          <p className="mt-3 text-[var(--kv-text)]">No social gallery posts yet.</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {posts.map((post) => (
-            <article key={post.id} className="overflow-hidden rounded-2xl border bg-white">
-              <div className="relative aspect-square bg-gray-100">
+            <article key={post.id} className="overflow-hidden rounded-2xl border bg-[var(--kv-card)]">
+              <div className="relative aspect-square bg-[var(--kv-soft)]">
                 <Image src={post.image_url} alt={post.alt_text} fill sizes="33vw" className="object-cover" />
               </div>
               <div className="space-y-3 p-4">
                 <div className="flex gap-2 text-xs">
-                  <span className="rounded-full bg-gray-100 px-2 py-1">#{post.sort_order}</span>
+                  <span className="rounded-full bg-[var(--kv-soft)] px-2 py-1">#{post.sort_order}</span>
                   <span className={`rounded-full px-2 py-1 ${post.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                     {post.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <p className="font-medium text-gray-900">{post.alt_text}</p>
-                <p className="line-clamp-2 text-sm text-gray-500">{post.caption}</p>
+                <p className="font-medium text-[var(--kv-text)]">{post.alt_text}</p>
+                <p className="line-clamp-2 text-sm text-[var(--kv-muted)]">{post.caption}</p>
                 <div className="flex gap-2">
                   <button onClick={() => toggle(post.id)} className="rounded-lg border p-2" aria-label="Toggle post">
                     {post.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                   <button onClick={() => edit(post)} className="rounded-lg border p-2" aria-label="Edit post"><Pencil size={16} /></button>
-                  <button onClick={() => remove(post.id)} className="rounded-lg border border-red-200 p-2 text-red-600" aria-label="Delete post"><Trash2 size={16} /></button>
+                  <button onClick={() => remove(post.id)} className="rounded-lg border border-[var(--kv-danger)]/30 p-2 text-[var(--kv-danger)]" aria-label="Delete post"><Trash2 size={16} /></button>
                 </div>
               </div>
             </article>
@@ -186,13 +186,13 @@ export default function HomepageSocialPostsManager() {
 
       {open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-          <form onSubmit={submit} className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl bg-white p-6">
+          <form onSubmit={submit} className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl bg-[var(--kv-card)] p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">{editing ? 'Edit post' : 'Add post'}</h2>
               <button type="button" onClick={close} aria-label="Close"><X /></button>
             </div>
             {form.preview ? (
-              <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">
+              <div className="relative aspect-square overflow-hidden rounded-xl bg-[var(--kv-soft)]">
                 <Image src={form.preview} alt="Preview" fill sizes="500px" className="object-cover" unoptimized={form.preview.startsWith('blob:')} />
               </div>
             ) : null}
@@ -230,7 +230,7 @@ export default function HomepageSocialPostsManager() {
             </label>
             <div className="flex justify-end gap-3 border-t pt-4">
               <button type="button" onClick={close} className="rounded-xl border px-4 py-2">Cancel</button>
-              <button disabled={saving} className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-60">
+              <button disabled={saving} className="rounded-xl bg-[var(--kv-accent)] px-4 py-2 font-semibold text-[var(--kv-card)] disabled:opacity-60">
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </div>

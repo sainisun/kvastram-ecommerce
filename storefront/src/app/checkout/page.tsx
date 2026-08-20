@@ -15,20 +15,13 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { useCurrency } from '@/context/currency-context';
 import { formatMoney } from '@/lib/currency';
 import { resolveRegionForCountry } from '@/lib/regions';
+import { useCheckoutAuth } from '@/hooks/use-checkout-auth';
+import { useCheckoutPricing } from '@/hooks/use-checkout-pricing';
 import CheckoutAuthStep from '@/components/checkout/CheckoutAuthStep';
 import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
 import CheckoutPaymentStep from '@/components/checkout/CheckoutPaymentStep';
 import CheckoutSuccess from '@/components/checkout/CheckoutSuccess';
 import CheckoutShippingForm from '@/components/checkout/CheckoutShippingForm';
-
-interface ShippingOption {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  estimated_days: string;
-  currency_code: string;
-}
 
 export default function CheckoutPage() {
   const { customer, loading: authLoading } = useAuth();
@@ -42,13 +35,7 @@ export default function CheckoutPage() {
     'auth'
   );
   
-  // Auth state for Step 0
-  const [authEmail, setAuthEmail] = useState(customer?.email || '');
-  const [authOtp, setAuthOtp] = useState('');
-  const [authStage, setAuthStage] = useState<'email' | 'otp'>('email');
-  const [authLoadingStep, setAuthLoadingStep] = useState(false);
-  const [authError, setAuthError] = useState('');
-
+  // Checkout authentication state is isolated in useCheckoutAuth.
   const [orderId, setOrderId] = useState('');         // display_id for UI
   const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
   const [checkoutPaymentToken, setCheckoutPaymentToken] = useState('');
@@ -73,19 +60,7 @@ export default function CheckoutPage() {
     text: string;
   } | null>(null);
 
-  // PHASE 1.3: Shipping Options State
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] =
-    useState<ShippingOption | null>(null);
-  const [shippingLoading, setShippingLoading] = useState(false);
-  const [freeShippingThreshold, setFreeShippingThreshold] = useState(25000);
-  const [shippingPreviewMessage, setShippingPreviewMessage] = useState('');
-
-  // PHASE 1.4: Tax Calculation State
-  const [taxAmount, setTaxAmount] = useState(0);
-  const [taxLoading, setTaxLoading] = useState(false);
-  const [taxName, setTaxName] = useState('Tax');
-
+  // Shipping and tax state/effects are isolated in useCheckoutPricing.
   // PHASE 1.5: Terms Acceptance State
   const [acceptTerms, setAcceptTerms] = useState(false);
 
@@ -117,10 +92,43 @@ export default function CheckoutPage() {
         last_name: customer.last_name || prev.last_name,
         phone: customer.phone || prev.phone,
       }));
-      setAuthEmail(customer.email);
     }
   }, [customer]);
 
+  const checkoutAuth = useCheckoutAuth({
+    customer,
+    onCustomerVerified: (verifiedCustomer) => {
+      setFormData((prev) => ({
+        ...prev,
+        email: verifiedCustomer.email || prev.email,
+        first_name: verifiedCustomer.first_name || prev.first_name,
+        last_name: verifiedCustomer.last_name || prev.last_name,
+        phone: verifiedCustomer.phone || prev.phone,
+      }));
+      setStep('shipping');
+    },
+  });
+
+  const checkoutPricing = useCheckoutPricing({
+    countryCode: formData.country_code,
+    postalCode: formData.postal_code,
+    cartTotal,
+    discountAmount: discount?.amount || 0,
+    currentRegionId: currentRegion?.id,
+    settings: settings || undefined,
+  });
+
+  const {
+    shippingOptions,
+    selectedShipping,
+    shippingLoading,
+    freeShippingThreshold,
+    shippingPreviewMessage,
+    taxAmount,
+    taxLoading,
+    taxName,
+    setSelectedShipping,
+  } = checkoutPricing;
   // Skip auth step if user is already logged in
   useEffect(() => {
     if (!authLoading && step === 'auth') {
@@ -144,83 +152,6 @@ export default function CheckoutPage() {
     }
   }, [formData.country_code, regions, currentRegion?.id, setRegion]);
 
-  // PHASE 1.3: Fetch shipping options when country changes
-  useEffect(() => {
-    const fetchShippingOptions = async () => {
-      if (!formData.country_code) {
-        setShippingOptions([]);
-        setSelectedShipping(null);
-        setShippingPreviewMessage('');
-        return;
-      }
-
-      setShippingLoading(true);
-      try {
-        const data = await api.getShippingOptions(
-          formData.country_code,
-          currentRegion?.id,
-          formData.postal_code
-        );
-        setShippingPreviewMessage(data.serviceability?.message || '');
-        if (data.options && data.options.length > 0) {
-          setShippingOptions(data.options);
-          setFreeShippingThreshold(data.free_shipping_threshold || 25000);
-          // Auto-select first option
-          setSelectedShipping(data.options[0]);
-        } else {
-          setShippingOptions([]);
-          setSelectedShipping(null);
-        }
-      } catch (error) {
-        console.error('Failed to fetch shipping options:', error);
-        setShippingOptions([]);
-        setSelectedShipping(null);
-        setShippingPreviewMessage('');
-      } finally {
-        setShippingLoading(false);
-      }
-    };
-
-    // Debounce the fetch
-    const timer = setTimeout(fetchShippingOptions, 300);
-    return () => clearTimeout(timer);
-  }, [formData.country_code, formData.postal_code, currentRegion?.id]);
-
-  // PHASE 1.4: Fetch tax when country or cart total changes
-  useEffect(() => {
-    const fetchTax = async () => {
-      if (!formData.country_code || cartTotal === 0) {
-        setTaxAmount(0);
-        return;
-      }
-
-      setTaxLoading(true);
-      try {
-        // Calculate subtotal after discount
-        const subtotal = cartTotal - (discount?.amount || 0);
-        // Pass settings to use dynamic tax rates from backend
-        const data = await api.calculateTax(
-          formData.country_code,
-          subtotal,
-          currentRegion?.id,
-          settings || undefined
-        );
-        if (data.tax_amount) {
-          setTaxAmount(data.tax_amount);
-          setTaxName(data.tax_name || 'Tax');
-        }
-      } catch (error) {
-        console.error('Failed to calculate tax:', error);
-        setTaxAmount(0);
-      } finally {
-        setTaxLoading(false);
-      }
-    };
-
-    const timer = setTimeout(fetchTax, 500);
-    return () => clearTimeout(timer);
-  }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id, settings]);
-
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return;
     setPromoLoading(true);
@@ -240,43 +171,6 @@ export default function CheckoutPage() {
     }
   };
 
-
-  const handleSendCheckoutOtp = async () => {
-    if (!authEmail) return;
-    setAuthLoadingStep(true);
-    setAuthError('');
-    try {
-      await api.sendCheckoutOtp(authEmail);
-      setAuthStage('otp');
-    } catch (err: unknown) {
-      const authRequestError = err as Error;
-      setAuthError(authRequestError.message || 'Failed to send OTP');
-    } finally {
-      setAuthLoadingStep(false);
-    }
-  };
-
-  const handleVerifyCheckoutOtp = async () => {
-    if (authOtp.length !== 6) return;
-    setAuthLoadingStep(true);
-    setAuthError('');
-    try {
-      const res = await api.verifyCheckoutOtp(authEmail, authOtp);
-      setFormData((prev) => ({
-        ...prev,
-        email: res.customer.email || prev.email,
-        first_name: res.customer.first_name || prev.first_name,
-        last_name: res.customer.last_name || prev.last_name,
-        phone: res.customer.phone || prev.phone,
-      }));
-      setStep('shipping');
-    } catch (err: unknown) {
-      const verificationError = err as Error;
-      setAuthError(verificationError.message || 'Invalid OTP');
-    } finally {
-      setAuthLoadingStep(false);
-    }
-  };
 
   // PHASE 1.1: Allow guest checkout - removed login requirement
   // Guests can now checkout without creating an account
@@ -596,16 +490,16 @@ export default function CheckoutPage() {
 
             {step === 'auth' ? (
               <CheckoutAuthStep
-                authEmail={authEmail}
-                authOtp={authOtp}
-                authStage={authStage}
-                authLoading={authLoadingStep}
-                authError={authError}
-                onEmailChange={setAuthEmail}
-                onOtpChange={setAuthOtp}
-                onSendOtp={handleSendCheckoutOtp}
-                onVerifyOtp={handleVerifyCheckoutOtp}
-                onChangeEmail={() => setAuthStage('email')}
+                authEmail={checkoutAuth.authEmail}
+                authOtp={checkoutAuth.authOtp}
+                authStage={checkoutAuth.authStage}
+                authLoading={checkoutAuth.authLoading}
+                authError={checkoutAuth.authError}
+                onEmailChange={checkoutAuth.setAuthEmail}
+                onOtpChange={checkoutAuth.setAuthOtp}
+                onSendOtp={checkoutAuth.sendOtp}
+                onVerifyOtp={checkoutAuth.verifyOtp}
+                onChangeEmail={checkoutAuth.changeEmail}
               />
             ) : step === 'shipping' ? (
               <CheckoutShippingForm

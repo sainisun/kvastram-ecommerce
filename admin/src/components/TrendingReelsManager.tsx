@@ -290,17 +290,17 @@ export default function TrendingReelsManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Trending Reels</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Trending Reels</h1>
+          <p className="mt-1 text-sm text-[var(--kv-text)]">
             Manage the vertical video cards shown below the hero banner.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
         >
           <Plus size={18} />
           Add New Reel
@@ -308,16 +308,16 @@ export default function TrendingReelsManager() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total Reels</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{reels.length}</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Total Reels</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-text)]">{reels.length}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Active</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Active</p>
           <p className="mt-2 text-3xl font-bold text-emerald-600">{activeCount}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Inactive</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Inactive</p>
           <p className="mt-2 text-3xl font-bold text-amber-600">
             {reels.length - activeCount}
           </p>
@@ -325,24 +325,24 @@ export default function TrendingReelsManager() {
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-10 text-center text-[var(--kv-muted)] shadow-sm">
           Loading trending reels...
         </div>
       ) : reels.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+        <div className="rounded-2xl border border-dashed border-[var(--kv-border)] bg-[var(--kv-card)] p-12 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]">
             <Film size={24} />
           </div>
-          <h2 className="mt-4 text-lg font-semibold text-gray-900">
+          <h2 className="mt-4 text-lg font-semibold text-[var(--kv-text)]">
             No trending reels yet
           </h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-[var(--kv-muted)]">
             Add your first reel to create the homepage video strip.
           </p>
           <button
             type="button"
             onClick={openCreateModal}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
           >
             <Plus size={18} />
             Add New Reel
@@ -353,9 +353,9 @@ export default function TrendingReelsManager() {
           {reels.map((reel) => (
             <div
               key={reel.id}
-              className="grid gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
+              className="grid gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
             >
-              <div className="relative h-[280px] overflow-hidden rounded-xl bg-gray-100">
+              <div className="relative h-[280px] overflow-hidden rounded-xl bg-[var(--kv-soft)]">
                 <Image
                   src={reel.thumbnail_url}
                   alt={reel.product_name}
@@ -367,10 +367,10 @@ export default function TrendingReelsManager() {
 
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                  <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-xs font-medium text-[var(--kv-text)]">
                     Sort #{reel.sort_order}
                   </span>
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                  <span className="rounded-full bg-[var(--kv-accent)]/10 px-3 py-1 text-xs font-medium text-[var(--kv-accent-deep)]">
                     {reel.view_count || 0} views
                   </span>
                   <span
@@ -385,21 +385,21 @@ export default function TrendingReelsManager() {
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-[var(--kv-text)]">
                     {reel.product_name}
                   </h2>
-                  <p className="mt-1 text-sm font-medium text-gray-700">
+                  <p className="mt-1 text-sm font-medium text-[var(--kv-text)]">
                     {reel.price}
                   </p>
                 </div>
 
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-[var(--kv-text)]">
                   <p className="break-all">
-                    <span className="font-medium text-gray-900">Video:</span>{' '}
+                    <span className="font-medium text-[var(--kv-text)]">Video:</span>{' '}
                     {reel.video_url}
                   </p>
                   <p className="break-all">
-                    <span className="font-medium text-gray-900">Link:</span>{' '}
+                    <span className="font-medium text-[var(--kv-text)]">Link:</span>{' '}
                     {reel.link_url}
                   </p>
                 </div>
@@ -410,7 +410,7 @@ export default function TrendingReelsManager() {
                   type="button"
                   onClick={() => handleToggle(reel.id)}
                   disabled={togglingId === reel.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {reel.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                   {togglingId === reel.id
@@ -422,7 +422,7 @@ export default function TrendingReelsManager() {
                 <button
                   type="button"
                   onClick={() => openEditModal(reel)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   <Pencil size={16} />
                   Edit
@@ -431,7 +431,7 @@ export default function TrendingReelsManager() {
                   type="button"
                   onClick={() => handleDelete(reel.id)}
                   disabled={deletingId === reel.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-danger)]/30 px-4 py-2 text-sm font-medium text-[var(--kv-danger)] transition hover:bg-[var(--kv-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Trash2 size={16} />
                   {deletingId === reel.id ? 'Deleting...' : 'Delete'}
@@ -440,7 +440,7 @@ export default function TrendingReelsManager() {
                   href={reel.link_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-accent)]/30 px-4 py-2 text-sm font-medium text-[var(--kv-accent-deep)] transition hover:bg-[var(--kv-accent)]/10"
                 >
                   <ExternalLink size={16} />
                   Open Link
@@ -453,13 +453,13 @@ export default function TrendingReelsManager() {
 
       {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-[var(--kv-card)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--kv-border)] px-6 py-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[var(--kv-text)]">
                   {editingReel ? 'Edit Trending Reel' : 'Add Trending Reel'}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-[var(--kv-muted)]">
                   Upload a vertical product video and thumbnail for the homepage reel strip.
                 </p>
               </div>
@@ -467,7 +467,7 @@ export default function TrendingReelsManager() {
                 type="button"
                 onClick={closeModal}
                 aria-label="Close trending reel form"
-                className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-full p-2 text-[var(--kv-muted)] transition hover:bg-[var(--kv-soft)] hover:text-[var(--kv-text)]"
               >
                 <X size={18} />
               </button>
@@ -476,19 +476,19 @@ export default function TrendingReelsManager() {
             <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
               <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                  <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-soft)] p-4">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Reel Video {editingReel ? '' : '*'}
                     </label>
-                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-4 transition hover:border-blue-400 hover:bg-blue-50/40">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-[var(--kv-border)] bg-[var(--kv-card)] px-4 py-4 transition hover:border-[var(--kv-accent)]/60 hover:bg-[var(--kv-accent)]/10/40">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]">
                         <Upload size={18} />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-gray-900">
+                        <p className="truncate text-sm font-medium text-[var(--kv-text)]">
                           {form.videoName || 'Choose MP4 or MOV video'}
                         </p>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-[var(--kv-muted)]">
                           Vertical reels work best. Max 50MB.
                         </p>
                       </div>
@@ -504,10 +504,10 @@ export default function TrendingReelsManager() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Thumbnail {editingReel ? '' : '*'}
                     </label>
-                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center transition hover:border-blue-400 hover:bg-blue-50/40">
+                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-8 text-center transition hover:border-[var(--kv-accent)]/60 hover:bg-[var(--kv-accent)]/10/40">
                       {form.thumbnailPreview ? (
                         // Local object URLs are only used for temporary client-side preview.
                         // eslint-disable-next-line @next/next/no-img-element
@@ -517,14 +517,14 @@ export default function TrendingReelsManager() {
                           className="mb-4 h-[240px] w-[180px] rounded-xl object-cover"
                         />
                       ) : (
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-card)] text-[var(--kv-accent-deep)] shadow-sm">
                           <Film size={24} />
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-[var(--kv-text)]">
                         Click to choose thumbnail image
                       </span>
-                      <span className="mt-1 text-xs text-gray-500">
+                      <span className="mt-1 text-xs text-[var(--kv-muted)]">
                         JPG, PNG, or WEBP up to 5MB
                       </span>
                       <input
@@ -541,11 +541,11 @@ export default function TrendingReelsManager() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Linked Product
                     </label>
                     <select
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 mb-4"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100 mb-4"
                       value={form.productId}
                       onChange={(e) => {
                         const product = products.find((p) => p.id === e.target.value);
@@ -576,10 +576,10 @@ export default function TrendingReelsManager() {
                       ))}
                     </select>
 
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Product Name
                     </label>
-                    <p className="mb-2 text-xs text-gray-500">
+                    <p className="mb-2 text-xs text-[var(--kv-muted)]">
                       This title is shown on the storefront reel card and inside the reel player.
                     </p>
                     <input
@@ -590,14 +590,14 @@ export default function TrendingReelsManager() {
                           productName: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="Mulmul Summer Dress"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Price Label
                     </label>
                     <input
@@ -608,17 +608,17 @@ export default function TrendingReelsManager() {
                           price: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="Rs. 5,999"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Price Amount <span className="text-gray-400 font-normal">(INR paise — for currency conversion)</span>
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
+                      Price Amount <span className="text-[var(--kv-muted)] font-normal">(INR paise — for currency conversion)</span>
                     </label>
-                    <p className="mb-2 text-xs text-gray-500">
+                    <p className="mb-2 text-xs text-[var(--kv-muted)]">
                       Enter price in paise e.g. ₹5,999 → type 599900. Auto-filled when you select a product above.
                     </p>
                     <input
@@ -631,16 +631,16 @@ export default function TrendingReelsManager() {
                           priceAmount: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="599900"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Link URL
                     </label>
-                    <p className="mb-2 text-xs text-gray-500">
+                    <p className="mb-2 text-xs text-[var(--kv-muted)]">
                       This product URL powers the Buy Now action on the trending reel experience.
                     </p>
                     <input
@@ -651,7 +651,7 @@ export default function TrendingReelsManager() {
                           linkUrl: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="/products/mulmul-summer-dress"
                       required
                     />
@@ -659,7 +659,7 @@ export default function TrendingReelsManager() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         Sort Order
                       </label>
                       <input
@@ -672,12 +672,12 @@ export default function TrendingReelsManager() {
                             sortOrder: event.target.value,
                           }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       />
                     </div>
 
                     <div className="flex items-end">
-                      <label className="inline-flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700">
+                      <label className="inline-flex items-center gap-3 rounded-xl border border-[var(--kv-border)] px-4 py-3 text-sm font-medium text-[var(--kv-text)]">
                         <input
                           type="checkbox"
                           checked={form.isActive}
@@ -687,7 +687,7 @@ export default function TrendingReelsManager() {
                               isActive: event.target.checked,
                             }))
                           }
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-accent-deep)] focus:ring-blue-500"
                         />
                         Active on storefront
                       </label>
@@ -696,18 +696,18 @@ export default function TrendingReelsManager() {
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-4 sm:flex-row sm:justify-end">
+              <div className="flex flex-col-reverse gap-3 border-t border-[var(--kv-border)] pt-4 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="rounded-xl border border-[var(--kv-border)] px-4 py-2.5 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
                     ? form.videoFile

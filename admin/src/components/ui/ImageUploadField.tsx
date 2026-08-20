@@ -58,37 +58,37 @@ export default function ImageUploadField({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-[var(--kv-text)]">
         {label}
         {required ? ' *' : ''}
       </label>
 
       {value ? (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <div className={`relative ${previewClassName} bg-gray-50`}>
+        <div className="overflow-hidden rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)]">
+          <div className={`relative ${previewClassName} bg-[var(--kv-soft)]`}>
             <img
               src={value}
               alt={label}
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="flex items-center justify-between gap-3 border-t border-gray-100 p-3">
+          <div className="flex items-center justify-between gap-3 border-t border-[var(--kv-border)] p-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs text-gray-500">{value}</p>
+              <p className="truncate text-xs text-[var(--kv-muted)]">{value}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
                 disabled={uploading}
-                className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-md border border-[var(--kv-border)] px-3 py-2 text-xs font-medium text-[var(--kv-text)] transition hover:border-[var(--kv-border)] hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {uploading ? 'Uploading...' : uploadButtonText}
               </button>
               <button
                 type="button"
                 onClick={() => onChange('')}
-                className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="inline-flex items-center gap-1 rounded-md border border-[var(--kv-border)] px-3 py-2 text-xs font-medium text-[var(--kv-text)] transition hover:border-[var(--kv-danger)]/30 hover:bg-[var(--kv-danger)]/10 hover:text-[var(--kv-danger)]"
               >
                 <X size={14} />
                 Clear
@@ -101,7 +101,7 @@ export default function ImageUploadField({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-4 text-sm font-medium text-[var(--kv-text)] transition hover:border-[var(--kv-muted)] hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploading ? (
             'Uploading...'
@@ -122,7 +122,7 @@ export default function ImageUploadField({
         onChange={handleFileChange}
       />
 
-      {helpText ? <p className="text-xs text-gray-500">{helpText}</p> : null}
+      {helpText ? <p className="text-xs text-[var(--kv-muted)]">{helpText}</p> : null}
     </div>
   );
 }

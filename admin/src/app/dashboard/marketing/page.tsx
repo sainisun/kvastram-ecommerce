@@ -185,15 +185,15 @@ export default function MarketingPage() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Coupons</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Coupons</h1>
+          <p className="mt-1 text-sm text-[var(--kv-text)]">
             Create and manage discount codes for the storefront.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateForm}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--kv-text)] px-4 py-2 text-sm font-semibold text-[var(--kv-card)] hover:bg-[var(--kv-text)]"
         >
           <Plus size={16} />
           New Coupon
@@ -201,30 +201,30 @@ export default function MarketingPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Total Coupons</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{discounts.length}</p>
+        <div className="rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)] p-5">
+          <p className="text-sm text-[var(--kv-muted)]">Total Coupons</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-text)]">{discounts.length}</p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Active</p>
-          <p className="mt-2 text-3xl font-bold text-green-700">{stats.active}</p>
+        <div className="rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)] p-5">
+          <p className="text-sm text-[var(--kv-muted)]">Active</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-success)]">{stats.active}</p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Total Uses</p>
-          <p className="mt-2 text-3xl font-bold text-blue-700">{stats.totalUses}</p>
+        <div className="rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)] p-5">
+          <p className="text-sm text-[var(--kv-muted)]">Total Uses</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-accent-deep)]">{stats.totalUses}</p>
         </div>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-lg border border-gray-200 bg-white p-5">
+        <form onSubmit={handleSubmit} className="rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)] p-5">
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-[var(--kv-text)]">
               {editingDiscount ? 'Edit Coupon' : 'Create Coupon'}
             </h2>
             <button
               type="button"
               onClick={closeForm}
-              className="text-sm font-medium text-gray-500 hover:text-gray-900"
+              className="text-sm font-medium text-[var(--kv-muted)] hover:text-[var(--kv-text)]"
             >
               Cancel
             </button>
@@ -232,21 +232,21 @@ export default function MarketingPage() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Code</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Code</span>
               <input
                 type="text"
                 value={form.code}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, code: event.target.value.toUpperCase() }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)]"
                 placeholder="WELCOME10"
                 required
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Type</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Type</span>
               <select
                 value={form.type}
                 onChange={(event) =>
@@ -256,7 +256,7 @@ export default function MarketingPage() {
                     value: event.target.value === 'free_shipping' ? '0' : current.value,
                   }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)]"
               >
                 <option value="percentage">Percentage</option>
                 <option value="fixed_amount">Fixed Amount</option>
@@ -265,7 +265,7 @@ export default function MarketingPage() {
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Value</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Value</span>
               <input
                 type="number"
                 min="0"
@@ -274,12 +274,12 @@ export default function MarketingPage() {
                 onChange={(event) =>
                   setForm((current) => ({ ...current, value: event.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black disabled:bg-gray-100"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)] disabled:bg-[var(--kv-soft)]"
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Usage Limit</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Usage Limit</span>
               <input
                 type="number"
                 min="1"
@@ -287,44 +287,44 @@ export default function MarketingPage() {
                 onChange={(event) =>
                   setForm((current) => ({ ...current, usage_limit: event.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)]"
                 placeholder="No limit"
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Starts At</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Starts At</span>
               <input
                 type="date"
                 value={form.starts_at}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, starts_at: event.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)]"
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Ends At</span>
+              <span className="mb-1 block text-sm font-medium text-[var(--kv-text)]">Ends At</span>
               <input
                 type="date"
                 value={form.ends_at}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, ends_at: event.target.value }))
                 }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                className="w-full rounded-lg border border-[var(--kv-border)] px-3 py-2 text-sm outline-none focus:border-[var(--kv-text)]"
               />
             </label>
           </div>
 
-          <label className="mt-4 flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="mt-4 flex items-center gap-2 text-sm font-medium text-[var(--kv-text)]">
             <input
               type="checkbox"
               checked={form.is_active}
               onChange={(event) =>
                 setForm((current) => ({ ...current, is_active: event.target.checked }))
               }
-              className="h-4 w-4 rounded border-gray-300"
+              className="h-4 w-4 rounded border-[var(--kv-border)]"
             />
             Active
           </label>
@@ -333,7 +333,7 @@ export default function MarketingPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-[var(--kv-text)] px-4 py-2 text-sm font-semibold text-[var(--kv-card)] hover:bg-[var(--kv-text)] disabled:opacity-60"
             >
               {saving && <Loader2 size={16} className="animate-spin" />}
               {editingDiscount ? 'Update Coupon' : 'Create Coupon'}
@@ -342,64 +342,64 @@ export default function MarketingPage() {
         </form>
       )}
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-lg border border-[var(--kv-border)] bg-[var(--kv-card)]">
         {loading ? (
-          <div className="flex items-center justify-center gap-2 p-10 text-gray-500">
+          <div className="flex items-center justify-center gap-2 p-10 text-[var(--kv-muted)]">
             <Loader2 size={18} className="animate-spin" />
             Loading coupons...
           </div>
         ) : discounts.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
-            <Tag size={36} className="mb-3 text-gray-300" />
-            <h2 className="text-lg font-semibold text-gray-900">No coupons yet</h2>
-            <p className="mt-1 text-sm text-gray-500">Create your first discount code.</p>
+            <Tag size={36} className="mb-3 text-[var(--kv-muted)]" />
+            <h2 className="text-lg font-semibold text-[var(--kv-text)]">No coupons yet</h2>
+            <p className="mt-1 text-sm text-[var(--kv-muted)]">Create your first discount code.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[var(--kv-border)]">
+              <thead className="bg-[var(--kv-soft)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Code
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Value
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Usage
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Ends
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--kv-muted)]">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
+              <tbody className="divide-y divide-gray-100 bg-[var(--kv-card)]">
                 {discounts.map((discount) => (
-                  <tr key={discount.id} className="hover:bg-gray-50">
+                  <tr key={discount.id} className="hover:bg-[var(--kv-soft)]">
                     <td className="px-6 py-4">
-                      <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm font-semibold text-gray-900">
+                      <span className="rounded bg-[var(--kv-soft)] px-2 py-1 font-mono text-sm font-semibold text-[var(--kv-text)]">
                         {discount.code}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm capitalize text-gray-700">
+                    <td className="px-6 py-4 text-sm capitalize text-[var(--kv-text)]">
                       {(discount.type || 'unknown').replace('_', ' ')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-[var(--kv-text)]">
                       {formatDiscountValue(discount)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-[var(--kv-text)]">
                       {discount.usage_count || 0} / {discount.usage_limit || 'No limit'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    <td className="px-6 py-4 text-sm text-[var(--kv-text)]">
                       {discount.ends_at
                         ? new Date(discount.ends_at).toLocaleDateString()
                         : 'No end date'}
@@ -408,8 +408,8 @@ export default function MarketingPage() {
                       <span
                         className={`rounded-full px-2 py-1 text-xs font-semibold ${
                           discount.is_active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-[var(--kv-success)]/10 text-[var(--kv-success)]'
+                            : 'bg-[var(--kv-soft)] text-[var(--kv-text)]'
                         }`}
                       >
                         {discount.is_active ? 'Active' : 'Inactive'}
@@ -421,7 +421,7 @@ export default function MarketingPage() {
                           type="button"
                           onClick={() => openEditForm(discount)}
                           aria-label={`Edit coupon ${discount.code}`}
-                          className="rounded p-2 text-blue-600 hover:bg-blue-50"
+                          className="rounded p-2 text-[var(--kv-accent-deep)] hover:bg-[var(--kv-accent)]/10"
                           title="Edit coupon"
                         >
                           <Edit2 size={16} />
@@ -430,7 +430,7 @@ export default function MarketingPage() {
                           type="button"
                           onClick={() => handleDelete(discount)}
                           aria-label={`Delete coupon ${discount.code}`}
-                          className="rounded p-2 text-red-600 hover:bg-red-50"
+                          className="rounded p-2 text-[var(--kv-danger)] hover:bg-[var(--kv-danger)]/10"
                           title="Delete coupon"
                         >
                           <Trash2 size={16} />

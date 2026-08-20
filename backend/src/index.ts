@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { csrf } from 'hono/csrf';
 import {
@@ -29,6 +28,7 @@ import { healthCheck } from './db/client';
 
 // Import error handler
 import { errorHandler } from './middleware/error-handler';
+import { requestObservability } from './middleware/request-observability';
 import { successResponse, errorResponse } from './utils/api-response';
 
 // Import routes
@@ -113,33 +113,12 @@ import { startSeoCronScheduler, stopSeoCronScheduler } from './cron';
 
 const app = new Hono();
 
-// 🕵️‍♂️ TRACER: Log every request to confirm frontend-backend communication (dev only)
-if (process.env.NODE_ENV !== 'production') {
-  app.use('*', async (c, next) => {
-    const method = c.req.method;
-    const path = c.req.path.split('?')[0]; // Mask query params
-    const traceId = c.req.header('x-debug-trace') || 'NONE';
-
-    console.log(
-      `[TRACER] ${method} ${path} | Trace-ID: ${traceId} | Time: ${new Date().toISOString()}`
-    );
-
-    if (traceId !== 'NONE') {
-      console.log(
-        `[TRACER] ✅ MATCH! Request received from frontend with ID: ${traceId}`
-      );
-    }
-
-    await next();
-  });
-}
-
 // Serve uploaded files as static assets (no auth required)
 app.use('/uploads/*', serveStatic({ root: '/app' }));
 
-// Security & Logging Middleware
+// Security, request observability, and logging middleware
 app.use('*', secureHeaders());
-app.use('*', logger());
+app.use('*', requestObservability);
 
 // OPT-004: Request timeout for all routes (30s default)
 app.use('*', defaultTimeout);

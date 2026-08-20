@@ -245,17 +245,17 @@ export default function CategoryCirclesManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Category Circles</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Category Circles</h1>
+          <p className="mt-1 text-sm text-[var(--kv-text)]">
             Manage the circular category row shown below the category page banner on mobile.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
         >
           <Plus size={18} />
           Add New Circle
@@ -263,16 +263,16 @@ export default function CategoryCirclesManager() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total Circles</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{circles.length}</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Total Circles</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--kv-text)]">{circles.length}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Active</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Active</p>
           <p className="mt-2 text-3xl font-bold text-emerald-600">{activeCount}</p>
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Inactive</p>
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-sm">
+          <p className="text-sm text-[var(--kv-muted)]">Inactive</p>
           <p className="mt-2 text-3xl font-bold text-amber-600">
             {circles.length - activeCount}
           </p>
@@ -280,24 +280,24 @@ export default function CategoryCirclesManager() {
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+        <div className="rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-10 text-center text-[var(--kv-muted)] shadow-sm">
           Loading category circles...
         </div>
       ) : circles.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+        <div className="rounded-2xl border border-dashed border-[var(--kv-border)] bg-[var(--kv-card)] p-12 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-accent)]/10 text-[var(--kv-accent-deep)]">
             <FolderOpen size={24} />
           </div>
-          <h2 className="mt-4 text-lg font-semibold text-gray-900">
+          <h2 className="mt-4 text-lg font-semibold text-[var(--kv-text)]">
             No category circles yet
           </h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-[var(--kv-muted)]">
             Add your first circle to populate the mobile category scroller.
           </p>
           <button
             type="button"
             onClick={openCreateModal}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)]"
           >
             <Plus size={18} />
             Add New Circle
@@ -308,9 +308,9 @@ export default function CategoryCirclesManager() {
           {circles.map((circle) => (
             <div
               key={circle.id}
-              className="grid gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
+              className="grid gap-4 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] p-4 shadow-sm lg:grid-cols-[220px_1fr_auto]"
             >
-              <div className="relative h-[220px] w-[220px] overflow-hidden rounded-full bg-gray-100">
+              <div className="relative h-[220px] w-[220px] overflow-hidden rounded-full bg-[var(--kv-soft)]">
                 <Image
                   src={circle.image_url}
                   alt={circle.label}
@@ -322,7 +322,7 @@ export default function CategoryCirclesManager() {
 
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                  <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-xs font-medium text-[var(--kv-text)]">
                     Sort #{circle.sort_order}
                   </span>
                   <span
@@ -337,11 +337,11 @@ export default function CategoryCirclesManager() {
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold tracking-[0.08em] text-gray-900 uppercase">
+                  <h2 className="text-lg font-semibold tracking-[0.08em] text-[var(--kv-text)] uppercase">
                     {circle.label}
                   </h2>
-                  <p className="mt-2 break-all text-sm text-gray-600">
-                    <span className="font-medium text-gray-900">Link:</span>{' '}
+                  <p className="mt-2 break-all text-sm text-[var(--kv-text)]">
+                    <span className="font-medium text-[var(--kv-text)]">Link:</span>{' '}
                     {circle.link_url}
                   </p>
                 </div>
@@ -352,7 +352,7 @@ export default function CategoryCirclesManager() {
                   type="button"
                   onClick={() => handleToggle(circle.id)}
                   disabled={togglingId === circle.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {circle.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                   {togglingId === circle.id
@@ -364,7 +364,7 @@ export default function CategoryCirclesManager() {
                 <button
                   type="button"
                   onClick={() => openEditModal(circle)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-border)] px-4 py-2 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   <Pencil size={16} />
                   Edit
@@ -373,7 +373,7 @@ export default function CategoryCirclesManager() {
                   type="button"
                   onClick={() => handleDelete(circle.id)}
                   disabled={deletingId === circle.id}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-danger)]/30 px-4 py-2 text-sm font-medium text-[var(--kv-danger)] transition hover:bg-[var(--kv-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Trash2 size={16} />
                   {deletingId === circle.id ? 'Deleting...' : 'Delete'}
@@ -382,7 +382,7 @@ export default function CategoryCirclesManager() {
                   href={circle.link_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--kv-accent)]/30 px-4 py-2 text-sm font-medium text-[var(--kv-accent-deep)] transition hover:bg-[var(--kv-accent)]/10"
                 >
                   <ExternalLink size={16} />
                   Open Link
@@ -395,13 +395,13 @@ export default function CategoryCirclesManager() {
 
       {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-[var(--kv-card)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--kv-border)] px-6 py-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[var(--kv-text)]">
                   {editingCircle ? 'Edit Category Circle' : 'Add Category Circle'}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-[var(--kv-muted)]">
                   Upload a square image, label, and destination for the mobile circle row.
                 </p>
               </div>
@@ -409,7 +409,7 @@ export default function CategoryCirclesManager() {
                 type="button"
                 onClick={closeModal}
                 aria-label="Close category circle form"
-                className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-full p-2 text-[var(--kv-muted)] transition hover:bg-[var(--kv-soft)] hover:text-[var(--kv-text)]"
               >
                 <X size={18} />
               </button>
@@ -418,10 +418,10 @@ export default function CategoryCirclesManager() {
             <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
               <div className="grid gap-6 lg:grid-cols-[1fr_1.05fr]">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                  <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                     Circle Image {editingCircle ? '' : '*'}
                   </label>
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center transition hover:border-blue-400 hover:bg-blue-50/40">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-8 text-center transition hover:border-[var(--kv-accent)]/60 hover:bg-[var(--kv-accent)]/10/40">
                     {form.imagePreview ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -430,14 +430,14 @@ export default function CategoryCirclesManager() {
                         className="mb-4 h-[220px] w-[220px] rounded-full object-cover"
                       />
                     ) : (
-                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--kv-card)] text-[var(--kv-accent-deep)] shadow-sm">
                         <Upload size={22} />
                       </div>
                     )}
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-[var(--kv-text)]">
                       Click to choose circle image
                     </span>
-                    <span className="mt-1 text-xs text-gray-500">
+                    <span className="mt-1 text-xs text-[var(--kv-muted)]">
                       JPG, PNG, or WEBP up to 5MB
                     </span>
                     <input
@@ -453,7 +453,7 @@ export default function CategoryCirclesManager() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Label
                     </label>
                     <input
@@ -464,14 +464,14 @@ export default function CategoryCirclesManager() {
                           label: event.target.value,
                         }))
                       }
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       placeholder="Wedding Sarees"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Catalog Category
                     </label>
                     <select
@@ -486,7 +486,7 @@ export default function CategoryCirclesManager() {
                           linkUrl: selected ? `/collections/${selected.slug}` : current.linkUrl,
                         }));
                       }}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                     >
                       <option value="">-- Select a Category --</option>
                       {catalogCategories.map((category) => (
@@ -498,7 +498,7 @@ export default function CategoryCirclesManager() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                       Linked Collection (Optional)
                     </label>
                     <select
@@ -515,7 +515,7 @@ export default function CategoryCirclesManager() {
                           return update;
                         });
                       }}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       required
                     >
                       <option value="">-- Select a Collection --</option>
@@ -529,7 +529,7 @@ export default function CategoryCirclesManager() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                      <label className="mb-2 block text-sm font-medium text-[var(--kv-text)]">
                         Sort Order
                       </label>
                       <input
@@ -542,12 +542,12 @@ export default function CategoryCirclesManager() {
                             sortOrder: event.target.value,
                           }))
                         }
-                        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-[var(--kv-border)] px-3 py-2.5 text-sm text-[var(--kv-text)] outline-none transition focus:border-[var(--kv-accent)] focus:ring-2 focus:ring-blue-100"
                       />
                     </div>
 
                     <div className="flex items-end">
-                      <label className="inline-flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700">
+                      <label className="inline-flex items-center gap-3 rounded-xl border border-[var(--kv-border)] px-4 py-3 text-sm font-medium text-[var(--kv-text)]">
                         <input
                           type="checkbox"
                           checked={form.isActive}
@@ -557,7 +557,7 @@ export default function CategoryCirclesManager() {
                               isActive: event.target.checked,
                             }))
                           }
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="h-4 w-4 rounded border-[var(--kv-border)] text-[var(--kv-accent-deep)] focus:ring-blue-500"
                         />
                         Active on storefront
                       </label>
@@ -566,18 +566,18 @@ export default function CategoryCirclesManager() {
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-4 sm:flex-row sm:justify-end">
+              <div className="flex flex-col-reverse gap-3 border-t border-[var(--kv-border)] pt-4 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  className="rounded-xl border border-[var(--kv-border)] px-4 py-2.5 text-sm font-medium text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl bg-[var(--kv-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--kv-card)] transition hover:bg-[var(--kv-accent-deep)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
                     ? editingCircle

@@ -37,8 +37,8 @@ export default function EditCategoryPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center text-gray-500">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-3"></div>
+      <div className="p-8 flex items-center justify-center text-[var(--kv-muted)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kv-text)] mr-3"></div>
         Loading category...
       </div>
     );
@@ -46,11 +46,11 @@ export default function EditCategoryPage() {
 
   if (error) {
     return (
-      <div className="p-8 text-center text-red-600">
+      <div className="p-8 text-center text-[var(--kv-danger)]">
         {error}
         <button
           onClick={() => router.push('/dashboard/categories')}
-          className="block mx-auto mt-4 text-blue-600 hover:underline"
+          className="block mx-auto mt-4 text-[var(--kv-accent-deep)] hover:underline"
         >
           Back to Categories
         </button>

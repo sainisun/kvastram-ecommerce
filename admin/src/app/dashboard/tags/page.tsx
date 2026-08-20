@@ -66,8 +66,8 @@ export default function TagsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center text-gray-500">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-3"></div>
+      <div className="p-8 flex items-center justify-center text-[var(--kv-muted)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kv-text)] mr-3"></div>
         Loading tags...
       </div>
     );
@@ -77,15 +77,15 @@ export default function TagsPage() {
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tags</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--kv-text)]">Tags</h1>
+          <p className="text-[var(--kv-muted)] mt-1">
             Manage product tags for filtering and organization
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsCreating(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)] transition-colors"
         >
           <Plus size={20} />
           Add Tag
@@ -94,40 +94,40 @@ export default function TagsPage() {
 
       {/* Create Tag Modal/Form */}
       {isCreating && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-[var(--kv-text)]/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--kv-card)] rounded-xl shadow-xl p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">New Tag</h2>
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
                 aria-label="Close tag form"
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[var(--kv-muted)] hover:text-[var(--kv-text)]"
               >
                 <X size={20} />
               </button>
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">
+              <div className="bg-[var(--kv-danger)]/10 text-[var(--kv-danger)] text-sm p-3 rounded-lg mb-4">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleCreate}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--kv-text)] mb-1">
                   Tag Name
                 </label>
                 <input
                   type="text"
                   value={newTagName}
                   onChange={(e) => setNewTagName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none"
+                  className="w-full px-4 py-2 border border-[var(--kv-border)] rounded-lg focus:ring-2 focus:ring-black focus:border-[var(--kv-text)] outline-none"
                   placeholder="e.g. New Arrival, Sale, Exclusive"
                   autoFocus
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-[var(--kv-muted)] mt-1">
                   Slug will be auto-generated.
                 </p>
               </div>
@@ -135,14 +135,14 @@ export default function TagsPage() {
                 <button
                   type="button"
                   onClick={() => setIsCreating(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-[var(--kv-text)] hover:bg-[var(--kv-soft)] rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!newTagName.trim()}
-                  className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)] transition-colors disabled:opacity-50"
                 >
                   Create Tag
                 </button>
@@ -152,11 +152,11 @@ export default function TagsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-[var(--kv-card)] rounded-xl shadow-sm border border-[var(--kv-border)] overflow-hidden">
         {tags.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            <TagIcon size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-900">No tags found</p>
+          <div className="p-12 text-center text-[var(--kv-muted)]">
+            <TagIcon size={48} className="mx-auto mb-4 text-[var(--kv-muted)]" />
+            <p className="text-lg font-medium text-[var(--kv-text)]">No tags found</p>
             <p className="mt-1">
               Create tags to help customers filter products.
             </p>
@@ -166,22 +166,22 @@ export default function TagsPage() {
             {tags.map((tag) => (
               <div
                 key={tag.id}
-                className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group"
+                className="p-4 flex items-center justify-between hover:bg-[var(--kv-soft)] transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                  <div className="w-8 h-8 rounded-full bg-[var(--kv-soft)] flex items-center justify-center text-[var(--kv-muted)]">
                     <TagIcon size={14} />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{tag.name}</p>
-                    <p className="text-xs text-gray-400">/{tag.slug}</p>
+                    <p className="font-medium text-[var(--kv-text)]">{tag.name}</p>
+                    <p className="text-xs text-[var(--kv-muted)]">/{tag.slug}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleDelete(tag.id)}
                   aria-label={`Delete tag ${tag.name}`}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-2 text-[var(--kv-muted)] hover:text-[var(--kv-danger)] hover:bg-[var(--kv-danger)]/10 rounded transition-colors opacity-0 group-hover:opacity-100"
                   title="Delete Tag"
                 >
                   <Trash2 size={16} />

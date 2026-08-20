@@ -37,12 +37,12 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
   }
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 overflow-hidden bg-white">
-      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 p-1">
+    <div className="w-full rounded-xl border border-[var(--kv-border)] overflow-hidden bg-[var(--kv-card)]">
+      <div className="flex flex-wrap items-center gap-1 border-b border-[var(--kv-border)] bg-[var(--kv-soft)] p-1">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('bold') ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Bold"
         >
           <Bold size={16} />
@@ -50,16 +50,16 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('italic') ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Italic"
         >
           <Italic size={16} />
         </button>
-        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        <div className="w-px h-6 bg-[var(--kv-border)] mx-1"></div>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('heading', { level: 2 }) ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Heading 2"
         >
           <Heading2 size={16} />
@@ -67,16 +67,16 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('heading', { level: 3 }) ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Heading 3"
         >
           <Heading3 size={16} />
         </button>
-        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        <div className="w-px h-6 bg-[var(--kv-border)] mx-1"></div>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bulletList') ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('bulletList') ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Bullet List"
         >
           <List size={16} />
@@ -84,7 +84,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('orderedList') ? 'bg-gray-200 text-black' : 'text-gray-600'}`}
+          className={`p-2 rounded hover:bg-[var(--kv-border)] ${editor.isActive('orderedList') ? 'bg-[var(--kv-border)] text-[var(--kv-text)]' : 'text-[var(--kv-text)]'}`}
           title="Numbered List"
         >
           <ListOrdered size={16} />

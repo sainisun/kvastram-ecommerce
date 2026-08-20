@@ -398,7 +398,7 @@ export default function OrdersPage() {
               setStatusFilter(event.target.value as OrderFilter);
               setPage(1);
             }}
-            className="min-w-[190px] rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
+            className="min-w-[190px] rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-card)] px-4 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
           >
             {FILTERS.map((filter) => (
               <option key={filter.value} value={filter.value}>
@@ -589,7 +589,7 @@ export default function OrdersPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--kv-card)] text-[var(--kv-accent-deep)]">
                         <Truck size={18} />
                       </span>
                     </div>
@@ -645,7 +645,7 @@ export default function OrdersPage() {
                       <select
                         value={workflowStatus}
                         onChange={(event) => void singleUpdate(order.id, event.target.value)}
-                        className="w-full border border-[var(--kv-border)] bg-white px-3 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
+                        className="w-full border border-[var(--kv-border)] bg-[var(--kv-card)] px-3 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
                       >
                         {getStatusOptions(workflowStatus).map((status) => (
                           <option key={status} value={status}>

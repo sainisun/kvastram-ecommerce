@@ -103,7 +103,7 @@ export default function HeaderNavigationPage() {
       // Show success message
       const successMsg = document.createElement('div');
       successMsg.className =
-        'fixed top-4 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg';
+        'fixed top-4 right-4 bg-[var(--kv-success)]/10 border border-[var(--kv-success)]/30 text-[var(--kv-success)] px-4 py-3 rounded-lg';
       successMsg.textContent = 'Header navigation saved!';
       document.body.appendChild(successMsg);
       setTimeout(() => successMsg.remove(), 3000);
@@ -116,8 +116,8 @@ export default function HeaderNavigationPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center text-gray-500">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-3"></div>
+      <div className="p-8 flex items-center justify-center text-[var(--kv-muted)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--kv-text)] mr-3"></div>
         Loading navigation...
       </div>
     );
@@ -126,22 +126,22 @@ export default function HeaderNavigationPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-[var(--kv-text)]">
           Header Navigation Manager
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-[var(--kv-muted)] mt-1">
           Manage which categories appear in the storefront header and their order
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div className="bg-[var(--kv-danger)]/10 border border-[var(--kv-danger)]/30 text-[var(--kv-danger)] px-4 py-3 rounded-lg mb-6">
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <div className="bg-[var(--kv-card)] rounded-xl shadow-sm border border-[var(--kv-border)] overflow-hidden mb-6">
+        <div className="border-b border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-3 grid grid-cols-12 gap-4 text-xs font-medium text-[var(--kv-muted)] uppercase tracking-wider">
           <div className="col-span-5">Category</div>
           <div className="col-span-2 text-center">Image</div>
           <div className="col-span-2 text-center">Visible</div>
@@ -149,8 +149,8 @@ export default function HeaderNavigationPage() {
         </div>
 
         {categories.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            <p className="text-lg font-medium text-gray-900">
+          <div className="p-12 text-center text-[var(--kv-muted)]">
+            <p className="text-lg font-medium text-[var(--kv-text)]">
               No categories in header
             </p>
             <p className="mt-1">
@@ -163,7 +163,7 @@ export default function HeaderNavigationPage() {
             {categories.map((category, index) => (
               <div
                 key={category.id}
-                className="px-4 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors grid grid-cols-12"
+                className="px-4 py-3 flex items-center gap-4 hover:bg-[var(--kv-soft)] transition-colors grid grid-cols-12"
               >
                 <div className="col-span-5 flex items-center gap-3">
                   <div className="flex flex-col items-center">
@@ -172,12 +172,12 @@ export default function HeaderNavigationPage() {
                     )}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-[var(--kv-text)]">
                       {category.name}
                     </p>
-                    <p className="text-xs text-gray-500">{category.slug}</p>
+                    <p className="text-xs text-[var(--kv-muted)]">{category.slug}</p>
                     {category.children && category.children.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-[var(--kv-muted)] mt-1">
                         {category.children.length} subcategories
                       </p>
                     )}
@@ -192,17 +192,17 @@ export default function HeaderNavigationPage() {
                       className="w-10 h-10 object-cover rounded"
                     />
                   ) : (
-                    <span className="text-xs text-gray-400">No image</span>
+                    <span className="text-xs text-[var(--kv-muted)]">No image</span>
                   )}
                 </div>
 
                 <div className="col-span-2 flex justify-center">
                   <button
                     onClick={() => handleShowInHeaderToggle(category.id)}
-                    className="p-2 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-2 rounded text-[var(--kv-muted)] hover:text-[var(--kv-text)] transition-colors"
                   >
                     {category.show_in_header ? (
-                      <Eye size={18} className="text-blue-600" />
+                      <Eye size={18} className="text-[var(--kv-accent-deep)]" />
                     ) : (
                       <EyeOff size={18} />
                     )}
@@ -213,7 +213,7 @@ export default function HeaderNavigationPage() {
                   <button
                     onClick={() => moveUp(index)}
                     disabled={index === 0}
-                    className="p-2 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded text-[var(--kv-muted)] hover:text-[var(--kv-text)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Move up"
                   >
                     <ArrowUp size={18} />
@@ -221,7 +221,7 @@ export default function HeaderNavigationPage() {
                   <button
                     onClick={() => moveDown(index)}
                     disabled={index === categories.length - 1}
-                    className="p-2 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded text-[var(--kv-muted)] hover:text-[var(--kv-text)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Move down"
                   >
                     <ArrowDown size={18} />
@@ -235,16 +235,16 @@ export default function HeaderNavigationPage() {
 
       {categories.length > 0 && (
         <>
-          <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="font-semibold text-gray-900 mb-3">Live Preview</h3>
-            <p className="text-xs text-gray-600 mb-4">
+          <div className="mb-8 p-6 bg-[var(--kv-soft)] rounded-lg border border-[var(--kv-border)]">
+            <h3 className="font-semibold text-[var(--kv-text)] mb-3">Live Preview</h3>
+            <p className="text-xs text-[var(--kv-text)] mb-4">
               Header will show these categories in this order:
             </p>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="px-3 py-1 bg-white border border-gray-300 rounded text-sm text-gray-700 flex items-center gap-2"
+                  className="px-3 py-1 bg-[var(--kv-card)] border border-[var(--kv-border)] rounded text-sm text-[var(--kv-text)] flex items-center gap-2"
                 >
                   {cat.emoji && <span>{cat.emoji}</span>}
                   <span>{cat.name}</span>
@@ -257,7 +257,7 @@ export default function HeaderNavigationPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2 bg-[var(--kv-text)] text-[var(--kv-card)] rounded-lg hover:bg-[var(--kv-text)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 'Saving...'
