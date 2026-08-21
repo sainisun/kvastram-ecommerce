@@ -12,6 +12,7 @@ import { BestSellers } from '@/components/home/BestSellers';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { CraftJourneySection } from '@/components/home/CraftJourneySection';
+import { EditorialDiscovery } from '@/components/home/EditorialDiscovery';
 import { HomepageFallback } from '@/components/home/HomepageFallback';
 import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
@@ -99,6 +100,12 @@ export default async function Home() {
 
           {/* S5. New Arrivals */}
           <NewArrivals products={homepage.new_arrivals} />
+
+          {/* S5b. Editorial discovery driven by live category and collection payloads */}
+          <EditorialDiscovery
+            categories={homepage.featured_categories}
+            collections={homepage.collections}
+          />
 
           {/* S6. Watch & Buy */}
           <WatchBuyPreview reels={homepage.watch_shop} />
