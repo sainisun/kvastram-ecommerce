@@ -44,10 +44,10 @@ test.describe('Storefront visual contract', () => {
     }
   });
 
-  test('homepage renders the exact 8-section contract in order', async ({ page }) => {
+  test('homepage renders the exact 9-section contract in order', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const sections = page.locator('[data-home-section]');
-    await expect(sections).toHaveCount(8);
+    await expect(sections).toHaveCount(9);
     await expect(sections.first()).toHaveAttribute('data-home-section', /1-circle-categories/, {
       timeout: 10000,
     });
@@ -59,6 +59,7 @@ test.describe('Storefront visual contract', () => {
       '3-trust-bar',
       '5-best-sellers',
       '8-new-arrivals',
+      'editorial-discovery',
       '12-watch-shop',
       '10-craft-journey',
       '15-footer',
