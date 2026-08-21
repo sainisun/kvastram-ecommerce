@@ -603,9 +603,9 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {product.description ? (
-              <div 
+              <div
                 className={[styles['pdp-summary-description'], 'prose', 'prose-sm', 'max-w-none', 'text-[var(--kv-muted)]'].filter(Boolean).join(' ')}
-                dangerouslySetInnerHTML={{ __html: product.description }} 
+                dangerouslySetInnerHTML={{ __html: sanitizeProductRichText(product.description) }}
               />
             ) : null}
 

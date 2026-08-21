@@ -2,6 +2,7 @@
 
 import type { SizeGuide as SizeGuideType, SizeMeasurement } from '@/types';
 import { Modal } from '@/design-system';
+import { sanitizeProductRichText } from '@/lib/sanitize-product-rich-text';
 
 interface SizeGuideProps {
   isOpen: boolean;
@@ -74,7 +75,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               <h3 className="font-body text-body-xs font-[var(--ds-type-strong-weight)] tracking-[var(--ds-type-label-tracking)] uppercase text-primary mb-4 text-[var(--kv-text)]">
                 Product Size Guide
               </h3>
-              <div dangerouslySetInnerHTML={{ __html: sizeGuide }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeProductRichText(sizeGuide) }} />
             </div>
           ) : sizeGuide && typeof sizeGuide === 'object' ? (
             renderCustomSizeChart(sizeGuide)
@@ -237,4 +238,3 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
     </Modal>
   );
 }
-
