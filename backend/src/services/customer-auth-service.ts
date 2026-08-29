@@ -17,6 +17,13 @@ import {
 // 🔒 FIX-011: Email verification constants
 const VERIFICATION_TOKEN_EXPIRY_MINUTES = 10;
 
+export class OtpLockoutError extends Error {
+  constructor() {
+    super('Too many attempts. Request a new OTP.');
+    this.name = 'OtpLockoutError';
+  }
+}
+
 // 🔒 Q9: Account Lockout Configuration (shared constants)
 import {
   MAX_FAILED_ATTEMPTS,
@@ -439,6 +446,7 @@ export const customerAuthService = {
       .set({
         verification_token: hashedOtp,
         verification_expires_at: verificationExpires,
+        verification_attempts: 0,
         updated_at: new Date(),
       })
       .where(eq(customers.id, customer.id));
@@ -482,8 +490,36 @@ export const customerAuthService = {
       throw new Error('OTP has expired');
     }
 
+    if ((customer.verification_attempts || 0) >= MAX_FAILED_ATTEMPTS) {
+      throw new OtpLockoutError();
+    }
+
     const isValid = await bcrypt.compare(otp, customer.verification_token);
     if (!isValid) {
+      const newAttempts = (customer.verification_attempts || 0) + 1;
+
+      if (newAttempts >= MAX_FAILED_ATTEMPTS) {
+        await db
+          .update(customers)
+          .set({
+            verification_token: null,
+            verification_expires_at: null,
+            verification_attempts: MAX_FAILED_ATTEMPTS,
+            updated_at: new Date(),
+          })
+          .where(eq(customers.id, customer.id));
+
+        throw new OtpLockoutError();
+      }
+
+      await db
+        .update(customers)
+        .set({
+          verification_attempts: newAttempts,
+          updated_at: new Date(),
+        })
+        .where(eq(customers.id, customer.id));
+
       throw new Error('Invalid OTP');
     }
 
@@ -494,6 +530,7 @@ export const customerAuthService = {
         email_verified: true,
         verification_token: null,
         verification_expires_at: null,
+        verification_attempts: 0,
         updated_at: new Date(),
       })
       .where(eq(customers.id, customer.id))

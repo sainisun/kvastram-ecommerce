@@ -129,6 +129,21 @@ This guide is the definitive registry of all backend features implemented in the
 * **What you need to do**:
   * Run: `npx tsx src/scripts/reset-admin.ts`
 
+### C. Customer OTP Brute-Force and Resend Protection
+* **Technical Flow**:
+  * Main customer email verification records failed submissions in `customers.verification_attempts` and uses the shared `MAX_FAILED_ATTEMPTS` authentication threshold.
+  * At the threshold, the pending OTP is invalidated and the verification endpoint returns HTTP 429. Other invalid or expired OTP responses remain HTTP 400.
+  * Successful verification and generation of a fresh OTP reset `verification_attempts` to `0`.
+  * Resend requests are limited to 3 per normalized email address in a 15-minute window. Requests without a usable email fall back to an IP-scoped key.
+* **Known limitations**:
+  * The rate limiter currently uses its in-memory store. A multi-instance deployment needs a shared store so resend limits cannot be bypassed across instances or process restarts.
+  * The resend response body is intentionally generic for existing and non-existing accounts, but processing time can still differ because an existing unverified account performs bcrypt hashing, a database update, and notification dispatch. A future hardening pass should add equivalent dummy bcrypt work to the non-existent/already-verified branch and reassess timing behavior.
+* **Edge Cases and Dependencies**:
+  * Request-body inspection uses a cloned request, preserving the original body for downstream Zod validation.
+  * Requesting a fresh OTP clears an OTP-attempt lockout, while the dedicated resend limiter constrains repeated resets.
+* **Operational Commands**:
+  * Run backend lint and authentication regression tests after changing OTP verification or resend behavior.
+
 ---
 
 ## 6. UI/UX Design System Enhancements (v1.1)

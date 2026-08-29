@@ -22,12 +22,16 @@ import { zValidator } from '@hono/zod-validator';
 import {
   customerAuthService,
   LoginCustomerSchema,
+  OtpLockoutError,
   RegisterCustomerSchema,
 } from '../../services/customer-auth-service';
 import { z } from 'zod';
 import { config } from '../../config';
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie';
-import { emailLimiter } from '../../middleware/rate-limiter';
+import {
+  emailLimiter,
+  otpResendLimiter,
+} from '../../middleware/rate-limiter';
 
 const storeAuthRouter = new Hono();
 
@@ -228,6 +232,9 @@ storeAuthRouter.post(
         customer,
       });
     } catch (error: any) {
+      if (error instanceof OtpLockoutError) {
+        return c.json({ error: error.message }, 429);
+      }
       return c.json({ error: error.message }, 400);
     }
   }
@@ -237,7 +244,7 @@ storeAuthRouter.post(
 // 🔒 FIX-004: Rate limited to prevent email bombing attacks
 storeAuthRouter.post(
   '/resend-verification',
-  emailLimiter,
+  otpResendLimiter,
   zValidator('json', ResendVerificationSchema),
   async (c) => {
     const { email } = c.req.valid('json');

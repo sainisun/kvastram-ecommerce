@@ -62,6 +62,37 @@ export const otpGenerationLimiter = rateLimiter({
   },
 });
 
+export const otpResendLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000,
+  limit: 3,
+  standardHeaders: 'draft-7',
+  keyGenerator: async (c: Context) => {
+    const body = (await c.req.raw
+      .clone()
+      .json()
+      .catch(() => null)) as { email?: unknown } | null;
+    const email =
+      typeof body?.email === 'string'
+        ? body.email.trim().toLowerCase()
+        : '';
+
+    return email
+      ? `otp_resend:${email}`
+      : `otp_resend_ip:${getClientIp(c)}`;
+  },
+  handler: (c: Context) => {
+    logSecurityEvent('warn', 'OTP resend limit exceeded', c, {
+      limiter: 'otp_resend',
+      limit: 3,
+      window_ms: 15 * 60 * 1000,
+    });
+    return c.json(
+      { error: 'Too many OTP resend requests. Try again later.' },
+      429
+    );
+  },
+});
+
 export const generalLimiter = createLimiter(
   60 * 1000,
   isDev ? 500 : 1200,
